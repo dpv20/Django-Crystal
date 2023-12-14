@@ -1,0 +1,21 @@
+{% extends 'main/base.html' %}
+{% load static crispy_forms_tags %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <!-- Lagoon Dropdown Area -->
+            <form method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <input type="submit" value="Select Lagoon">
+            </form>
+        </div>
+
+        <div class="col-md-9">
+            <!-- Rest of your content for the checklist page -->
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "main/base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container">
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Date Field -->
+        <div class="row mb-3">
+            <div class="col-3">
+                <div class="form-group">
+                    {{ form.fecha|as_crispy_field }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Supervisor Field -->
+        <div class="row mb-3">
+            <div class="col-3">
+                <div class="form-group">
+                    {{ form.supervisor|as_crispy_field }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Lagoon Field -->
+        <div class="row mb-3">
+            <div class="col-3">
+                <div class="form-group">
+                    {{ form.lagoons|as_crispy_field }}
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-3">
+                <input type="submit" value="Submit" class="btn btn-primary">
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

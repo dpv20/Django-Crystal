@@ -1,0 +1,5 @@
+<select name="lagunas" class="sampletext" required="">
+    {% for lagoon in lagoons %}
+        <option value="{{ lagoon.id }}">{{ lagoon.name }}</option>
+    {% endfor %}
+</select>

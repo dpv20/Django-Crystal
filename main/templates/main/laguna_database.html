@@ -1,0 +1,52 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Codigo</th>
+                <th>Identificador</th>
+                <th>Estado</th>
+                <th>Rend</th>
+                <th>Nombre_Proyecto</th>
+                <th>idplatanus</th>
+                <th>ranking</th>
+                <th>idioma</th>
+                <th>mailcontacto</th>
+                <th>subjectr</th>
+                <th>mailcontacto2</th>
+                <th>horariocorte</th>
+                <th>Water_analysis</th>
+                <th>Region</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for laguna in lagunas %}
+                <tr>
+                    <td>{{ laguna.idLagunas }}</td>
+                    <td>{{ laguna.Nombre }}</td>
+                    <td>{{ laguna.Codigo }}</td>
+                    <td>{{ laguna.Identificador }}</td>
+                    <td>{{ laguna.Estado }}</td>
+                    <td>{{ laguna.Rend }}</td>
+                    <td>{{ laguna.Nombre_Proyecto }}</td>
+                    <td>{{ laguna.idplatanus }}</td>
+                    <td>{{ laguna.ranking }}</td>
+                    <td>{{ laguna.idioma }}</td>
+                    <td>{{ laguna.mailcontacto }}</td>
+                    <td>{{ laguna.subjectr }}</td>
+                    <td>{{ laguna.mailcontacto2 }}</td>
+                    <td>{{ laguna.horariocorte }}</td>
+                    <td>{{ laguna.Water_analysis }}</td>
+                    <td>{{ laguna.Region }}</td>
+                    <td>
+                        <a href="{% url 'edit_laguna' laguna.idLagunas %}">Edit</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

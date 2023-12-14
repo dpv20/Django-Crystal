@@ -1,0 +1,90 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+<style>
+    /* Styling for the table to make it look more table-like */
+    table {
+        border-collapse: collapse;  /* Makes sure table borders are joined */
+        width: 100%;
+    }
+
+    table, th, td {
+        border: 1px solid black;  /* Adds border to the table and its cells */
+    }
+
+    th, td {
+        padding: 8px 12px;  /* Gives some space inside each cell */
+        text-align: left;
+    }
+
+    th {
+        background-color: #f2f2f2;  /* Gives a different background to header cells */
+    }
+</style>
+
+<!-- Table for the daily report -->
+<table>
+    <thead>
+        <tr>
+            <th>Cod</th>
+            <th>Projects</th>
+            <th>Monday ({{ monday_date }})</th>
+            <th>Friday ({{ friday_date }})</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for lagoon in lagoons %}
+        <tr>
+            <td>{{ lagoon.idLagunas }}</td>
+            <td>{{ lagoon.Nombre }}</td>
+            <td>
+                <a href="{% url 'monday' lagoon.idLagunas %}">
+                    {% if lagoon.total_images_monday == 0 %}
+                        <font color="red">X</font>
+                    {% else %}
+                        TF:{{ lagoon.total_images_monday }}/TR:{{ lagoon.selected_images_monday }}
+                    {% endif %}
+                </a>
+            </td>
+            <td>
+                <a href="{% url 'friday' lagoon.idLagunas %}">
+                    {% if lagoon.total_images_friday == 0 %}
+                        <font color="red">X</font>
+                    {% else %}
+                        TF:{{ lagoon.total_images_friday }}/TR:{{ lagoon.selected_images_friday }}
+                    {% endif %}
+                </a>
+            </td>           
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<form id="lagoonForm" enctype="multipart/form-data" method="POST">
+    {% csrf_token %}
+    <table class="viaje">
+        <caption class="titletables">DETAIL</caption>
+        <tbody>
+            <!-- ... rest of your form template ... -->
+        </tbody>
+    </table>
+</form>
+
+<script>
+    document.getElementById('fileInput').addEventListener('change', function() {
+        if (this.value) {  // Check if a file has been selected
+            document.getElementById('lagoonForm').submit();  // Submit the form
+        }
+    });
+</script>
+
+<!-- Display Platanus links -->
+{% if Laguna.idPlatanus %}
+    <a href="https://infocenter.crystal-lagoons.com/api/reports/heatmap/{{ Laguna.idPlatanus }}?date={{ date_today }}" target="_blank">Heatmap Report</a>
+    <br>
+    <a href="https://infocenter.crystal-lagoons.com/api/reports/cleaning/{{ Laguna.idPlatanus }}?date={{ date_today }}" target="_blank">Cleaning Report</a>
+{% else %}
+    <p>No ID Platanus available</p>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+<style>
+    .viaje {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .viaje, th, td {
+        border: 1px solid black;
+        padding: 8px 12px;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+</style>
+
+<form id="lagoonForm" enctype="multipart/form-data" method="POST">
+    {% csrf_token %}
+    <table class="viaje">
+        <caption class="titletables">DETAIL</caption>
+        <tbody>
+            <tr>
+                <td>Lagoon:</td>
+                <td>Laguna {{ lagoon_name }}</td>
+            </tr>
+            <tr>
+                <td>RELEVANT MATTERS</td>
+                <td>
+                    <textarea name="comentrelevant" rows="5" cols="60">{{ detail.comentrelevant }}</textarea>
+                </td>
+            </tr>
+            <tr>
+                <td>COMMENTS ON WATER QUALITY</td>
+                <td>
+                    <textarea name="comentqw" rows="5" cols="60">{{ detail.comentqw }}</textarea>
+                </td>
+            </tr>
+            <tr>
+                <td>COMMENTS ON LAGOON MAINTENANCE</td>
+                <td>
+                    <textarea name="comentlgm" rows="5" cols="60">{{ detail.comentlgm }}</textarea>
+                </td>
+            </tr>
+            <tr>
+                <td>MILESTONES</td>
+                <td>
+                    <textarea name="milestone" rows="5" cols="60">{{ detail.milestone }}</textarea>
+                </td>
+            </tr>
+            <tr>
+                <td>RESPONSIBILITY OF THE MILESTONE:</td>
+                <td>
+                    <select name="responsible" class="sampletext">
+                        <option value="">Last:{{ detail.status }}</option>
+                        <option value="Operations" {% if detail.responsible == "Operations" %}selected{% endif %}>Operations</option>
+                        <option value="Engineering" {% if detail.responsible == "Engineering" %}selected{% endif %}>Engineering</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Status:</td>
+                <td>
+                    <select name="status" class="sampletext">
+                        <option value="">Last:{{ detail.status }}</option>
+                        <option value="Normal Operation" {% if detail.status == "Normal Operation" %}selected{% endif %}>Normal Operation</option>
+                        <option value="Quarantine" {% if detail.status == "Quarantine" %}selected{% endif %}>Quarantine</option>
+                        <option value="Emptying process" {% if detail.status == "Emptying process" %}selected{% endif %}>Emptying process</option>
+                        <option value="Filling on going" {% if detail.status == "Filling on going" %}selected{% endif %}>Filling on going</option>
+                        <option value="Quarantine/ Emptying process" {% if detail.status == "Quarantine/ Emptying process" %}selected{% endif %}>Quarantine/ Emptying process</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Showroom Lagoon</td>
+                <td>
+                    <input type="checkbox" name="showroom" value="True" {% if detail.showroom %}checked{% endif %}>
+                </td>
+            </tr>
+            <tr>
+                <td>Uploading photos:</td>
+                <td>
+                    <input type="file" name="userfile[]" id="fileInput" multiple="multiple">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <a href="{% url 'daily_report' %}" class="button" style="display:table-cell; vertical-align:middle; text-align:center;">Back</a>
+                </td>
+                <td>
+                    <input type="submit" name="cargar" class="button" value="Submit">
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+
+<script>
+    document.getElementById('fileInput').addEventListener('change', function() {
+        if (this.value) {  // Check if a file has been selected
+            document.getElementById('lagoonForm').submit();  // Submit the form
+        }
+    });
+</script>
+
+<!-- Display Platanus links -->
+{% if Laguna.idPlatanus %}
+    <a href="https://infocenter.crystal-lagoons.com/api/reports/heatmap/{{ Laguna.idPlatanus }}?date={{ date_today }}" target="_blank">Heatmap Report</a>
+    <br>
+    <a href="https://infocenter.crystal-lagoons.com/api/reports/cleaning/{{ Laguna.idPlatanus }}?date={{ date_today }}" target="_blank">Cleaning Report</a>
+{% else %}
+    <p>No ID Platanus available</p>
+{% endif %}
+
+<!-- Display images for the week -->
+<div style="margin-top: 20px;">
+    <h3>Images for the Week:</h3>
+    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+        {% for image in images %}
+            <div style="flex: 1; min-width: calc(25% - 10px); max-width: calc(25% - 10px); box-sizing: border-box; margin-bottom: 15px;">
+                <img src="{{ image.photo.url }}" alt="Image for {{ lagoon_name }} on {{ image.date }}" style="width: 100%; height: auto;">
+                <p style="text-align: center;">Date: {{ image.date }}</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
