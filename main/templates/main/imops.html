@@ -1,0 +1,39 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+
+<h2>IMOPS Form</h2>
+
+<div class="table-box">
+    <form method="post" id="imopsForm">
+        {% csrf_token %}
+
+        <!-- Date Selection (Month and Year) -->
+        <div class="form-group">
+            <label for="date_id">Fecha:</label>
+            {{ form.date|add_class:'sampletext'|attr:'id:date_id' }}
+        </div>
+
+        <!-- Laguna Selection -->
+        <div class="form-group">
+            <label for="laguna_id">Laguna</label>
+            {{ form.laguna.as_widget(attrs={'class': 'select-laguna', 'id': 'laguna_id'}) }}
+        </div>
+
+        <!-- Buttons -->
+        <div class="button-container">
+            <button type="button" onclick="location.href='/'" class="button">Home</button>
+            <button type="submit" class="button">Submit</button>
+        </div>
+    </form>
+</div>
+
+<style>
+    /* Your existing styles plus any additional styles if needed */
+</style>
+
+<script>
+    // Optional: Any additional JavaScript needed
+</script>
+
+{% endblock %}

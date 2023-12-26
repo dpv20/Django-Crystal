@@ -1,0 +1,218 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <h2>Stock Form</h2>
+    {% if messages %}
+        <div class="alert-messages">
+            {% for message in messages %}
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <form method="post" class="form-horizontal">
+        {% csrf_token %}
+
+        
+        <!-- Styling for the tables -->
+        <style>
+            .table-box {
+                border: 1px solid #ddd;
+                padding: 15px;
+                margin-bottom: 20px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+                width: max-content;
+                margin-right: 50px;
+            }
+            .alert-messages {
+                margin-bottom: 20px;
+            }
+        </style>
+
+        <!-- Box for Date, Project, and Stock/Supply Selection -->
+        <div class="table-box">
+            <table class="viaje">
+                <tbody>
+                    <!-- Date Field -->
+                    <tr>
+                        <td>Date:</td>
+                        <td>
+                            <input type="date" name="date" value="{{ form.date.value|default_if_none:'' }}" style="width:150px" class="sampletext">
+                            {% if form.date.errors %}
+                                {% for error in form.date.errors %}
+                                    <div class="error">{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <!-- Project Field -->
+                    <tr>
+                        <td>Project:</td>
+                        <td>
+                            <select name="laguna" style="width:150px" class="sampletext">
+                                <option value="" {% if not form.laguna.value %}selected{% endif %}>-- Select Laguna --</option>
+                                {% for laguna in lagunas %}
+                                    <option value="{{ laguna.idLagunas }}" {% if form.laguna.value == laguna.idLagunas %}selected{% endif %}>{{ laguna.Nombre }}</option>
+                                {% endfor %}
+                            </select>
+                            {% if form.laguna.errors %}
+                                {% for error in form.laguna.errors %}
+                                    <div class="error">{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <!-- Stock/Supply Selection -->
+                    <tr>
+                        <td style="padding-right: 50px;">Stock/Supply:</td>
+                        <td>
+                            <div class="form-check form-check-inline">
+                                <label class="form-check-label" for="stock" style="margin-right: 20px;">
+                                    <input class="form-check-input" type="radio" name="stock_or_supply" id="stock" value="stock" {% if form.stock_or_supply.value == "stock" %}checked{% endif %}> Stock
+                                </label>
+                                <label class="form-check-label" for="supply">
+                                    <input class="form-check-input" type="radio" name="stock_or_supply" id="supply" value="supply" {% if form.stock_or_supply.value == "supply" %}checked{% endif %}> Supply
+                                </label>
+                            </div>
+                            {% if form.stock_or_supply.errors %}
+                                {% for error in form.stock_or_supply.errors %}
+                                    <div class="error">{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Box for Stock Item Fields -->
+        <div class="table-box">
+            <table class="viaje">
+                <tbody>
+                    <!-- Headers -->
+                    <tr>
+                        <td style="padding-right: 100px;"></td>
+                        <td style="padding-right: 50px;">Tank</td>
+                        <td style="padding-right: 50px;">Storage</td>
+                        <td style="padding-right: 100px;"></td>
+                    </tr>
+                    <!-- CL-AP2HI -->
+                    <td>CL-AP2HI:</td>
+                        <td>
+                            <input type="number" name="cl_ap2hi_tank" class="sampletext" style="width:75px" value="{{ form.cl_ap2hi_tank.value|default_if_none:'' }}">
+                            {% if form.cl_ap2hi_tank.errors %}
+                                {% for error in form.cl_ap2hi_tank.errors %}
+                                    <div class="error">{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <input type="number" name="cl_ap2hi_storage" class="sampletext" style="width:75px" value="{{ form.cl_ap2hi_storage.value|default_if_none:'' }}">
+                            {% if form.cl_ap2hi_storage.errors %}
+                                {% for error in form.cl_ap2hi_storage.errors %}
+                                    <div class="error">{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </td>
+                        <td>Litres</td>
+                    </tr>
+                    <!-- CL-FH1LO -->
+                    <tr>
+                        <td>CL-FH1LO:</td>
+                        <td>
+                            <input type="number" name="cl_fh1lo_tank" class="sampletext" style="width:75px" value="{{ form.cl_fh1lo_tank.value|default_if_none:'' }}">
+                            {% if form.cl_fh1lo_tank.errors %}
+                                {% for error in form.cl_fh1lo_tank.errors %}
+                                    <div class="error">{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <input type="number" name="cl_fh1lo_storage" class="sampletext" style="width:75px" value="{{ form.cl_fh1lo_storage.value|default_if_none:'' }}">
+                            {% if form.cl_fh1lo_storage.errors %}
+                                {% for error in form.cl_fh1lo_storage.errors %}
+                                    <div class="error">{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </td>
+                        <td>Litres</td>
+                    </tr>
+                    <!-- CL-FLO12 -->
+                    <tr>
+                        <td>CL-FLO12:</td>
+                        <td>
+                            <input type="number" name="cl_flo12_tank" class="sampletext" style="width:75px" value="{{ form.cl_flo12_tank.value|default_if_none:'' }}">
+                            {% if form.cl_flo12_tank.errors %}
+                                {% for error in form.cl_flo12_tank.errors %}
+                                    <div class="error">{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <input type="number" name="cl_flo12_storage" class="sampletext" style="width:75px" value="{{ form.cl_flo12_storage.value|default_if_none:'' }}">
+                            {% if form.cl_flo12_storage.errors %}
+                                {% for error in form.cl_flo12_storage.errors %}
+                                    <div class="error">{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </td>
+                        <td>Kilograms</td>
+                    </tr>
+                    <!-- CL-COTFLO -->
+                    <tr>
+                        <td>CL-COTFLO:</td>
+                        <td>
+                            <input type="number" name="cl_cotflo_tank" class="sampletext" style="width:75px" value="{{ form.cl_cotflo_tank.value|default_if_none:'' }}">
+                            {% if form.cl_cotflo_tank.errors %}
+                                {% for error in form.cl_cotflo_tank.errors %}
+                                    <div class="error">{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <input type="number" name="cl_cotflo_storage" class="sampletext" style="width:75px" value="{{ form.cl_cotflo_storage.value|default_if_none:'' }}">
+                            {% if form.cl_cotflo_storage.errors %}
+                                {% for error in form.cl_cotflo_storage.errors %}
+                                    <div class="error">{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </td>
+                        <td>Kilograms</td>
+                    </tr>
+                    <!-- CL-MB010 -->
+                    <tr>
+                        <td>CL-MB010:</td>
+                        <td>
+                            <input type="number" name="cl_mb010_tank" class="sampletext" style="width:75px" value="{{ form.cl_mb010_tank.value|default_if_none:'' }}">
+                            {% if form.cl_mb010_tank.errors %}
+                                {% for error in form.cl_mb010_tank.errors %}
+                                    <div class="error">{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <input type="number" name="cl_mb010_storage" class="sampletext" style="width:75px" value="{{ form.cl_mb010_storage.value|default_if_none:'' }}">
+                            {% if form.cl_mb010_storage.errors %}
+                                {% for error in form.cl_mb010_storage.errors %}
+                                    <div class="error">{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </td>
+                        <td>Litres</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+        <!-- Submit and Back Buttons -->
+        <div class="form-group">
+            <input type="submit" name="Enviar" class="btn btn-primary" value="Submit">
+            <a href="/" title="Go back" class="btn btn-secondary">Back</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

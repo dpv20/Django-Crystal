@@ -1,0 +1,68 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+
+<h2>Reporte Semanal</h2>
+
+<div class="table-box">
+    <form id="lagunaForm">
+        <!-- Date Selection -->
+        <div class="form-group">
+            <label for="fecha">Fecha:</label>
+            <input type="date" id="fecha" name="fecha" class="sampletext">
+        </div>
+
+        <!-- Laguna Selection -->
+        <div class="form-group">
+            <label for="idLaguna">Laguna</label>
+            <select name="idLaguna" id="idLaguna" class="select-laguna">
+                {% for laguna in lagunas %}
+                    <option value="{{ laguna.idLagunas }}">{{ laguna.Nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Buttons -->
+        <div class="button-container">
+            <button type="button" onclick="location.href='/'" class="button">Home</button>
+            <button type="button" onclick="submitForm()" class="button">Elegir</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function submitForm() {
+        var selectedLagunaId = document.getElementById('idLaguna').value;
+        var selectedDate = document.getElementById('fecha').value;
+        window.location.href = '/laguna/' +  'relevant_matters/' + encodeURIComponent(selectedLagunaId) +'/' + encodeURIComponent(selectedDate) + '/';
+    }
+</script>
+
+<style>
+    .table-box {
+        border: 1px solid #ddd;
+        padding: 15px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        width: max-content;
+        margin-right: 50px;
+    }
+    .form-group {
+        margin-bottom: 10px;
+    }
+    .button-container {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+    }
+    
+    .spacer {
+        flex-grow: 1;
+    }
+    .table-box h2 {
+        color: grey; /* Adjust the color as needed */
+    }
+</style>
+
+{% endblock %}
+

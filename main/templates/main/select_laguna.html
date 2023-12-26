@@ -1,0 +1,37 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+
+<h2>Seleccionar Laguna</h2>
+
+<div class="table-box">
+    <form id="lagunaForm">
+        <label for="nombreLaguna">Nombre de Laguna:</label>
+        <select name="nombreLaguna" id="nombreLaguna">
+            {% for laguna in lagunas %}
+                <option value="{{ laguna.Nombre }}">{{ laguna.Nombre }}</option>
+            {% endfor %}
+        </select>
+        <button type="button" onclick="submitForm()">Ver Notas</button>
+    </form>
+</div>
+
+<script>
+    function submitForm() {
+        var selectedLaguna = document.getElementById('nombreLaguna').value;
+        window.location.href = '/notas/' + encodeURIComponent(selectedLaguna) + '/';
+    }
+</script>
+
+<style>
+    .table-box {
+        border: 1px solid #ddd;
+        padding: 15px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        width: max-content;
+        margin-right: 50px;
+    }
+</style>
+
+{% endblock %}

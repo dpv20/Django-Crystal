@@ -1,0 +1,56 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+
+<h2>Notas de la Laguna: {{ nombre_laguna }}</h2>
+
+<table border="1" style="width: 100%; table-layout: fixed;">
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Supervisor</th>
+            <th>Personal</th>
+            <th>Lim_Fondo</th>
+            <th>Lim_Manual</th>
+            <th>Filtro</th>
+            <th>Sist_Dosi</th>
+            <th>Sist_Recir</th>
+            <th>Telemetría</th>
+            <th>Skimmers</th>
+            <th>Ultrasonido</th>
+            <th>Infraestructura</th>
+            <th>Condición Liner</th>
+            <th>Agua Relleno</th>
+            <th>Nivel Agua</th>
+            <th>Mitigación</th>
+            <th>Promedio</th>
+            <th>edit</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for nota in notas %}
+            <tr>
+                <td>{{ nota.fecha }}</td>
+                <td>{{ nota.supervisor }}</td>
+                <td>{{ nota.notas.nota_personal|default:"N/A" }}</td>
+                <td>{{ nota.notas.nota_limpieza_fondo|default:"N/A" }}</td>
+                <td>{{ nota.notas.nota_limpieza_manual|default:"N/A" }}</td>
+                <td>{{ nota.notas.nota_filtro|default:"N/A" }}</td>
+                <td>{{ nota.notas.nota_sistema_dosificacion|default:"N/A" }}</td>
+                <td>{{ nota.notas.nota_sistema_recirculacion|default:"N/A" }}</td>
+                <td>{{ nota.notas.nota_telemetria|default:"N/A" }}</td>
+                <td>{{ nota.notas.nota_skimmers|default:"N/A" }}</td>
+                <td>{{ nota.notas.nota_ultrasonido|default:"N/A" }}</td>
+                <td>{{ nota.notas.nota_infraestructura|default:"N/A" }}</td>
+                <td>{{ nota.notas.nota_condicion_liner|default:"N/A" }}</td>
+                <td>{{ nota.notas.nota_agua_relleno|default:"N/A" }}</td>
+                <td>{{ nota.notas.nota_nivel_laguna|default:"N/A" }}</td>
+                <td>{{ nota.notas.nota_mitigacion|default:"N/A" }}</td>
+                <td>{{ nota.promedio|floatformat:2|default:"N/A" }}</td>
+                <th>Pending</th>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

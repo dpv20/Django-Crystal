@@ -1,0 +1,23 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Manuals{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Manuals</h2>
+    <table class="viaje">
+        <tbody>
+            {% for manual in manuals %}
+            <tr>
+                <td>
+                    <a href="{{ manual.file_url }}" target="_blank">
+                        <img src="/media/PDF.png" width="20" height="20" alt="PDF Icon">
+                    </a>
+                </td>
+                <td>{{ manual.name }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

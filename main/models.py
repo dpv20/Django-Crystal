@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
+from datetime import datetime
+import os
+from django.utils import timezone
 
 
 # Create your models here.
@@ -19,8 +22,6 @@ class Item(models.Model):
     def __str__(self):
         return self.text
     
-
-
 class Laguna(models.Model):
     idLagunas = models.CharField(max_length=10, primary_key=True)
     Nombre = models.CharField(max_length=255, blank=True, null=True)
@@ -42,16 +43,34 @@ class Laguna(models.Model):
     def __str__(self):
         return self.Nombre
 
+def image_upload_to(upload_date):
+    def wrapper(instance, filename):
+        extension = os.path.splitext(filename)[1]
+        formatted_date = upload_date.strftime('%Y_%m_%d')
+        count = LagunaImage.objects.filter(
+            laguna=instance.laguna, 
+            date=upload_date
+        ).count()
+
+        new_filename = f"{formatted_date}_{count + 1}{extension}"
+        return f"laguna_images/{instance.laguna.idLagunas}/{new_filename}"
+    return wrapper
 
 class LagunaImage(models.Model):
     laguna = models.ForeignKey(Laguna, on_delete=models.CASCADE, related_name="images")
-    photo = models.ImageField(upload_to='laguna_images/')
+    photo = models.ImageField(upload_to='upload_to_placeholder')
     date = models.DateField()
     selected = models.BooleanField(default=False)
+    _upload_date = None
 
+    def set_upload_date(self, date):
+        self._upload_date = date
     def __str__(self):
         return f"Image for {self.laguna.Nombre} on {self.date}"
-
+    def save(self, *args, **kwargs):
+        if self._upload_date is not None:
+            self.photo.field.upload_to = image_upload_to(self._upload_date)
+        super().save(*args, **kwargs)
 
 ######################
 
@@ -63,19 +82,18 @@ class BaseChecklist(models.Model):
     class Meta:
         abstract = True
 
-
 class PersonalDeLaLaguna(BaseChecklist):
     todo_bien = models.BooleanField(default=False, verbose_name="¿Operando todo bien?")
     cantidad = models.CharField(max_length=200, blank=True, null=True)
     dotacion_incompleta = models.BooleanField(default=False)
-    nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 5)], blank=True, null=True)
+    nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True)
     comentario = models.TextField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if self.todo_bien:
             self.cantidad = ""
             self.dotacion_incompleta = False
-            self.nota = None
+            self.nota = 5
             # self.comentario remains unchanged
         super().save(*args, **kwargs)
 
@@ -130,11 +148,12 @@ class OperacionLimpiezaDeFondo(BaseChecklist):
     carro_nuevo_comentarios = models.CharField(max_length=200, blank=True)
 
     # Evaluación general
-    nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 5)], blank=True, null=True)
+    nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True)
     evaluacion_comentarios = models.TextField(blank=True)
 
     def save(self, *args, **kwargs):
         if self.todo_bien:
+            self.nota = 5
             # Set all boolean fields to False except "todo_bien"
             for field in self._meta.fields:
                 if isinstance(field, models.BooleanField) and field.name != "todo_bien":
@@ -182,11 +201,12 @@ class OperacionLimpiezaManual(BaseChecklist):
     suciedad_en_uniones = models.BooleanField(default=False, verbose_name="Suciedad en las uniones de liner, arrugas y baches",help_text="Limpieza de Liner")
 
     # 6) Evaluación general
-    nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 5)], blank=True, null=True)
+    nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True)
     evaluacion_comentarios = models.TextField(blank=True)
 
     def save(self, *args, **kwargs):
         if self.todo_bien:
+            self.nota = 5
             # Set all boolean fields to False except "todo_bien"
             for field in self._meta.fields:
                 if isinstance(field, models.BooleanField) and field.name != "todo_bien":
@@ -239,11 +259,12 @@ class OperacionFiltro(BaseChecklist):
     bomba_comentarios = models.CharField(max_length=200, blank=True, verbose_name="Comentarios")
 
     # Evaluación general
-    nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 5)], blank=True, null=True)
+    nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True)
     evaluacion_comentarios = models.TextField(blank=True)
 
     def save(self, *args, **kwargs):
         if self.todo_bien:
+            self.nota = 5
             # Set all boolean fields to False except "todo_bien"
             for field in self._meta.fields:
                 if isinstance(field, models.BooleanField) and field.name != "todo_bien":
@@ -306,11 +327,12 @@ class OperacionSistemaDosificacion(BaseChecklist):
     discordancia_telemetria = models.BooleanField(default=False, verbose_name="Discordancia entre la dosificación por telemetría y la real")
 
     # Evaluación general
-    nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 5)], blank=True, null=True)
+    nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True)
     evaluacion_comentarios = models.TextField(blank=True)
 
     def save(self, *args, **kwargs):
         if self.todo_bien:
+            self.nota = 5 
             # Set all boolean fields to False except "todo_bien"
             for field in self._meta.fields:
                 if isinstance(field, models.BooleanField) and field.name != "todo_bien":
@@ -359,12 +381,13 @@ class OperacionSistemaRecirculacion(BaseChecklist):
     camara_comentarios = models.CharField(max_length=200, blank=True, verbose_name="Comentarios")
 
     # Evaluación general
-    nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 5)], blank=True, null=True)
+    nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True)
     evaluacion_comentario = models.TextField(blank=True, verbose_name="Comentario")
 
     def save(self, *args, **kwargs):
         # If everything is fine, reset other fields to their defaults
         if self.todo_bien:
+            self.nota = 5
             # Set all boolean fields to False except "todo_bien"
             for field in self._meta.fields:
                 if isinstance(field, models.BooleanField) and field.name != "todo_bien":
@@ -431,12 +454,13 @@ class FuncionamientoTelemetria(BaseChecklist):
     otro_panel = models.CharField(max_length=200, blank=True, verbose_name="Otro")
 
     # Evaluación general
-    nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 5)], blank=True, null=True)
+    nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True)
     evaluacion_comentario = models.TextField(blank=True, verbose_name="Comentario")
 
     def save(self, *args, **kwargs):
         # If everything is fine, reset other fields to their defaults
         if self.todo_bien:
+            self.nota = 5
             # Set all boolean fields to False except "todo_bien"
             for field in self._meta.fields:
                 if isinstance(field, models.BooleanField) and field.name != "todo_bien":
@@ -490,12 +514,13 @@ class OperacionSkimmers(BaseChecklist):
     manguera_comentarios = models.CharField(max_length=200, blank=True, verbose_name="Comentarios")
 
     # Evaluación general
-    nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 5)], blank=True, null=True)
+    nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True)
     evaluacion_comentario = models.TextField(blank=True, verbose_name="Comentarios")
 
     def save(self, *args, **kwargs):
         # If everything is fine, reset other fields to their defaults
         if self.todo_bien:
+            self.nota = 5
             # Set all boolean fields to False except "todo_bien"
             for field in self._meta.fields:
                 if isinstance(field, models.BooleanField) and field.name != "todo_bien":
@@ -524,11 +549,12 @@ class OperacionUltrasonido(BaseChecklist):
     falta_energia = models.BooleanField(default=False, verbose_name="Falta de energía")
 
     # Evaluación general
-    nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 5)], blank=True, null=True)
+    nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True)
     comentario = models.TextField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if self.todo_bien:
+            self.nota = 5
             # Set all boolean fields to False except "todo_bien"
             for field in self._meta.fields:
                 if isinstance(field, models.BooleanField) and field.name != "todo_bien":
@@ -557,11 +583,12 @@ class Infraestructura(BaseChecklist):
     bomba_mal_estado = models.BooleanField(default=False, verbose_name="Bomba sentina en mal estado o no tienen")
 
     # Evaluación general
-    nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 5)], blank=True, null=True)
+    nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True)
     comentario = models.TextField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if self.todo_bien:
+            self.nota = 5
             # Set all boolean fields to False except "todo_bien"
             for field in self._meta.fields:
                 if isinstance(field, models.BooleanField) and field.name != "todo_bien":
@@ -578,11 +605,12 @@ class CondicionLiner(BaseChecklist):
     algas = models.BooleanField(default=False, verbose_name="Liner con algas")
 
     # Evaluación general
-    nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 5)], blank=True, null=True)
+    nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True)
     comentario = models.TextField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if self.todo_bien:
+            self.nota = 5
             # Set all boolean fields to False except "todo_bien"
             for field in self._meta.fields:
                 if isinstance(field, models.BooleanField) and field.name != "todo_bien":
@@ -608,11 +636,12 @@ class CondicionVisualLaguna(BaseChecklist):
     liner_sedimento = models.BooleanField(default=False, verbose_name="Liner con sedimento")
 
     # Evaluación general
-    nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 5)], blank=True, null=True)
+    nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True)
     comentario = models.TextField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if self.todo_bien:
+            self.nota = 5
             # Set all boolean fields to False except "todo_bien"
             for field in self._meta.fields:
                 if isinstance(field, models.BooleanField) and field.name != "todo_bien":
@@ -636,11 +665,12 @@ class FuncionamientoAguaRelleno(BaseChecklist):
     otro_fuente = models.CharField(max_length=200, blank=True, verbose_name="Otro")
 
     # Evaluación general
-    nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 5)], blank=True, null=True)
+    nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True)
     comentario = models.TextField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if self.todo_bien:
+            self.nota = 5
             # Set all boolean fields to False except "todo_bien"
             for field in self._meta.fields:
                 if isinstance(field, models.BooleanField) and field.name != "todo_bien":
@@ -656,11 +686,12 @@ class NivelDeLaLaguna(BaseChecklist):
     nivel_alto = models.BooleanField(default=False, verbose_name="Nivel alto")
 
     # Evaluación general
-    nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 5)], blank=True, null=True)
+    nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True)
     comentario = models.TextField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if self.todo_bien:
+            self.nota = 5
             # Set all boolean fields to False except "todo_bien"
             for field in self._meta.fields:
                 if isinstance(field, models.BooleanField) and field.name != "todo_bien":
@@ -676,11 +707,12 @@ class MedidasDeMitigacion(BaseChecklist):
     no_tienen = models.BooleanField(default=False, verbose_name="No tienen")
 
     # Evaluación general
-    nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 5)], blank=True, null=True)
+    nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True)
     comentario = models.TextField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if self.todo_bien:
+            self.nota = 5
             # Set all boolean fields to False except "todo_bien"
             for field in self._meta.fields:
                 if isinstance(field, models.BooleanField) and field.name != "todo_bien":
@@ -723,3 +755,78 @@ class LagoonDetail(models.Model):
 
     def __str__(self):
         return f"{self.idLagunas} - {self.date} - {self.status}"
+
+class Laguna_Stock(models.Model):
+    # Choice for stock or supply
+    STOCK_OR_SUPPLY_CHOICES = [
+        ('stock', 'Stock'),
+        ('supply', 'Supply'),
+    ]
+
+    # Fields
+    date = models.DateField()
+    laguna = models.ForeignKey(Laguna, on_delete=models.CASCADE, verbose_name="Project")
+    stock_or_supply = models.CharField(max_length=6, choices=STOCK_OR_SUPPLY_CHOICES)
+    
+    # Stock items
+    cl_ap2hi_tank = models.IntegerField()  # Number of tanks
+    cl_ap2hi_storage = models.DecimalField(max_digits=10, decimal_places=2)  # Storage capacity
+
+    cl_fh1lo_tank = models.IntegerField()
+    cl_fh1lo_storage = models.DecimalField(max_digits=10, decimal_places=2)
+
+    cl_flo12_tank = models.IntegerField()
+    cl_flo12_storage = models.DecimalField(max_digits=10, decimal_places=2)
+
+    cl_cotflo_tank = models.IntegerField()
+    cl_cotflo_storage = models.DecimalField(max_digits=10, decimal_places=2)
+
+    cl_mb010_tank = models.IntegerField()
+    cl_mb010_storage = models.DecimalField(max_digits=10, decimal_places=2)
+
+    # Add more fields as needed for each stock item
+
+    def __str__(self):
+        return f"{self.laguna.Nombre} - {self.date}"
+    
+class RelevantMatters(models.Model):
+    laguna = models.ForeignKey(Laguna, on_delete=models.CASCADE, related_name="relevant_matters")
+    text = models.TextField()  # Text field for the content
+    date = models.DateField()  # Date field
+
+    class Meta:
+        unique_together = ('laguna', 'date')  # Ensures uniqueness for each laguna and date
+
+    def __str__(self):
+        return f"Relevant Matters for {self.laguna.Nombre} on {self.date}"
+
+class MyModel(models.Model):
+    date = models.DateField(auto_now_add=True)
+
+    resumen_ejecutivo = models.TextField()
+    last_resumen_ejecutivo_date = models.DateField(editable=False, null=True)
+
+    recomendaciones = models.TextField()
+    last_recomendaciones_date = models.DateField(editable=False, null=True)
+
+    temas_pendientes = models.TextField()
+    last_temas_pendientes_date = models.DateField(editable=False, null=True)
+
+    def save(self, *args, **kwargs):
+        # Get the current instance from the database
+        if self.pk:
+            old_instance = MyModel.objects.get(pk=self.pk)
+            if old_instance.resumen_ejecutivo != self.resumen_ejecutivo:
+                self.last_resumen_ejecutivo_date = timezone.now().date()
+            if old_instance.recomendaciones != self.recomendaciones:
+                self.last_recomendaciones_date = timezone.now().date()
+            if old_instance.temas_pendientes != self.temas_pendientes:
+                self.last_temas_pendientes_date = timezone.now().date()
+        else:
+            # This is a new instance, so set all dates
+            self.last_resumen_ejecutivo_date = self.date
+            self.last_recomendaciones_date = self.date
+            self.last_temas_pendientes_date = self.date
+
+        super(MyModel, self).save(*args, **kwargs)
+

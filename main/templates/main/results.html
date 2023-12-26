@@ -22,51 +22,52 @@ function toggleForm(formId) {
         <p><strong>Supervisor:</strong> {{ request.session.supervisor }}</p>
         <p><strong>Lagoon:</strong> {{ request.session.lagoons }}</p>
 
+
         <!-- Toggle buttons for both forms -->
         <div class="divspoiler">
             <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('personalForm')">Personal de la Laguna{% if request.session.personal_form_submitted %}(...LISTO){% endif %}</a>
         </div>
         <div class="divspoiler">
-            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('limpiezaForm')">Operacion Limpieza de Fondo</a>
+            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('limpiezaForm')">Operacion Limpieza de Fondo{% if request.session.limpieza_form_submitted %}(...LISTO){% endif %}</a>
         </div>
         <div class="divspoiler">
-            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('limpiezamanualForm')">Operacion Limpieza Manual</a>
+            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('limpiezamanualForm')">Operacion Limpieza Manual{% if request.session.limpiezamanual_form_submitted %}(...LISTO){% endif %}</a>
         </div>
         <div class="divspoiler">
-            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('operacionfiltroForms')">Operacion Filtro</a>
+            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('operacionfiltroForms')">Operacion Filtro{% if request.session.operacionfiltro_form_submitted %}(...LISTO){% endif %}</a>
         </div>
         <div class="divspoiler">
-            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('operacionsistemadosificacionForms')">Operacion Sistema Dosificacion</a>
+            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('operacionsistemadosificacionForms')">Operacion Sistema Dosificacion{% if request.session.operacionsistemadosificacion_form_submitted %}(...LISTO){% endif %}</a>
         </div>
         <div class="divspoiler">
-            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('operacionsistemarecirculacionForms')">Operacion Sistema Recirculacion</a>
+            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('operacionsistemarecirculacionForms')">Operacion Sistema Recirculacion{% if request.session.operacionsistemarecirculacion_form_submitted %}(...LISTO){% endif %}</a>
         </div>
         <div class="divspoiler">
-            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('funcionamientotelemetriaForms')">Funcionamiento Telemetria</a>
+            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('funcionamientotelemetriaForms')">Funcionamiento Telemetria{% if request.session.funcionamientotelemetria_form_submitted %}(...LISTO){% endif %}</a>
         </div>
         <div class="divspoiler">
-            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('operacionskimmersForms')">Operacion Skimmers</a>
+            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('operacionskimmersForms')">Operacion Skimmers{% if request.session.operacionskimmers_form_submitted %}(...LISTO){% endif %}</a>
         </div>
         <div class="divspoiler">
-            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('operacionultrasonidoForms')">Operacion Ultrasonido</a>
+            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('operacionultrasonidoForms')">Operacion Ultrasonido{% if request.session.operacionultrasonido_form_submitted %}(...LISTO){% endif %}</a>
         </div>
         <div class="divspoiler">
-            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('infraestructuraForms')">Infraestructura</a>
+            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('infraestructuraForms')">Infraestructura{% if request.session.infraestructura_form_submitted %}(...LISTO){% endif %}</a>
         </div>
         <div class="divspoiler">
-            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('condicionlinerForms')">Condicion Liner</a>
+            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('condicionlinerForms')">Condicion Liner{% if request.session.condicionliner_form_submitted %}(...LISTO){% endif %}</a>
         </div>
         <div class="divspoiler">
-            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('condicionvisuallagunaForms')">Condicion Visual Laguna</a>
+            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('condicionvisuallagunaForms')">Condicion Visual Laguna{% if request.session.condicionvisuallaguna_form_submitted %}(...LISTO){% endif %}</a>
         </div>
         <div class="divspoiler">
-            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('funcionamientoaguarellenoForms')">Funcionamiento Agua Relleno</a>
+            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('funcionamientoaguarellenoForms')">Funcionamiento Agua Relleno{% if request.session.funcionamientoaguarelleno_form_submitted %}(...LISTO){% endif %}</a>
         </div>
         <div class="divspoiler">
-            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('niveldelalagunaForms')">Nivel de la Laguna</a>
+            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('niveldelalagunaForms')">Nivel de la Laguna{% if request.session.niveldelalaguna_form_submitted %}(...LISTO){% endif %}</a>
         </div>
         <div class="divspoiler">
-            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('medidasdemitigacionForms')">Medidas de Mitigacion</a>
+            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('medidasdemitigacionForms')">Medidas de Mitigacion{% if request.session.medidasdemitigacion_form_submitted %}(...LISTO){% endif %}</a>
         </div>
     </div>
     
