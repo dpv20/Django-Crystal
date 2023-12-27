@@ -15,11 +15,12 @@ from .views import (
     upload_image_view,
     semanal_selection_view2,
     display_latest_relevant_matter_view,
-    imops_view
+    imops_view,
+    index_page
 )
 
 urlpatterns = [
-    path("", views.home, name="home"),
+    path("", views.index_page, name="indexpage"),
     path("home/", views.home, name="home"),
     path("create/", views.create, name="create"),
     path("<int:id>", views.index, name="index"),
@@ -42,7 +43,7 @@ urlpatterns = [
     path('update_image_status/', views.update_image_status, name='update_image_status'),
     path('semanal_selection/', views.semanal_selection_view2, name='semanal_selection'),
     path('laguna/relevant_matters/<str:idLagunas>/<str:fecha>/', views.display_latest_relevant_matter_view, name='display_latest_relevant_matter'),
-    path('imops/', imops_view, name='imops_view'),
+    path('imops/', views.imops_view, name='imops_view'),
 ]
 
 

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Index Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            margin: 0;
+            padding-top: 5px;
+        }
+        .logo {
+            margin-bottom: 20px;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 20px;
+            width: 80%;
+            max-width: 800px;
+            margin-top: 20px;
+        }
+        .grid-item {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 200px;
+            height: 220px;
+            overflow: hidden;
+        }
+        .grid-item img {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">
+        <img src="/media/logo.png" alt="Company Logo">
+    </div>
+    <div class="grid-container">
+        <!-- Repeat this block for each window -->
+        <a href="http://op.crystallagoons.info/" class="grid-item" style="text-decoration: none; color: inherit;">
+            <img src="/media/passport.png" alt="Window 1">
+            <span>Solicitudes de Viajes</span>
+        </a>
+        <a href="https://infocenter.crystallagoons.com/" class="grid-item" style="text-decoration: none; color: inherit;">
+            <img src="/media/infocenter.png" alt="Window 2">
+            <span>infocenter</span>
+        </a>
+        <a href="http://opvisitas.crystallagoons.info/" class="grid-item" style="text-decoration: none; color: inherit;">
+            <img src="/media/operaciones 2.png" alt="Window 3">
+            <span>Visitas de Operaciones</span>
+        </a>
+        <a href="https://www.exacq.com/support/downloads.php" class="grid-item" style="text-decoration: none; color: inherit;">
+            <img src="/media/camaras.png" alt="Window 4">
+            <span>Camaras APP</span> <!-- You can change the text to match your needs -->
+        </a>
+        <a href="https://console.twilio.com/" class="grid-item" style="text-decoration: none; color: inherit;">
+            <img src="/media/twilio.png" alt="Window 5">
+            <span>twilio Sim Cards</span> <!-- You can change the text to match your needs -->
+        </a>
+    <!-- New grid item for /home/ -->
+        <a href="/home/" class="grid-item" style="text-decoration: none; color: inherit;">
+            <img src="/media/operacionesnew.png" alt="Window 6">
+            <span>Visitas de Operaciones New</span> <!-- You can change the text to match your needs -->
+        </a>
+        <!-- Add more grid items as needed -->
+    </div>
+</body>
+</html>

@@ -39,6 +39,7 @@ class Laguna(models.Model):
     horariocorte = models.TimeField(blank=True, null=True)
     Water_analysis = models.BooleanField(blank=True, null=True)
     Region = models.IntegerField(blank=True, null=True)
+    filtroreporte = models.CharField(max_length=100, null=True)
     
     def __str__(self):
         return self.Nombre
@@ -720,11 +721,25 @@ class MedidasDeMitigacion(BaseChecklist):
 
         super().save(*args, **kwargs)
 
+
+
 class Supervisor(models.Model):
     name = models.CharField(max_length=255, unique=True)
+    lagunas = models.ManyToManyField(Laguna, through='SupervisorLaguna', related_name='supervisors')
 
     def __str__(self):
         return self.name
+
+class SupervisorLaguna(models.Model):
+    supervisor = models.ForeignKey(Supervisor, on_delete=models.CASCADE)
+    laguna = models.ForeignKey(Laguna, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('supervisor', 'laguna')
+
+    def __str__(self):
+        return f'{self.supervisor.name} - {self.laguna.Nombre}'
+
 
 class LagoonDetail(models.Model):
     idLagunas = models.ForeignKey('Laguna', on_delete=models.CASCADE, verbose_name="Lagoon ID")
@@ -800,33 +815,39 @@ class RelevantMatters(models.Model):
     def __str__(self):
         return f"Relevant Matters for {self.laguna.Nombre} on {self.date}"
 
-class MyModel(models.Model):
-    date = models.DateField(auto_now_add=True)
+def get_default_laguna():
+    return Laguna.objects.first().idLagunas  # Adjust this to return a default Laguna id
 
+class IMOP(models.Model):
+    laguna = models.ForeignKey('Laguna', on_delete=models.CASCADE)
+    generated_id = models.CharField(max_length=255, editable=False, blank=True, null=True)
+    date = models.DateField(auto_now_add=True)
+    
     resumen_ejecutivo = models.TextField()
     last_resumen_ejecutivo_date = models.DateField(editable=False, null=True)
-
     recomendaciones = models.TextField()
     last_recomendaciones_date = models.DateField(editable=False, null=True)
-
     temas_pendientes = models.TextField()
     last_temas_pendientes_date = models.DateField(editable=False, null=True)
 
+    is_completed = models.BooleanField(default=False)  # New field
+
     def save(self, *args, **kwargs):
-        # Get the current instance from the database
-        if self.pk:
-            old_instance = MyModel.objects.get(pk=self.pk)
+        if not self.pk:  # Check if this is a new instance
+            selected_month_year = self.date.strftime("%m%y")
+            num_imops = IMOP.objects.filter(laguna=self.laguna).count()
+            self.generated_id = f"{self.laguna.idLagunas}-{num_imops + 1}-{selected_month_year}"
+
+            self.last_resumen_ejecutivo_date = self.date
+            self.last_recomendaciones_date = self.date
+            self.last_temas_pendientes_date = self.date
+        else:
+            old_instance = IMOP.objects.get(pk=self.pk)
             if old_instance.resumen_ejecutivo != self.resumen_ejecutivo:
                 self.last_resumen_ejecutivo_date = timezone.now().date()
             if old_instance.recomendaciones != self.recomendaciones:
                 self.last_recomendaciones_date = timezone.now().date()
             if old_instance.temas_pendientes != self.temas_pendientes:
                 self.last_temas_pendientes_date = timezone.now().date()
-        else:
-            # This is a new instance, so set all dates
-            self.last_resumen_ejecutivo_date = self.date
-            self.last_recomendaciones_date = self.date
-            self.last_temas_pendientes_date = self.date
 
-        super(MyModel, self).save(*args, **kwargs)
-
+        super(IMOP, self).save(*args, **kwargs)

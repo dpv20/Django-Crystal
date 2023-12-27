@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ToDoList, Item, Supervisor, Laguna, LagunaImage, LagoonDetail, MyModel  
+from .models import ToDoList, Item, Supervisor, Laguna, LagunaImage, LagoonDetail, IMOP  , SupervisorLaguna
 # Register your models here.
 
 # admin.site.register(ToDoList)
@@ -119,10 +119,16 @@ class MedidasDeMitigacionAdmin(admin.ModelAdmin):
     list_filter = ['date', 'supervisor', 'lagoon', 'todo_bien', 'nota']
     search_fields = ['supervisor', 'lagoon']
 
+
+class SupervisorLagunaInline(admin.TabularInline):
+    model = SupervisorLaguna
+    extra = 1
+
 @admin.register(Supervisor)
 class SupervisorAdmin(admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
+    inlines = [SupervisorLagunaInline]
 
 class LagunaImageAdmin(admin.ModelAdmin):
     list_display = ['laguna', 'date', 'selected']
@@ -166,7 +172,7 @@ class RelevantMattersAdmin(admin.ModelAdmin):
 
 admin.site.register(RelevantMatters, RelevantMattersAdmin)
 
-class MyModelAdmin(admin.ModelAdmin):
+class IMOPAdmin(admin.ModelAdmin):
     list_display = ('date', 'last_resumen_ejecutivo_date', 'last_recomendaciones_date', 'last_temas_pendientes_date')
     search_fields = ('resumen_ejecutivo', 'recomendaciones', 'temas_pendientes')
 
@@ -190,4 +196,4 @@ class MyModelAdmin(admin.ModelAdmin):
             return self.readonly_fields + ('date',)
         return self.readonly_fields
 
-admin.site.register(MyModel, MyModelAdmin)
+admin.site.register(IMOP, IMOPAdmin)

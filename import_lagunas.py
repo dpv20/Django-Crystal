@@ -51,7 +51,8 @@ def load_data_from_csv(filename):
                 mailcontacto2=row['mailcontacto2'],
                 horariocorte=horario_corte_value,
                 Water_analysis=row.get('Water_analysis', None) and (row['Water_analysis'].lower() == 'true'),
-                Region=int_or_none(row.get('Region', None))
+                Region=int_or_none(row.get('Region', None)),
+                filtroreporte=row['filtroreporte']
             )
             
             laguna.save()

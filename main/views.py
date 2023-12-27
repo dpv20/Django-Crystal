@@ -36,7 +36,8 @@ from .models import (
     FuncionamientoAguaRelleno, 
     NivelDeLaLaguna, 
     MedidasDeMitigacion,
-    RelevantMatters
+    RelevantMatters,
+    IMOP
     )
 from .forms import (
     CreateNewList,
@@ -64,6 +65,8 @@ from .forms import (
     )
 
 
+def index_page(request):
+    return render(request, 'main/indexpage.html')
 
 
 def index(response, id):
@@ -741,7 +744,8 @@ def imops_view(request):
     if request.method == 'POST':
         form = LagunaSelectionForm(request.POST)
         if form.is_valid():
-            # Process the valid form data
+            selected_laguna = form.cleaned_data['laguna']
+            num_imops = IMOP.objects.filter(laguna=selected_laguna).count()
             month_year = form.cleaned_data['date']
             selected_laguna = form.cleaned_data['laguna']
             
@@ -751,5 +755,12 @@ def imops_view(request):
             return redirect('some_view_name')  # Replace with your desired redirect
     else:
         form = LagunaSelectionForm()
+    
+    completed_imops = IMOP.objects.filter(is_completed=True)
+    incomplete_imops = IMOP.objects.filter(is_completed=False)
 
-    return render(request, 'main/imops.html', {'form': form})
+    return render(request, 'main/imops.html', {
+        'form': form,
+        'completed_imops': completed_imops,
+        'incomplete_imops': incomplete_imops
+    })
