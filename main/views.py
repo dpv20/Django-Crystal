@@ -5,7 +5,8 @@ from datetime import date, timedelta
 from django.utils import timezone
 from django.utils.dateparse import parse_date
 from django.db.models import Count, Q
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import reverse
 from django.contrib import messages
 from django.views.decorators.http import require_http_methods
 from itertools import groupby
@@ -37,7 +38,9 @@ from .models import (
     NivelDeLaLaguna, 
     MedidasDeMitigacion,
     RelevantMatters,
-    IMOP
+    IMOP,
+    Supervisor,
+    SupervisorLaguna
     )
 from .forms import (
     CreateNewList,
@@ -61,7 +64,8 @@ from .forms import (
     FuncionamientoAguaRellenoForms,
     NivelDeLaLagunaForms,
     MedidasDeMitigacionForms,
-    LagunaSelectionForm
+    LagunaSelectionForm,
+    RelevantMatterForm
     )
 
 
@@ -693,52 +697,10 @@ def update_image_status(request):
 
     return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
 
-
-def display_latest_relevant_matter_view(request, idLagunas):
-    laguna = Laguna.objects.get(idLagunas=idLagunas)
-
-    # Retrieve the latest relevant matter for this Laguna
-    latest_relevant_matter = RelevantMatters.objects.filter(
-        laguna=laguna
-    ).order_by('-date').first()  # Get the most recent relevant matter
-
-    return render(request, 'main/display_latest_relevant_matter.html', {
-        'laguna': laguna,
-        'latest_relevant_matter': latest_relevant_matter
-    })
-
 def semanal_selection_view2(request):
     lagunas = Laguna.objects.all()
-    return render(request, 'main/select_laguna_3.html', {'lagunas': lagunas})
-
-def display_latest_relevant_matter_view(request, idLagunas, fecha):
-    date_format = "%Y-%m-%d"
-    end_date = datetime.strptime(fecha, date_format).date()
-
-    laguna = Laguna.objects.get(idLagunas=idLagunas)
-
-    # Retrieve the latest relevant matter for this Laguna up to the end_date
-    latest_relevant_matter = RelevantMatters.objects.filter(
-        laguna=laguna,
-        date__lte=end_date
-    ).order_by('-date').first()
-
-    if request.method == 'POST':
-        new_text = request.POST.get('relevant_matter_text')
-        if new_text:
-            # Update or create a new relevant matter entry
-            RelevantMatters.objects.update_or_create(
-                laguna=laguna, 
-                date=end_date,
-                defaults={'text': new_text}
-            )
-            return redirect('display_latest_relevant_matter', idLagunas=idLagunas, fecha=fecha)
-
-    return render(request, 'main/relevant_matters.html', {
-        'laguna': laguna,
-        'fecha': fecha,
-        'latest_relevant_matter': latest_relevant_matter
-    })
+    supervisors = Supervisor.objects.all()  # Query all supervisors
+    return render(request, 'main/select_laguna_3.html', {'lagunas': lagunas, 'supervisors': supervisors})
 
 def imops_view(request):
     if request.method == 'POST':
@@ -763,4 +725,35 @@ def imops_view(request):
         'form': form,
         'completed_imops': completed_imops,
         'incomplete_imops': incomplete_imops
+    })
+
+def supervisor_relevant_matters_view(request, supervisor_name):
+    supervisor = get_object_or_404(Supervisor, name=supervisor_name)
+    lagunas = supervisor.lagunas.all()
+
+    lagunas_with_matters = {laguna: [] for laguna in lagunas}
+    for laguna in lagunas:
+        relevant_matters = RelevantMatters.objects.filter(laguna=laguna).order_by('date')
+        lagunas_with_matters[laguna] = relevant_matters if relevant_matters.exists() else None
+
+    if request.method == 'POST':
+        if 'update_matter' in request.POST:
+            matter_id = request.POST.get('matter_id')
+            if matter_id:  # Existing matter
+                matter = get_object_or_404(RelevantMatters, id=matter_id)
+                matter.date = timezone.now().date()
+                matter.text = request.POST.get('text', matter.text)
+                matter.save()
+            else:  # New matter
+                laguna_id = request.POST.get('laguna_id')
+                laguna = get_object_or_404(Laguna, idLagunas=laguna_id)
+                new_text = request.POST.get('text', '')
+                new_matter = RelevantMatters(laguna=laguna, text=new_text, date=timezone.now().date())
+                new_matter.save()
+
+            return redirect('supervisor_relevant_matters', supervisor_name=supervisor_name)
+
+    return render(request, 'main/supervisor_relevant_matters.html', {
+        'supervisor': supervisor,
+        'lagunas_with_matters': lagunas_with_matters,
     })

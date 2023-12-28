@@ -5,19 +5,13 @@
 <h2>Reporte Semanal</h2>
 
 <div class="table-box">
-    <form id="lagunaForm">
-        <!-- Date Selection -->
+    <form id="supervisorForm">
+        <!-- Supervisor Selection -->
         <div class="form-group">
-            <label for="fecha">Fecha:</label>
-            <input type="date" id="fecha" name="fecha" class="sampletext">
-        </div>
-
-        <!-- Laguna Selection -->
-        <div class="form-group">
-            <label for="idLaguna">Laguna</label>
-            <select name="idLaguna" id="idLaguna" class="select-laguna">
-                {% for laguna in lagunas %}
-                    <option value="{{ laguna.idLagunas }}">{{ laguna.Nombre }}</option>
+            <label for="supervisor">Supervisor</label>
+            <select name="supervisor" id="supervisor" class="select-supervisor">
+                {% for supervisor in supervisors %}
+                    <option value="{{ supervisor.name }}">{{ supervisor.name }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -32,9 +26,8 @@
 
 <script>
     function submitForm() {
-        var selectedLagunaId = document.getElementById('idLaguna').value;
-        var selectedDate = document.getElementById('fecha').value;
-        window.location.href = '/laguna/' +  'relevant_matters/' + encodeURIComponent(selectedLagunaId) +'/' + encodeURIComponent(selectedDate) + '/';
+        var selectedSupervisorName = document.getElementById('supervisor').value;
+        window.location.href = '/supervisor/' + encodeURIComponent(selectedSupervisorName) + '/';
     }
 </script>
 
@@ -55,7 +48,6 @@
         justify-content: space-between;
         margin-top: 10px;
     }
-    
     .spacer {
         flex-grow: 1;
     }
@@ -65,4 +57,3 @@
 </style>
 
 {% endblock %}
-

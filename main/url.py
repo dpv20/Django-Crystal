@@ -13,10 +13,9 @@ from .views import (
     semanal_selection_view, 
     display_images_view, 
     upload_image_view,
-    semanal_selection_view2,
-    display_latest_relevant_matter_view,
     imops_view,
-    index_page
+    index_page,
+    supervisor_relevant_matters_view
 )
 
 urlpatterns = [
@@ -42,8 +41,10 @@ urlpatterns = [
     path('semanal/upload/<str:idLagunas>/<str:fecha>/', upload_image_view, name='upload_image'),
     path('update_image_status/', views.update_image_status, name='update_image_status'),
     path('semanal_selection/', views.semanal_selection_view2, name='semanal_selection'),
-    path('laguna/relevant_matters/<str:idLagunas>/<str:fecha>/', views.display_latest_relevant_matter_view, name='display_latest_relevant_matter'),
     path('imops/', views.imops_view, name='imops_view'),
+    path('supervisor/<str:supervisor_name>/', views.supervisor_relevant_matters_view, name='supervisor_relevant_matters'),
+    
+    
 ]
 
 

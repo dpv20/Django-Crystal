@@ -20,7 +20,8 @@ from .models import (
     CondicionVisualLaguna, 
     FuncionamientoAguaRelleno, 
     NivelDeLaLaguna, 
-    MedidasDeMitigacion
+    MedidasDeMitigacion,
+    RelevantMatters
     )
 
 
@@ -161,3 +162,8 @@ class LagunaSelectionForm(forms.Form):
 
     date = forms.DateField(widget=SelectDateWidget(years=years, empty_label=("Choose Year", "Choose Month", None)))
     laguna = forms.ModelChoiceField(queryset=Laguna.objects.all(), to_field_name="Codigo", empty_label="Select Laguna")
+
+class RelevantMatterForm(forms.ModelForm):
+    class Meta:
+        model = RelevantMatters
+        fields = ['text', 'date']

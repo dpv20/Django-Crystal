@@ -1,0 +1,86 @@
+<<!-- supervisor_relevant_matters.html -->
+{% extends 'main/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<style>
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+
+    .container {
+        display: flex;
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #ccc;
+    }
+    .left-column {
+        flex: 1;
+        padding-right: 10px;
+    }
+    .right-column {
+        flex: 2;
+    }
+    .next-button {
+        text-align: right;
+        margin-top: 20px;
+    }
+</style>
+
+<div class="header">
+    <h2>Relevant Matters for Supervisor: {{ supervisor.name }}</h2>
+    <a href="{% url 'supervisor_relevant_matters' supervisor_name=supervisor.name %}2">
+        <button>Next</button>
+    </a>
+</div>
+
+{% for laguna, matters in lagunas_with_matters.items %}
+    <div class="container">
+        <!-- Left column: Laguna details, Date, and Update/Add button -->
+        <div class="left-column">
+            <p><strong>{{ laguna.idLagunas }}: {{ laguna.Nombre }}</strong></p>
+            {% if matters %}
+                {% for matter in matters %}
+                    <p>Last edited: {{ matter.date|date:"d-m-Y" }}</p>
+                    <form method="post" action="" id="form-{{ matter.id }}">
+                        {% csrf_token %}
+                        <input type="hidden" name="matter_id" value="{{ matter.id }}">
+                        <input type="submit" name="update_matter" value="Update Matter">
+                    </form>
+                {% endfor %}
+            {% else %}
+                <p>Date: N/A</p>
+                <form method="post" action="" id="form-{{ laguna.idLagunas }}">
+                    {% csrf_token %}
+                    <input type="hidden" name="laguna_id" value="{{ laguna.idLagunas }}">
+                    <input type="submit" name="update_matter" value="Add Matter">
+                </form>
+            {% endif %}
+        </div>
+
+        <!-- Right column: Text field for relevant matters -->
+        <div class="right-column">
+            {% if matters %}
+                {% for matter in matters %}
+                    <textarea name="text" form="form-{{ matter.id }}" style="width: 100%; height: 100px;">{{ matter.text }}</textarea>
+                {% endfor %}
+            {% else %}
+                <textarea name="text" form="form-{{ laguna.idLagunas }}" style="width: 100%; height: 100px;"></textarea>
+            {% endif %}
+        </div>
+    </div>
+{% endfor %}
+
+<div class="next-button">
+    <a href="{% url 'supervisor_relevant_matters' supervisor_name=supervisor.name %}2">
+        <button>Next</button>
+    </a>
+</div>
+
+
+{% endblock %}
