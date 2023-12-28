@@ -757,3 +757,25 @@ def supervisor_relevant_matters_view(request, supervisor_name):
         'supervisor': supervisor,
         'lagunas_with_matters': lagunas_with_matters,
     })
+
+def supervisor_relevant_matters_page2(request, supervisor_name):
+    supervisor = get_object_or_404(Supervisor, name=supervisor_name)
+    lagunas = supervisor.lagunas.all()
+
+    end_date = datetime.now().date()
+    start_date = end_date - timedelta(days=7)
+
+    lagunas_with_images = {}
+    for laguna in lagunas:
+        images = LagunaImage.objects.filter(
+            laguna=laguna,
+            date__range=(start_date, end_date)
+        ).order_by('date', 'photo')
+        lagunas_with_images[laguna] = images
+
+    return render(request, 'main/supp_relevant_2.html', {
+        'supervisor': supervisor,
+        'lagunas_with_images': lagunas_with_images,
+        'start_date': start_date,
+        'end_date': end_date
+    })

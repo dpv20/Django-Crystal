@@ -43,7 +43,7 @@ urlpatterns = [
     path('semanal_selection/', views.semanal_selection_view2, name='semanal_selection'),
     path('imops/', views.imops_view, name='imops_view'),
     path('supervisor/<str:supervisor_name>/', views.supervisor_relevant_matters_view, name='supervisor_relevant_matters'),
-    
+    path('supervisor/<str:supervisor_name>/2', views.supervisor_relevant_matters_page2, name='supervisor_relevant_matters_page2'),
     
 ]
 

@@ -1,0 +1,123 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+<style>
+    .container {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #ccc;
+    }
+    .left-column {
+        flex: 1;
+        padding-right: 10px;
+        border-right: 1px solid #ccc;
+    }
+    .right-column {
+        flex: 2;
+        display: flex;
+        flex-wrap: wrap;
+        padding-left: 10px;
+    }
+    .image-container {
+        position: relative;
+        display: inline-block;
+        margin: 5px 5Px; 
+    }
+    .image-container img {
+        width: 100px;
+        height: 100px;
+        transition: all 0.3s ease;
+    }
+    .image-container img.enlarge-little:hover {
+        width: 250px;
+        height: 250px;
+    }
+    .image-container img.enlarge-medium:hover {
+        width: 350px;
+        height: 350px;
+    }
+    .image-container img.enlarge-large:hover {
+        width: 500px;
+        height: 500px;
+    }
+    .image-date {
+        margin-top: 5px; /* Space between the image and the date */
+    }
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 10px;
+    }
+    .header-buttons {
+        display: flex;
+        gap: 10px;
+    }
+</style>
+
+<script>
+    function setImageHoverSize(size) {
+        var images = document.querySelectorAll('.image-container img');
+        images.forEach(function(img) {
+            img.classList.remove('enlarge-little', 'enlarge-medium', 'enlarge-large');
+            if (size !== 'none') {
+                img.classList.add('enlarge-' + size);
+            }
+        });
+    }
+</script>
+
+
+
+<div class="header">
+    <h2>Relevant Matters for Supervisor: {{ supervisor.name }}</h2>
+    <select onchange="setImageHoverSize(this.value)">
+        <option value="none">None</option>
+        <option value="little">Little</option>
+        <option value="medium">Medium</option>
+        <option value="large">Large</option>
+    </select>
+    <div class="header-buttons">
+        <a href="{% url 'supervisor_relevant_matters' supervisor_name=supervisor.name %}">
+            <button class="back-button">Back</button>
+        </a>
+        <a href="{% url 'supervisor_relevant_matters' supervisor_name=supervisor.name %}3">
+            <button>Next</button>
+        </a>
+    </div>
+</div>
+
+{% for laguna, images in lagunas_with_images.items %}
+    <div class="container">
+        <div class="left-column">
+            <p><strong>{{ laguna.idLagunas }}: {{ laguna.Nombre }}</strong></p>
+            <p>Date range: {{ start_date }} to {{ end_date }}</p>
+        </div>
+        <div class="right-column">
+            {% for image in images %}
+                <div class="image-container">
+                    <img src="{{ image.photo.url }}" alt="Image">
+                    <div class="image-date">{{ image.date|date:"d/m/Y" }}</div>
+                </div>
+            {% empty %}
+                <p>No images found.</p>
+            {% endfor %}
+        </div>
+    </div>
+{% endfor %}
+
+<div class="next-button" style="text-align: right;">
+    <a href="{% url 'supervisor_relevant_matters' supervisor_name=supervisor.name %}">
+        <button class="back-button">Back</button>
+    </a>
+    <a href="{% url 'supervisor_relevant_matters' supervisor_name=supervisor.name %}3">
+        <button>Next</button>
+    </a>
+</div>
+
+{% endblock %}
