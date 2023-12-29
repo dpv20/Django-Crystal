@@ -4,7 +4,10 @@ from datetime import datetime, timedelta
 from datetime import date, timedelta
 from django.utils import timezone
 from django.utils.dateparse import parse_date
-from django.db.models import Count, Q
+from django.db.models import Count, Q, Case, When, Value, BooleanField
+from django.template.loader import render_to_string
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib import messages
@@ -14,6 +17,11 @@ from operator import attrgetter
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
+from xhtml2pdf import pisa
+import calendar
+from dateutil.relativedelta import relativedelta
+
+
 from .models import (
     ToDoList,
     Item,
@@ -714,7 +722,7 @@ def imops_view(request):
             # Additional logic to handle the selected data
             # For example, redirecting to another page or passing data to another function
             
-            return redirect('some_view_name')  # Replace with your desired redirect
+            return redirect('create_imop_view', id_laguna=selected_laguna.id, date=month_year.strftime("%Y-%m-%d"))
     else:
         form = LagunaSelectionForm()
     
@@ -779,3 +787,155 @@ def supervisor_relevant_matters_page2(request, supervisor_name):
         'start_date': start_date,
         'end_date': end_date
     })
+
+@require_http_methods(["POST"])
+@csrf_exempt
+def update_image_selection(request):
+    try:
+        data = json.loads(request.body)
+        image_id = data.get('image_id')
+        selected = data.get('selected', False)
+
+        image = LagunaImage.objects.get(id=image_id)
+        image.selected = selected
+        image.save()
+
+        return JsonResponse({'status': 'success'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
+    
+
+def supervisor_report(request, supervisor_name):
+    supervisor = get_object_or_404(Supervisor, name=supervisor_name)
+
+    end_date = datetime.now().date()
+    start_date = end_date - timedelta(days=7)
+
+    all_lagunas = supervisor.lagunas.all()
+
+    lagunas_with_pictures = []
+    lagunas_without_pictures = []
+
+    for laguna in all_lagunas:
+        images = LagunaImage.objects.filter(
+            laguna=laguna,
+            date__range=(start_date, end_date)
+        )
+
+        if images.exists():
+            lagunas_with_pictures.append(laguna)
+        else:
+            lagunas_without_pictures.append(laguna)
+
+    total_lagunas = len(all_lagunas)
+    lagunas_with_pictures_count = len(lagunas_with_pictures)
+
+    if total_lagunas > 0:
+        percentage_with_pictures = (lagunas_with_pictures_count / total_lagunas) * 100
+    else:
+        percentage_with_pictures = 0
+
+    return render(request, 'main/supervisor_report.html', {
+        'supervisor': supervisor,
+        'lagunas_with_pictures': lagunas_with_pictures,
+        'lagunas_without_pictures': lagunas_without_pictures,
+        'report_date': end_date,
+        'percentage_with_pictures': percentage_with_pictures
+    })
+
+import os
+from django.shortcuts import get_object_or_404, render
+from django.template.loader import render_to_string
+from xhtml2pdf import pisa
+from .models import Supervisor, LagunaImage
+from datetime import datetime, timedelta
+from django.http import HttpResponse
+
+def generate_pdf(request, supervisor_name):
+    try:
+        supervisor = get_object_or_404(Supervisor, name=supervisor_name)
+        end_date = datetime.now().date()
+        start_date = end_date - timedelta(days=7)
+
+        all_lagunas = supervisor.lagunas.all()
+        lagunas_with_pictures = []
+        lagunas_without_pictures = []
+
+        for laguna in all_lagunas:
+            images = LagunaImage.objects.filter(
+                laguna=laguna,
+                date__range=(start_date, end_date)
+            )
+
+            if images.exists():
+                lagunas_with_pictures.append(laguna)
+            else:
+                lagunas_without_pictures.append(laguna)
+
+        total_lagunas = len(all_lagunas)
+        percentage_with_pictures = (len(lagunas_with_pictures) / total_lagunas) * 100 if total_lagunas > 0 else 0
+
+        pdf_directory = 'C:\\code\\Djangopage\\PDF'
+        pdf_filename = "supervisor_report.pdf"
+        pdf_filepath = os.path.join(pdf_directory, pdf_filename)
+
+        html_content = render_to_string('PDFs/supervisor_report_pdf.html', {
+            'supervisor': supervisor,
+            'lagunas_with_pictures': lagunas_with_pictures,
+            'lagunas_without_pictures': lagunas_without_pictures,
+            'report_date': end_date,
+            'percentage_with_pictures': percentage_with_pictures,
+            'is_pdf': True
+        })
+
+        with open(pdf_filepath, "w+b") as pdf_file:
+            pisa_status = pisa.CreatePDF(html_content, dest=pdf_file)
+
+            if pisa_status.err:
+                raise Exception('PDF generation error')
+
+        return JsonResponse({'status': 'success', 'message': f'PDF successfully saved at {pdf_filepath}'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
+    
+def create_imop_view(request, id_laguna, date):
+    laguna = get_object_or_404(Laguna, pk=id_laguna)
+    year, month, day = map(int, date.split('-'))
+    selected_date = timezone.datetime(year, month, day).date()
+    date_from = selected_date - relativedelta(months=7)
+
+    start_date, end_date = calendar.monthrange(year, month)
+    images = LagunaImage.objects.filter(
+        laguna=laguna, 
+        date__range=[
+            timezone.datetime(year, month, 1).date(), 
+            timezone.datetime(year, month, end_date).date()
+        ]
+    )
+    return render(request, 'main/imops_2.html', {
+        'laguna': laguna,
+        'selected_date': selected_date,
+        'date_from': date_from,
+        'images': images,
+        # ... other context variables ...
+    })
+
+@csrf_exempt
+def generate_imop_id(request):
+    try:
+        data = json.loads(request.body)
+        laguna_idLagunas = data.get('laguna_idLagunas')  # Use 'idLagunas' to fetch the instance
+        selected_date = data.get('selected_date')
+
+        # Fetch the Laguna instance using idLagunas
+        laguna = Laguna.objects.get(idLagunas=laguna_idLagunas)
+
+        # Create a new IMOP instance
+        imop = IMOP(laguna=laguna, date=selected_date, is_completed=False)
+
+        # Implement your logic for generating the ID here
+        imop.generate_id()
+
+        return JsonResponse({'status': 'success', 'generated_id': imop.generated_id})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})

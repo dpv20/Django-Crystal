@@ -1,0 +1,128 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+
+<h2>IMOP Details</h2>
+<table style="width: 100%; border-collapse: separate; border-spacing: 15px;">
+    <thead>
+        <tr style="background-color: #f2f2f2;">
+            <th style="padding: 10px;">Supervisor</th>
+            <th style="padding: 10px;">Project</th>
+            <th style="padding: 10px;">Month</th>
+            <th style="padding: 10px;">Date(From)</th>
+            <th style="padding: 10px;">Date(To)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="padding: 10px;">{{ laguna.filtroreporte }}</td>
+            <td style="padding: 10px;">{{ laguna.Nombre }}</td>
+            <td style="padding: 10px;">{{ selected_date|date:"F" }}</td>
+            <td style="padding: 10px;">{{ date_from|date:"F Y" }}</td>
+            <td style="padding: 10px;">{{ selected_date|date:"F Y" }}</td>
+        </tr>
+    </tbody>
+</table>
+
+<div style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px;">
+    {% for image in images %}
+    <div class="image-container" data-image-id="{{ image.id }}" onclick="toggleImageSelection(this)">
+        <img src="{{ image.photo.url }}" alt="Image for {{ laguna.Nombre }}"
+             class="{% if image.selected %}selected{% endif %} enlarge-medium" />
+        <p>{{ image.date|date:"Y-m-d" }}</p>
+    </div>
+    {% empty %}
+    <p>No images found for this month.</p>
+    {% endfor %}
+</div>
+
+<button type="button" id="submitBtn" onclick="submitCheck()">Submit</button>
+
+<script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        let cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            let cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function toggleImageSelection(container) {
+    let image = container.querySelector('img');
+    let imageId = container.getAttribute('data-image-id');
+    let isSelected = image.classList.toggle('selected');
+
+    fetch('/update_image_selection/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            'image_id': imageId,
+            'selected': isSelected
+        })
+    });
+}
+
+function submitCheck() {
+    const selectedImages = document.querySelectorAll('.image-container img.selected').length;
+    if (selectedImages > 8) {
+        alert("You can only select a maximum of 8 images.");
+        return;
+    }
+
+    const lagunaId = "{{ laguna.idLagunas }}";
+    const selectedDate = "{{ selected_date|date:'Y-m-d' }}";
+
+    fetch('/generate_imop_id/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            'laguna_idLagunas': lagunaId,
+            'selected_date': selectedDate
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            window.location.href = '/imops/' + lagunaId + '/' + selectedDate + '/2';
+        } else {
+            alert('Error: ' + data.message);
+        }
+    });
+}
+</script>
+
+<style>
+.image-container {
+    position: relative;
+    display: inline-block;
+    margin: 5px; 
+}
+.image-container img {
+    width: 100px;
+    height: 100px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+.image-container img.enlarge-medium:hover {
+    width: 300px;
+    height: 300px;
+}
+.image-container img.selected {
+    border: 5px solid blue;
+}
+</style>
+
+{% endblock %}

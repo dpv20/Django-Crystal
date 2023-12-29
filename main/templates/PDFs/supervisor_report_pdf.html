@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .report-title {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .percentage-row {
+            background-color: #eef; /* Light background for percentage row */
+            text-align: center; /* Center-align the percentage text */
+            font-weight: bold; /* Optional: makes the text bold */
+        }
+
+        .laguna-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .laguna-item {
+            margin-bottom: 5px;
+            padding: 5px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .laguna-item:hover {
+            background-color: #eaeaea;
+        }
+    </style>
+</head>
+<body>
+    <h2 class="report-title">LAGOONS OPERATIONS REPORT :: Status As Of {{ report_date|date:"l, F d, Y" }}</h2>
+
+    <table>
+        <thead>
+            <tr class="percentage-row">
+                <td colspan="2">PORCENTAGE OF LAGOONS WITH PHOTOS this week: {{ percentage_with_pictures|floatformat:2 }}%</td>
+            </tr>
+            <tr>
+                <th>LAGOONS with pictures</th>
+                <th>LAGOONS without pictures</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <ul class="laguna-list">
+                        {% for laguna in lagunas_with_pictures %}
+                            <li class="laguna-item">{{ laguna.Nombre }}</li>
+                        {% empty %}
+                            <li class="laguna-item">No Lagunas with pictures.</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+                <td>
+                    <ul class="laguna-list">
+                        {% for laguna in lagunas_without_pictures %}
+                            <li class="laguna-item">{{ laguna.Nombre }}</li>
+                        {% empty %}
+                            <li class="laguna-item">No Lagunas without pictures.</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

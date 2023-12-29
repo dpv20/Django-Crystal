@@ -24,7 +24,7 @@
     .image-container {
         position: relative;
         display: inline-block;
-        margin: 5px 5Px; 
+        margin: 5px 5px; 
     }
     .image-container img {
         width: 100px;
@@ -42,6 +42,9 @@
     .image-container img.enlarge-large:hover {
         width: 500px;
         height: 500px;
+    }
+    .image-container img.selected {
+        border: 5px solid blue; /* Highlighting the selected image */
     }
     .image-date {
         margin-top: 5px; /* Space between the image and the date */
@@ -61,6 +64,27 @@
 </style>
 
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.image-container img').forEach(function(image) {
+            image.addEventListener('click', function() {
+                let imageId = image.getAttribute('data-image-id');
+                let isSelected = image.classList.toggle('selected');
+
+                fetch('/update_image_selection/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({
+                        'image_id': imageId,
+                        'selected': isSelected
+                    })
+                });
+            });
+        });
+    });
+
     function setImageHoverSize(size) {
         var images = document.querySelectorAll('.image-container img');
         images.forEach(function(img) {
@@ -70,9 +94,22 @@
             }
         });
     }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            let cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                let cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
 </script>
-
-
 
 <div class="header">
     <h2>Relevant Matters for Supervisor: {{ supervisor.name }}</h2>
@@ -101,7 +138,9 @@
         <div class="right-column">
             {% for image in images %}
                 <div class="image-container">
-                    <img src="{{ image.photo.url }}" alt="Image">
+                    <img src="{{ image.photo.url }}" alt="Image for {{ laguna.Nombre }}" 
+                         data-image-id="{{ image.id }}"
+                         class="{{ image.selected|yesno:'selected,' }}">
                     <div class="image-date">{{ image.date|date:"d/m/Y" }}</div>
                 </div>
             {% empty %}

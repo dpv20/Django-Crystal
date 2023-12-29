@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ToDoList, Item, Supervisor, Laguna, LagunaImage, LagoonDetail, IMOP  , SupervisorLaguna
+from .models import ToDoList, Item, Supervisor, Laguna, LagunaImage, LagoonDetail, IMOP  , SupervisorLaguna, Laguna_Stock, AditivosLaguna
 # Register your models here.
 
 # admin.site.register(ToDoList)
@@ -147,9 +147,6 @@ class LagoonDetailAdmin(admin.ModelAdmin):
 admin.site.register(LagoonDetail, LagoonDetailAdmin)
 
 
-from django.contrib import admin
-from .models import Laguna_Stock
-
 class LagunaStockAdmin(admin.ModelAdmin):
     list_display = [
         'laguna', 'date', 'stock_or_supply', 
@@ -197,3 +194,10 @@ class IMOPAdmin(admin.ModelAdmin):
         return self.readonly_fields
 
 admin.site.register(IMOP, IMOPAdmin)
+
+class AditivosLagunaAdmin(admin.ModelAdmin):
+    list_display = ('proyecto', 'leadtime', 'ddaDiaLts_AP2', 'ddaDiaLts_FH1')
+    search_fields = ('proyecto__Nombre', 'leadtime', 'ddaDiaLts_AP2', 'ddaDiaLts_FH1')
+    list_filter = ('proyecto', 'leadtime', 'ddaDiaLts_AP2', 'ddaDiaLts_FH1')
+
+admin.site.register(AditivosLaguna, AditivosLagunaAdmin)

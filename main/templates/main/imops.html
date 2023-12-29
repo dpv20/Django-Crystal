@@ -2,8 +2,6 @@
 
 {% block content %}
 
-
-
 <div class="table-box">
     <form method="post" id="imopsForm">
         {% csrf_token %}
@@ -29,7 +27,7 @@
                 <td>
                     <select id="laguna_id" name="laguna" class="select-laguna">
                         {% for choice in form.laguna.field.queryset %}
-                            <option value="{{ choice.Codigo }}" {% if form.laguna.value == choice.Codigo %}selected{% endif %}>
+                            <option value="{{ choice.idLagunas }}" {% if form.laguna.value == choice.idLagunas %}selected{% endif %}>
                                 {{ choice.Nombre }}
                             </option>
                         {% endfor %}
@@ -45,7 +43,7 @@
                 <td></td>
                 <td class="button-container">
                     <button type="button" onclick="location.href='/home/'" class="button">Home</button>
-                    <button type="submit" class="button">Submit</button>
+                    <button type="button" onclick="submitIMOPForm()" class="button">Submit</button>
                 </td>
             </tr>
         </table>
@@ -112,7 +110,21 @@
     </table>
 </div>
 
+<script>
+    function submitIMOPForm() {
+        var date = document.getElementById('date_id').value;
+        var laguna = document.getElementById('laguna_id').value;
 
+        if (date && laguna) {
+            var actionUrl = '/imops/' + laguna + '/' + date + '/';
+            var form = document.getElementById('imopsForm');
+            form.action = actionUrl;
+            form.submit();
+        } else {
+            alert("Please select a date and a Laguna.");
+        }
+    }
+</script>
 
 <style>
     .table-box {
@@ -126,9 +138,8 @@
     .table-title {
         text-align: center;
         font-weight: bold;
-        background-color: #1eb3ee; /* Example background color */
+        background-color: #1eb3ee;
         padding: 10px;
-        /* Add more styling as needed */
     }
     .form-group {
         margin-bottom: 10px;
@@ -141,9 +152,5 @@
     }
     /* Add more styles as needed */
 </style>
-
-<script>
-    // Optional: Any additional JavaScript needed
-</script>
 
 {% endblock %}
