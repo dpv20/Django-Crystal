@@ -79,8 +79,8 @@ function submitCheck() {
         return;
     }
 
-    const lagunaId = "{{ laguna.idLagunas }}";
-    const selectedDate = "{{ selected_date|date:'Y-m-d' }}";
+    const lagunaId = "{{ laguna.idLagunas }}"; // Replace with actual template variables
+    const selectedDate = "{{ selected_date }}"; // Use the date string directly
 
     fetch('/generate_imop_id/', {
         method: 'POST',

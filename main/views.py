@@ -924,16 +924,17 @@ def create_imop_view(request, id_laguna, date):
 def generate_imop_id(request):
     try:
         data = json.loads(request.body)
-        laguna_idLagunas = data.get('laguna_idLagunas')  # Use 'idLagunas' to fetch the instance
-        selected_date = data.get('selected_date')
+        laguna_idLagunas = data.get('laguna_idLagunas')
+        selected_date_str = data.get('selected_date')
+
+        # Convert the date string to a datetime object
+        selected_date = datetime.strptime(selected_date_str, '%b. %d, %Y').date()
 
         # Fetch the Laguna instance using idLagunas
         laguna = Laguna.objects.get(idLagunas=laguna_idLagunas)
 
         # Create a new IMOP instance
         imop = IMOP(laguna=laguna, date=selected_date, is_completed=False)
-
-        # Implement your logic for generating the ID here
         imop.generate_id()
 
         return JsonResponse({'status': 'success', 'generated_id': imop.generated_id})
