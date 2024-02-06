@@ -17,19 +17,31 @@
             max-height: 35px;
             width: auto;
         }
-
         .portal-links {
-            text-align: right;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
         }
 
-        .portal-links a {
+        .portal-links a, .language-select select {
             color: #007bff;
             text-decoration: none;
             margin-left: 10px;
+            padding: 2px 5px;
+            border-radius: 5px;
+            display: inline-block;
+            vertical-align: middle;
         }
 
         .portal-links a:hover {
             text-decoration: underline;
+        }
+
+        /* Additional styles for language select dropdown */
+        .language-select select {
+            border: 1px solid #007bff;
+            background-color: #fff;
+            color: #007bff;
         }
 
         .menu {
@@ -124,9 +136,24 @@
     <div class="portal">
         <img src="/media/LOGO CL.png" alt="Logo">
         <div class="portal-links">
-            <a href="logout.php">Logout</a>
-            <a href="/">/</a>
-            <a href="contrasena.php">Change password</a>
+            <div class="portal">
+                <div class="portal-links">
+                    <!-- Language Selection Dropdown -->
+                    <div class="language-select">
+                        <form action="{% url 'set_language' %}" method="post">
+                            {% csrf_token %}
+                            <input name="next" type="hidden" value="{{ request.path }}">
+                            <select name="language" onchange="this.form.submit()">
+                                <option value="es" {% if LANGUAGE_CODE == 'es' %} selected {% endif %}>Español</option>
+                                <option value="en" {% if LANGUAGE_CODE == 'en' %} selected {% endif %}>English</option>
+                            </select>
+                        </form>
+                    </div>
+                    <a href="/">Logout</a>
+                    <a href="/home">/</a>
+                    <a href="/">Change password</a>
+                </div>
+            </div>
         </div>
     </div>
 

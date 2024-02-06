@@ -33,7 +33,8 @@ ALLOWED_HOSTS = [
     'crystallagoons.info',
     '100.25.45.144',
     'tex.crystallagoons.info',
-    'viajes.crystallagoons.info' 
+    'viajes.crystallagoons.info',
+    '127.0.0.1'
     ]
     
 
@@ -48,7 +49,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'crispy_forms',
     'main.apps.MainConfig',
-    'register.apps.RegisterConfig',
 ]
 
 MIDDLEWARE = [
