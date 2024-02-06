@@ -940,3 +940,10 @@ def generate_imop_id(request):
         return JsonResponse({'status': 'success', 'generated_id': imop.generated_id})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)})
+
+
+
+
+def viernes_view(request, name="1"):
+    image_path = f"media/viernes/{name}.png"
+    return render(request, 'main/viernes.html', {'image_path': image_path})

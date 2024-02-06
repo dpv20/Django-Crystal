@@ -19,7 +19,8 @@ from .views import (
     update_image_selection,
     supervisor_report,
     generate_pdf,
-    generate_imop_id
+    generate_imop_id,
+    viernes_view
     
 )
 
@@ -54,6 +55,10 @@ urlpatterns = [
     path('supervisor/<str:supervisor_name>/report_pdf', generate_pdf, name='generate_pdf'),
     path('imops/<str:id_laguna>/<str:date>/', views.create_imop_view, name='create_imop_view'),
     path('generate_imop_id/', views.generate_imop_id, name='generate_imop_id'),
+
+    path('viernes/', viernes_view, name='viernes'),
+    path('viernes/<str:name>/', viernes_view, name='viernes_with_name'),
+
 ]
 
 

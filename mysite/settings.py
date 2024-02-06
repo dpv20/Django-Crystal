@@ -25,8 +25,17 @@ SECRET_KEY = 'django-insecure-(n*xzm9n6qun@ye1=9a9cl#1fd$)$c6ipk584!xz_k%bi4oz@k
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = [
+    'op.crystallagoons.info', 
+    '172.31.55.215', 
+    'https://op.crystallagoons.info/', 
+    'www.crystallagoons.info', 
+    'crystallagoons.info',
+    '100.25.45.144',
+    'tex.crystallagoons.info',
+    'viajes.crystallagoons.info' 
+    ]
+    
 
 # Application definition
 

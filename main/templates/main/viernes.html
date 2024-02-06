@@ -1,0 +1,57 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+
+
+<!-- viernes.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Viernes Image Viewer</title>
+    <style>
+        .image-container {
+            width: 100%; /* Full width */
+            max-width: 1600px; /* Maximum width */
+            position: relative;
+            margin: 0 auto;
+            cursor: pointer;
+        }
+        .image-container img {
+            width: 100%;
+            height: auto;
+            display: block; /* Removes bottom space under image */
+        }
+        .image-container.small {
+            max-width: 600px; /* 1.3 times the original size */
+        }
+    </style>
+    <script>
+        function navigateImage(direction) {
+            let currentImage = parseInt("{{ image_path|cut:'media/viernes/'|cut:'.png' }}");
+            let nextImage = direction === 'right' ? currentImage + 1 : currentImage - 1;
+            if(nextImage > 5) nextImage = 1;
+            if(nextImage < 1) nextImage = 5;
+            window.location.href = `/viernes/${nextImage}/`;
+        }
+        window.onload = function() {
+            let currentImage = parseInt("{{ image_path|cut:'media/viernes/'|cut:'.png' }}");
+            let container = document.querySelector('.image-container');
+            if (currentImage === 4 || currentImage === 5) {
+                container.classList.add('small');
+            }
+        };
+    </script>
+</head>
+<body>
+    <div class="image-container" onclick="event.clientX > this.clientWidth / 2 ? navigateImage('right') : navigateImage('left')">
+        <img src="/media/viernes/{{ image_path|cut:'media/viernes/' }}" alt="Viernes Image">
+    </div>
+</body>
+</html>
+
+
+
+
+
+
+{% endblock %}
