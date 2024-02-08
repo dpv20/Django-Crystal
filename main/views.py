@@ -20,7 +20,7 @@ import json
 from xhtml2pdf import pisa
 import calendar
 from dateutil.relativedelta import relativedelta
-
+from django.contrib.auth.decorators import login_required
 
 from .models import (
     ToDoList,
@@ -73,7 +73,8 @@ from .forms import (
     NivelDeLaLagunaForms,
     MedidasDeMitigacionForms,
     LagunaSelectionForm,
-    RelevantMatterForm
+    RelevantMatterForm,
+    LoginForm  
     )
 
 
@@ -106,10 +107,13 @@ def index(response, id):
         return render(response, "main/list.html", {"ls":ls})
     return render(response, "main/view.html", {})
 
+@login_required
 def home(request):
     lagunas = Laguna.objects.all()
     return render(request, "main/home.html", {'lagunas': lagunas, 'full_width': True})
 
+
+@login_required
 def create(response):
     if response.method == "POST":
         form = CreateNewList(response.POST)
@@ -125,16 +129,20 @@ def create(response):
         form = CreateNewList()
     return render(response, "main/create.html", {"form":form})
 
+@login_required
 def testing(response):
     return render(response, "main/testing.html", {})
 
+@login_required
 def view(response):
     return render(response, "main/view.html", {})
 
+@login_required
 def laguna_database(request):
     lagunas = Laguna.objects.all()
     return render(request, 'main/laguna_database.html', {'lagunas': lagunas, 'full_width': True})
 
+@login_required
 def edit_laguna(request, idLagunas):
     laguna = get_object_or_404(Laguna, idLagunas=idLagunas)
     
@@ -148,6 +156,7 @@ def edit_laguna(request, idLagunas):
     
     return render(request, 'main/edit_laguna.html', {'form': form})
 
+@login_required
 def initial_form_view(request):
     request.session['personal_form_submitted'] = False
     request.session['limpieza_form_submitted'] = False
@@ -177,6 +186,7 @@ def initial_form_view(request):
     personal_entries = PersonalDeLaLaguna.objects.all()  # Query the database
     return render(request, "main/initial_form.html", {"form": form, "personal_entries": personal_entries})
 
+@login_required
 def results_view(request):
     date = request.session.get('fecha')
     supervisor = request.session.get('supervisor')
@@ -435,6 +445,7 @@ def results_view(request):
     'medidasdemitigacion_form': medidasdemitigacion_form,
     })
 
+@login_required
 def daily_report(request):
     import datetime
 
@@ -489,6 +500,7 @@ def daily_report(request):
     }
     return render(request, 'main/daily_report.html', context)
 
+@login_required
 def lagoon_detail(request, idLagunas):
     date_today = date.today()
 
@@ -541,6 +553,7 @@ def lagoon_detail(request, idLagunas):
     }
     return render(request, 'main/idlagoon.html', context)
 
+@login_required
 def manuals_view(request):
     manuals = [
         {'file_url': 'varios/manuales/2015-05-04_Procedure_For_Working_On_Confined.pdf', 'name': '2015-05-04 Procedure For Working On Confined'},
@@ -557,6 +570,7 @@ def manuals_view(request):
 
     return render(request, 'main/manuals.html', {'manuals': manuals})
 
+@login_required
 def stock_view(request):
     if request.method == 'POST':
         form = StockForm(request.POST)
@@ -588,10 +602,12 @@ def stock_view(request):
     lagunas = Laguna.objects.all()
     return render(request, 'main/stock.html', {'form': form, 'lagunas': lagunas})
 
+@login_required
 def select_laguna_view(request):
     lagunas = Laguna.objects.all()
     return render(request, 'main/select_laguna.html', {'lagunas': lagunas})
 
+@login_required
 def notas_view(request, nombre_laguna):
     lagoon = get_object_or_404(Laguna, Nombre=nombre_laguna)
     id_laguna = lagoon.idLagunas
@@ -639,10 +655,12 @@ def notas_view(request, nombre_laguna):
         'full_width': True
     })
 
+@login_required
 def semanal_selection_view(request):
     lagunas = Laguna.objects.all()
     return render(request, 'main/select_laguna_2.html', {'lagunas': lagunas})
 
+@login_required
 def display_images_view(request, idLagunas, fecha):
     date_format = "%Y-%m-%d"
     end_date = datetime.strptime(fecha, date_format).date()
@@ -674,6 +692,7 @@ def display_images_view(request, idLagunas, fecha):
         'latest_relevant_matter': latest_relevant_matter
     })
 
+@login_required
 @require_http_methods(["POST"])
 def upload_image_view(request, idLagunas, fecha):
     laguna = Laguna.objects.get(idLagunas=idLagunas)
@@ -688,6 +707,7 @@ def upload_image_view(request, idLagunas, fecha):
 
     return redirect('display_images', idLagunas=idLagunas, fecha=fecha)
     
+@login_required
 @csrf_exempt
 def update_image_status(request):
     if request.method == 'POST':
@@ -705,11 +725,13 @@ def update_image_status(request):
 
     return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
 
+@login_required
 def semanal_selection_view2(request):
     lagunas = Laguna.objects.all()
     supervisors = Supervisor.objects.all()  # Query all supervisors
     return render(request, 'main/select_laguna_3.html', {'lagunas': lagunas, 'supervisors': supervisors})
 
+@login_required
 def imops_view(request):
     if request.method == 'POST':
         form = LagunaSelectionForm(request.POST)
@@ -735,6 +757,7 @@ def imops_view(request):
         'incomplete_imops': incomplete_imops
     })
 
+@login_required
 def supervisor_relevant_matters_view(request, supervisor_name):
     supervisor = get_object_or_404(Supervisor, name=supervisor_name)
     lagunas = supervisor.lagunas.all()
@@ -766,6 +789,7 @@ def supervisor_relevant_matters_view(request, supervisor_name):
         'lagunas_with_matters': lagunas_with_matters,
     })
 
+@login_required
 def supervisor_relevant_matters_page2(request, supervisor_name):
     supervisor = get_object_or_404(Supervisor, name=supervisor_name)
     lagunas = supervisor.lagunas.all()
@@ -788,6 +812,7 @@ def supervisor_relevant_matters_page2(request, supervisor_name):
         'end_date': end_date
     })
 
+@login_required
 @require_http_methods(["POST"])
 @csrf_exempt
 def update_image_selection(request):
@@ -804,7 +829,7 @@ def update_image_selection(request):
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)})
     
-
+@login_required
 def supervisor_report(request, supervisor_name):
     supervisor = get_object_or_404(Supervisor, name=supervisor_name)
 
@@ -851,6 +876,7 @@ from .models import Supervisor, LagunaImage
 from datetime import datetime, timedelta
 from django.http import HttpResponse
 
+@login_required
 def generate_pdf(request, supervisor_name):
     try:
         supervisor = get_object_or_404(Supervisor, name=supervisor_name)
@@ -897,7 +923,8 @@ def generate_pdf(request, supervisor_name):
         return JsonResponse({'status': 'success', 'message': f'PDF successfully saved at {pdf_filepath}'})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)})
-    
+
+@login_required    
 def create_imop_view(request, id_laguna, date):
     laguna = get_object_or_404(Laguna, pk=id_laguna)
     year, month, day = map(int, date.split('-'))
@@ -920,6 +947,7 @@ def create_imop_view(request, id_laguna, date):
         # ... other context variables ...
     })
 
+@login_required
 @csrf_exempt
 def generate_imop_id(request):
     try:
@@ -942,8 +970,38 @@ def generate_imop_id(request):
         return JsonResponse({'status': 'error', 'message': str(e)})
 
 
-
-
 def viernes_view(request, name="1"):
     image_path = f"media/viernes/{name}.png"
     return render(request, 'main/viernes.html', {'image_path': image_path})
+
+from django.contrib.auth import authenticate, login
+def login_view(request):
+    # Check if the user is already logged in
+    if request.user.is_authenticated:
+        # Optionally, redirect to home page if already logged in
+        return redirect('home')
+        # Or, you can render a different message/template if you prefer not to redirect
+        # return render(request, 'main/already_logged_in.html')
+
+    if request.method == 'POST':
+        form = LoginForm(request.POST)  # Instantiate the form with submitted data
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('home')  # Redirect to a home page or dashboard
+            else:
+                # Invalid login, add an error to the form
+                form.add_error(None, "Invalid username or password")
+    else:
+        form = LoginForm()  # Instantiate a blank form for GET request
+
+    # Check the language cookie to determine which template to render
+    language = request.COOKIES.get('language', 'en')
+    template_name = 'main/login.html' if language == 'es' else 'main/english/login_en.html'
+    return render(request, template_name, {'form': form})
+
+
+

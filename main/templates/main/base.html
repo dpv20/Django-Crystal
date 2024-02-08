@@ -37,7 +37,6 @@
             text-decoration: underline;
         }
 
-        /* Additional styles for language select dropdown */
         .language-select select {
             border: 1px solid #007bff;
             background-color: #fff;
@@ -127,40 +126,60 @@
  
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
  
-    <title>{% block title %}Crystal{% endblock %}</title>
-</head>
+    <title>Crystal</title>
 
-
-<body>
+    <script>
+        function setLanguage(lang) {
+            document.cookie = "language=" + lang + ";path=/";
+            location.reload();
+        }
     
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    
+        window.onload = function() {
+            var language = getCookie('language');
+            if (!language) {
+                language = 'en'; // Default language
+            }
+            
+            var select = document.querySelector('select');
+            if(select) select.value = language;
+        };
+    </script>
+</head>
+<body>
     <div class="portal">
         <img src="/media/LOGO CL.png" alt="Logo">
         <div class="portal-links">
-            <div class="portal">
-                <div class="portal-links">
-                    <!-- Language Selection Dropdown -->
-                    <div class="language-select">
-                        <form action="{% url 'set_language' %}" method="post">
-                            {% csrf_token %}
-                            <input name="next" type="hidden" value="{{ request.path }}">
-                            <select name="language" onchange="this.form.submit()">
-                                <option value="es" {% if LANGUAGE_CODE == 'es' %} selected {% endif %}>Español</option>
-                                <option value="en" {% if LANGUAGE_CODE == 'en' %} selected {% endif %}>English</option>
-                            </select>
-                        </form>
-                    </div>
-                    <a href="/">Logout</a>
-                    <a href="/home">/</a>
-                    <a href="/">Change password</a>
-                </div>
-            </div>
+            <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" style="background: none; border: none; color: #007bff; cursor: pointer; padding: 2px 5px; border-radius: 5px;">Logout</button>
+            </form>
+            <a href="/home">/</a>
+            <select onchange="setLanguage(this.value)">
+                <!--<option value="ar">Idioma</option>-->
+                <option value="es">Español</option>
+                <option value="en">English</option>
+                <!-- Add other languages as needed -->
+            </select>
         </div>
     </div>
 
     <ul class="menu">
-        <li>
-            <a href="/home/"><img src="/media/home.png" alt="Home" style="height: 20px; vertical-align: middle;"></a>
-        </li>
+        <li><a href="/home/"><img src="/media/home.png" alt="Home" style="height: 20px; vertical-align: middle;"></a></li>
         <li>
             <a href="#">Operations</a>
             <ul class="sub-menu">
@@ -168,9 +187,6 @@
                 <li><a href="/semanal/">Weekly register</a></li>
                 <li><a href="/stock/">Stock</a></li>
                 <li><a href="/select-laguna/">Edit Grades</a></li>
-                <!--
-                <li><a href="/daily-report/">Daily Register</a></li>
-                -->
             </ul>
         </li>
         <li>
@@ -179,33 +195,10 @@
                 <li><a href="/daily-report/">Daily Report</a></li>
                 <li><a href="/semanal_selection/">Weekly Relevant Matter</a></li>
                 <li><a href="/imops/">Make an IMOPS</a></li>
-                <!--
-                <li><a href="/additive-report/">Additive Report</a></li>
-                <li><a href="/imops-creation/">Make an IMOPS</a></li>
-                <li><a href="/checklist-report/">Checklist Report</a></li>
-                -->
             </ul>
         </li>
-        <li>
-            <!--
-            <a href="#">Expense Report</a>
-            <ul class="sub-menu">
-                <li><a href="/expense-creation/">Make an Expense Report</a></li>
-                <li><a href="/expense-consultation/">Consult an Expense Report</a></li>
-            </ul>
-            -->
-        </li>
-        <li>
-            <a href="/manuals/">Manuals</a>
-        </li>
-        <li>
-            <!--
-            <a href="/notifications/">Notifications</a>
-            -->
-        </li>
-        <li>
-            <a href="/database/">General Information</a>
-        </li>
+        <li><a href="/manuals/">Manuals</a></li>
+        <li><a href="/database/">General Information</a></li>
     </ul>
 
     <div id="content" name="content" class="main">

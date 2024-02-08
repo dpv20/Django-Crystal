@@ -2,7 +2,7 @@ from django.urls import path, include
 from .views import initial_form_view, results_view
 from django.conf import settings
 from django.conf.urls.static import static
-
+from django.contrib.auth.views import LogoutView
 from . import views
 
 from .views import (
@@ -20,7 +20,8 @@ from .views import (
     supervisor_report,
     generate_pdf,
     generate_imop_id,
-    viernes_view
+    viernes_view,
+    login_view
     
 )
 
@@ -58,6 +59,9 @@ urlpatterns = [
 
     path('viernes/', viernes_view, name='viernes'),
     path('viernes/<str:name>/', viernes_view, name='viernes_with_name'),
+
+    path('login/', login_view, name='login'),
+    path('logout/', LogoutView.as_view(), name='logout'),
 
 ]
 
