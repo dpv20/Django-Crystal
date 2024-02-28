@@ -24,6 +24,9 @@ SECRET_KEY = 'django-insecure-(n*xzm9n6qun@ye1=9a9cl#1fd$)$c6ipk584!xz_k%bi4oz@k
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+WKHTMLTOPDF_CMD = 'C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe'
+#    'wkhtmltopdf',
+
 
 ALLOWED_HOSTS = [
     'op.crystallagoons.info', 

@@ -1,0 +1,216 @@
+{% extends 'main/base.html' %}
+{% load custom_filters %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<!-- JavaScript function to toggle form visibility -->
+<script>
+function toggleForm(formId) {
+    var formDiv = document.getElementById(formId);
+    if (formDiv.style.display === 'none' || formDiv.style.display === '') {
+        formDiv.style.display = 'block';
+    } else {
+        formDiv.style.display = 'none';
+    }
+}
+</script>
+
+<div class="container" style="display: flex; justify-content: space-between;">
+    <div> <!-- This is the left side -->
+        <!-- Display session data -->
+        <p><strong>Date:</strong> {{ request.session.fecha }}</p>
+        <p><strong>Supervisor:</strong> {{ request.session.supervisor }}</p>
+        <p><strong>Lagoon:</strong> {{ request.session.lagoons }}</p>
+
+
+        <!-- Toggle buttons for both forms -->
+        <div class="divspoiler">
+            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('personalForm')">Personnel{% if request.session.personal_form_submitted %}(...LISTO){% endif %}</a>
+        </div>
+        <div class="divspoiler">
+            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('limpiezaForm')">Bottom cleaning operation{% if request.session.limpieza_form_submitted %}(...LISTO){% endif %}</a>
+        </div>
+        <div class="divspoiler">
+            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('limpiezamanualForm')">Manual cleaning operation{% if request.session.limpiezamanual_form_submitted %}(...LISTO){% endif %}</a>
+        </div>
+        <div class="divspoiler">
+            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('operacionfiltroForms')">Filter operation{% if request.session.operacionfiltro_form_submitted %}(...LISTO){% endif %}</a>
+        </div>
+        <div class="divspoiler">
+            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('operacionsistemadosificacionForms')">Dosing system operation{% if request.session.operacionsistemadosificacion_form_submitted %}(...LISTO){% endif %}</a>
+        </div>
+        <div class="divspoiler">
+            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('operacionsistemarecirculacionForms')">Recirculation system operation{% if request.session.operacionsistemarecirculacion_form_submitted %}(...LISTO){% endif %}</a>
+        </div>
+        <div class="divspoiler">
+            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('funcionamientotelemetriaForms')">Telemetry{% if request.session.funcionamientotelemetria_form_submitted %}(...LISTO){% endif %}</a>
+        </div>
+        <div class="divspoiler">
+            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('operacionskimmersForms')">Skimmers operation{% if request.session.operacionskimmers_form_submitted %}(...LISTO){% endif %}</a>
+        </div>
+        <div class="divspoiler">
+            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('operacionultrasonidoForms')">Ultrasounds operation{% if request.session.operacionultrasonido_form_submitted %}(...LISTO){% endif %}</a>
+        </div>
+        <div class="divspoiler">
+            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('infraestructuraForms')">Infrastructure{% if request.session.infraestructura_form_submitted %}(...LISTO){% endif %}</a>
+        </div>
+        <div class="divspoiler">
+            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('condicionlinerForms')">Liner{% if request.session.condicionliner_form_submitted %}(...LISTO){% endif %}</a>
+        </div>
+        <div class="divspoiler">
+            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('condicionvisuallagunaForms')">Visual condition{% if request.session.condicionvisuallaguna_form_submitted %}(...LISTO){% endif %}</a>
+        </div>
+        <div class="divspoiler">
+            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('funcionamientoaguarellenoForms')">Refilling water{% if request.session.funcionamientoaguarelleno_form_submitted %}(...LISTO){% endif %}</a>
+        </div>
+        <div class="divspoiler">
+            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('niveldelalagunaForms')">Water level of the lagoon{% if request.session.niveldelalaguna_form_submitted %}(...LISTO){% endif %}</a>
+        </div>
+        <div class="divspoiler">
+            <a href="javascript:void(0);" style="text-decoration: none;" onclick="toggleForm('medidasdemitigacionForms')">Environmental pollution{% if request.session.medidasdemitigacion_form_submitted %}(...LISTO){% endif %}</a>
+        </div>
+    </div>
+    
+    <div class="spoiler" id="personalForm" style="display: none;"> <!-- This is the right side for PersonalDeLaLagunaForm -->
+        <!-- Personal de la Laguna form -->
+        <h1>Personal de la Laguna</h1>
+        <form method="post" action="{% url 'results' %}">
+            {% csrf_token %}
+            
+            {{ personal_form|crispy }}
+            <input type="submit" name="personal_submit" value="Submit Personal">
+        </form>
+    </div>
+    
+    <div class="spoiler" id="limpiezaForm" style="display: none;"> <!-- This is the right side for OperacionLimpiezaDeFondoForm -->
+        <!-- Operacion Limpieza de Fondo form -->
+        <h1>Operacion Limpieza de Fondo</h1>
+        <form method="post" action="{% url 'results' %}">
+            {% csrf_token %}
+            {{ limpieza_form|crispy }}
+            <input type="submit" name="limpieza_submit" value="Submit Limpieza">
+        </form>
+    </div>
+
+    <div class="spoiler" id="limpiezamanualForm" style="display: none;"> 
+        <h1>Operacion Limpieza Manual</h1>
+        <form method="post" action="{% url 'results' %}">
+            {% csrf_token %}
+            {{ limpiezamanual_form|crispy }}
+            <input type="submit" name="limpiezamanual_submit" value="Submit Limpieza Manual">
+        </form>
+    </div>
+
+    <div class="spoiler" id="operacionfiltroForms" style="display: none;">
+        <h1>Operacion Filtro</h1>
+        <form method="post" action="{% url 'results' %}">
+            {% csrf_token %}
+            {{ operacionfiltro_form|crispy }}
+            <input type="submit" name="operacionfiltro_submit" value="Submit Operacion Filtro">
+        </form>
+    </div>
+
+    <div class="spoiler" id="operacionsistemadosificacionForms" style="display: none;">
+        <h1>Operacion Sistema Dosificacion</h1>
+        <form method="post" action="{% url 'results' %}">
+            {% csrf_token %}
+            {{ operacionsistemadosificacion_form|crispy }}
+            <input type="submit" name="operacionsistemadosificacion_submit" value="Submit Operacion SistemaDosificacion">
+        </form>
+    </div>
+
+    <div class="spoiler" id="operacionsistemarecirculacionForms" style="display: none;">
+        <h1>Operacion Sistema Recirculacion</h1>
+        <form method="post" action="{% url 'results' %}">
+            {% csrf_token %}
+            {{ operacionsistemarecirculacion_form|crispy }}
+            <input type="submit" name="operacionsistemarecirculacion_submit" value="Submit operacionsistemarecirculacion">
+        </form>
+    </div>
+
+    <div class="spoiler" id="funcionamientotelemetriaForms" style="display: none;">
+        <h1>Funcionamiento Telemetria</h1>
+        <form method="post" action="{% url 'results' %}">
+            {% csrf_token %}
+            {{ funcionamientotelemetria_form|crispy }}
+            <input type="submit" name="funcionamientotelemetria_submit" value="Submit funcionamientotelemetria">
+        </form>
+    </div>
+
+    <div class="spoiler" id="operacionskimmersForms" style="display: none;">
+        <h1>Operacion Skimmers</h1>
+        <form method="post" action="{% url 'results' %}">
+            {% csrf_token %}
+            {{ operacionskimmers_form|crispy }}
+            <input type="submit" name="operacionskimmers_submit" value="Submit operacion skimmers">
+        </form>
+    </div>
+
+    <div class="spoiler" id="operacionultrasonidoForms" style="display: none;">
+        <h1>Operacion Ultrasonido</h1>
+        <form method="post" action="{% url 'results' %}">
+            {% csrf_token %}
+            {{ operacionultrasonido_form|crispy }}
+            <input type="submit" name="operacionultrasonido_submit" value="Submit operacion ultrasonido">
+        </form>
+    </div>
+
+    <div class="spoiler" id="infraestructuraForms" style="display: none;">
+        <h1>Infraestructura</h1>
+        <form method="post" action="{% url 'results' %}">
+            {% csrf_token %}
+            {{ infraestructura_form|crispy }}
+            <input type="submit" name="infraestructura_submit" value="Submit infraestructura">
+        </form>
+    </div>
+
+    <div class="spoiler" id="condicionlinerForms" style="display: none;">
+        <h1>Condicion Liner</h1>
+        <form method="post" action="{% url 'results' %}">
+            {% csrf_token %}
+            {{ condicionliner_form|crispy }}
+            <input type="submit" name="condicionliner_submit" value="Submit condicionliner">
+        </form>
+    </div>
+
+    <div class="spoiler" id="condicionvisuallagunaForms" style="display: none;">
+        <h1>Condicion Visual Laguna</h1>
+        <form method="post" action="{% url 'results' %}">
+            {% csrf_token %}
+            {{ condicionvisuallaguna_form|crispy }}
+            <input type="submit" name="condicionvisuallaguna_submit" value="Submit condicion visual laguna">
+        </form>
+    </div>
+
+    <div class="spoiler" id="funcionamientoaguarellenoForms" style="display: none;">
+        <h1>Funcionamiento Agua Relleno</h1>
+        <form method="post" action="{% url 'results' %}">
+            {% csrf_token %}
+            {{ funcionamientoaguarelleno_form|crispy }}
+            <input type="submit" name="funcionamientoaguarelleno_submit" value="Submit funcionamiento agua relleno">
+        </form>
+    </div>
+
+    <div class="spoiler" id="niveldelalagunaForms" style="display: none;">
+        <h1>Nivel de la Laguna</h1>
+        <form method="post" action="{% url 'results' %}">
+            {% csrf_token %}
+            {{ niveldelalaguna_form|crispy }}
+            <input type="submit" name="niveldelalaguna_submit" value="Submit nivel de la laguna">
+        </form>
+    </div>
+
+    <div class="spoiler" id="medidasdemitigacionForms" style="display: none;">
+        <h1>Medidas de Mitigacion</h1>
+        <form method="post" action="{% url 'results' %}">
+            {% csrf_token %}
+            {{ medidasdemitigacion_form|crispy }}
+            <input type="submit" name="medidasdemitigacion_submit" value="Submit medidas de mitigacion">
+        </form>
+    </div>
+
+
+
+</div>
+
+{% endblock %}

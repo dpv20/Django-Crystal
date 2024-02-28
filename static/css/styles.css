@@ -1,0 +1,113 @@
+/* Define @font-face for Gotham fonts */
+@font-face {
+    font-family: 'Gotham';
+    src: url('/static/fonts/Gotham_Family_Fonts/Gotham-Black.otf') format('opentype');
+    font-weight: 900; /* Extra-Bold */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Gotham';
+    src: url('/static/fonts/Gotham_Family_Fonts/Gotham-BlackItalic.otf') format('opentype');
+    font-weight: 900; /* Extra-Bold */
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Gotham';
+    src: url('/static/fonts/Gotham_Family_Fonts/Gotham-Bold.otf') format('opentype');
+    font-weight: 700; /* Bold */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Gotham';
+    src: url('/static/fonts/Gotham_Family_Fonts/Gotham-BoldItalic.otf') format('opentype');
+    font-weight: 700; /* Bold */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Gotham';
+    src: url('/static/fonts/Gotham_Family_Fonts/Gotham-Book.otf') format('opentype');
+    font-weight: 700; /* Bold */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Gotham';
+    src: url('/static/fonts/Gotham_Family_Fonts/Gotham-BookItalic.otf') format('opentype');
+    font-weight: 700; /* Bold */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Gotham';
+    src: url('/static/fonts/Gotham_Family_Fonts/Gotham-Light.otf') format('opentype');
+    font-weight: 700; /* Bold */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Gotham';
+    src: url('/static/fonts/Gotham_Family_Fonts/Gotham-LightItalic.otf') format('opentype');
+    font-weight: 700; /* Bold */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Gotham';
+    src: url('/static/fonts/Gotham_Family_Fonts/Gotham-Medium.otf') format('opentype');
+    font-weight: 700; /* Bold */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Gotham';
+    src: url('/static/fonts/Gotham_Family_Fonts/Gotham-MediumItalic.otf') format('opentype');
+    font-weight: 700; /* Bold */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Gotham';
+    src: url('/static/fonts/Gotham_Family_Fonts/Gotham-Thin.otf') format('opentype');
+    font-weight: 700; /* Bold */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Gotham';
+    src: url('/static/fonts/Gotham_Family_Fonts/Gotham-ThinItalic.otf') format('opentype');
+    font-weight: 700; /* Bold */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Gotham';
+    src: url('/static/fonts/Gotham_Family_Fonts/Gotham-Ultra.otf') format('opentype');
+    font-weight: 700; /* Bold */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Gotham';
+    src: url('/static/fonts/Gotham_Family_Fonts/Gotham-UltraItalic.otf') format('opentype');
+    font-weight: 700; /* Bold */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Gotham';
+    src: url('/static/fonts/Gotham_Family_Fonts/Gotham-XLight.otf') format('opentype');
+    font-weight: 700; /* Bold */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Gotham';
+    src: url('/static/fonts/Gotham_Family_Fonts/Gotham-XLightItalic.otf') format('opentype');
+    font-weight: 700; /* Bold */
+    font-style: normal;
+}
+/* Add more @font-face rules for other styles/weights as needed */

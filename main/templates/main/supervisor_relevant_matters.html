@@ -50,15 +50,16 @@
                     <form method="post" action="" id="form-{{ matter.id }}">
                         {% csrf_token %}
                         <input type="hidden" name="matter_id" value="{{ matter.id }}">
-                        <input type="submit" name="update_matter" value="Update Matter">
-                    </form>
+                        <input type="submit" name="update_matter" value="Update Matter"> <!-- bonton -->
+                    </form> 
                 {% endfor %}
             {% else %}
                 <p>Date: N/A</p>
                 <form method="post" action="" id="form-{{ laguna.idLagunas }}">
                     {% csrf_token %}
                     <input type="hidden" name="laguna_id" value="{{ laguna.idLagunas }}">
-                    <input type="submit" name="update_matter" value="Add Matter">
+                    <input type="submit" name="update_matter" value="Add Matter"> <!-- bonton -->
+                    
                 </form>
             {% endif %}
         </div>

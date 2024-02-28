@@ -102,7 +102,7 @@
                     <!-- CL-AP2HI -->
                     <td>CL-AP2HI:</td>
                         <td>
-                            <input type="number" name="cl_ap2hi_tank" class="sampletext" style="width:75px" value="{{ form.cl_ap2hi_tank.value|default_if_none:'' }}">
+                            <input type="number" name="cl_ap2hi_tank" class="sampletext" style="width:75px" value="{{ form.cl_ap2hi_tank.value|default_if_none:'0' }}">
                             {% if form.cl_ap2hi_tank.errors %}
                                 {% for error in form.cl_ap2hi_tank.errors %}
                                     <div class="error">{{ error }}</div>
@@ -110,7 +110,7 @@
                             {% endif %}
                         </td>
                         <td>
-                            <input type="number" name="cl_ap2hi_storage" class="sampletext" style="width:75px" value="{{ form.cl_ap2hi_storage.value|default_if_none:'' }}">
+                            <input type="number" name="cl_ap2hi_storage" class="sampletext" style="width:75px" value="{{ form.cl_ap2hi_storage.value|default_if_none:'0' }}">
                             {% if form.cl_ap2hi_storage.errors %}
                                 {% for error in form.cl_ap2hi_storage.errors %}
                                     <div class="error">{{ error }}</div>
@@ -123,7 +123,7 @@
                     <tr>
                         <td>CL-FH1LO:</td>
                         <td>
-                            <input type="number" name="cl_fh1lo_tank" class="sampletext" style="width:75px" value="{{ form.cl_fh1lo_tank.value|default_if_none:'' }}">
+                            <input type="number" name="cl_fh1lo_tank" class="sampletext" style="width:75px" value="{{ form.cl_fh1lo_tank.value|default_if_none:'0' }}">
                             {% if form.cl_fh1lo_tank.errors %}
                                 {% for error in form.cl_fh1lo_tank.errors %}
                                     <div class="error">{{ error }}</div>
@@ -131,7 +131,7 @@
                             {% endif %}
                         </td>
                         <td>
-                            <input type="number" name="cl_fh1lo_storage" class="sampletext" style="width:75px" value="{{ form.cl_fh1lo_storage.value|default_if_none:'' }}">
+                            <input type="number" name="cl_fh1lo_storage" class="sampletext" style="width:75px" value="{{ form.cl_fh1lo_storage.value|default_if_none:'0' }}">
                             {% if form.cl_fh1lo_storage.errors %}
                                 {% for error in form.cl_fh1lo_storage.errors %}
                                     <div class="error">{{ error }}</div>
@@ -144,7 +144,7 @@
                     <tr>
                         <td>CL-FLO12:</td>
                         <td>
-                            <input type="number" name="cl_flo12_tank" class="sampletext" style="width:75px" value="{{ form.cl_flo12_tank.value|default_if_none:'' }}">
+                            <input type="number" name="cl_flo12_tank" class="sampletext" style="width:75px" value="{{ form.cl_flo12_tank.value|default_if_none:'0' }}">
                             {% if form.cl_flo12_tank.errors %}
                                 {% for error in form.cl_flo12_tank.errors %}
                                     <div class="error">{{ error }}</div>
@@ -152,7 +152,7 @@
                             {% endif %}
                         </td>
                         <td>
-                            <input type="number" name="cl_flo12_storage" class="sampletext" style="width:75px" value="{{ form.cl_flo12_storage.value|default_if_none:'' }}">
+                            <input type="number" name="cl_flo12_storage" class="sampletext" style="width:75px" value="{{ form.cl_flo12_storage.value|default_if_none:'0' }}">
                             {% if form.cl_flo12_storage.errors %}
                                 {% for error in form.cl_flo12_storage.errors %}
                                     <div class="error">{{ error }}</div>
@@ -165,7 +165,7 @@
                     <tr>
                         <td>CL-COTFLO:</td>
                         <td>
-                            <input type="number" name="cl_cotflo_tank" class="sampletext" style="width:75px" value="{{ form.cl_cotflo_tank.value|default_if_none:'' }}">
+                            <input type="number" name="cl_cotflo_tank" class="sampletext" style="width:75px" value="{{ form.cl_cotflo_tank.value|default_if_none:'0' }}">
                             {% if form.cl_cotflo_tank.errors %}
                                 {% for error in form.cl_cotflo_tank.errors %}
                                     <div class="error">{{ error }}</div>
@@ -173,7 +173,7 @@
                             {% endif %}
                         </td>
                         <td>
-                            <input type="number" name="cl_cotflo_storage" class="sampletext" style="width:75px" value="{{ form.cl_cotflo_storage.value|default_if_none:'' }}">
+                            <input type="number" name="cl_cotflo_storage" class="sampletext" style="width:75px" value="{{ form.cl_cotflo_storage.value|default_if_none:'0' }}">
                             {% if form.cl_cotflo_storage.errors %}
                                 {% for error in form.cl_cotflo_storage.errors %}
                                     <div class="error">{{ error }}</div>
@@ -186,7 +186,7 @@
                     <tr>
                         <td>CL-MB010:</td>
                         <td>
-                            <input type="number" name="cl_mb010_tank" class="sampletext" style="width:75px" value="{{ form.cl_mb010_tank.value|default_if_none:'' }}">
+                            <input type="number" name="cl_mb010_tank" class="sampletext" style="width:75px" value="{{ form.cl_mb010_tank.value|default_if_none:'0' }}">
                             {% if form.cl_mb010_tank.errors %}
                                 {% for error in form.cl_mb010_tank.errors %}
                                     <div class="error">{{ error }}</div>
@@ -194,7 +194,7 @@
                             {% endif %}
                         </td>
                         <td>
-                            <input type="number" name="cl_mb010_storage" class="sampletext" style="width:75px" value="{{ form.cl_mb010_storage.value|default_if_none:'' }}">
+                            <input type="number" name="cl_mb010_storage" class="sampletext" style="width:75px" value="{{ form.cl_mb010_storage.value|default_if_none:'0' }}">
                             {% if form.cl_mb010_storage.errors %}
                                 {% for error in form.cl_mb010_storage.errors %}
                                     <div class="error">{{ error }}</div>

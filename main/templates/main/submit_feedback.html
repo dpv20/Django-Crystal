@@ -1,0 +1,26 @@
+{% extends 'main/base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}
+    {% if form_submitted %}
+        Form Sent Successfully
+    {% else %}
+        Submit Feedback
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    {% if form_submitted %}
+        <h2>Form Sent Successfully</h2>
+    {% else %}
+        <h2>Submit Feedback</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    {% endif %}
+</div>
+{% endblock %}

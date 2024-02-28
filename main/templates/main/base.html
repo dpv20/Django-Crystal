@@ -181,24 +181,26 @@
     <ul class="menu">
         <li><a href="/home/"><img src="/media/home.png" alt="Home" style="height: 20px; vertical-align: middle;"></a></li>
         <li>
-            <a href="#">Operations</a>
+            <a href="#">Operaciones</a>
             <ul class="sub-menu">
-                <li><a href="/initial/">Make a Checklist</a></li>
-                <li><a href="/semanal/">Weekly register</a></li>
+                <li><a href="/initial/">Revisar Checklist</a></li>
+                <li><a href="/semanal/">Registro Semanal</a></li>
                 <li><a href="/stock/">Stock</a></li>
-                <li><a href="/select-laguna/">Edit Grades</a></li>
+                <li><a href="/select-laguna/">Modificar Notas</a></li>
             </ul>
         </li>
         <li>
-            <a href="#">Reports</a>
+            <a href="#">Reportes</a>
             <ul class="sub-menu">
-                <li><a href="/daily-report/">Daily Report</a></li>
-                <li><a href="/semanal_selection/">Weekly Relevant Matter</a></li>
-                <li><a href="/imops/">Make an IMOPS</a></li>
+                <li><a href="/daily-report/">Reporte Diario</a></li>
+                <li><a href="/semanal_selection/">Asuntos Relevantes Semanal</a></li>
+                <li><a href="/imops/">Generar IMOPS</a></li>
             </ul>
         </li>
-        <li><a href="/manuals/">Manuals</a></li>
-        <li><a href="/database/">General Information</a></li>
+        <li><a href="/manuals/">Manuales</a></li>
+        <li><a href="/database/">Informacion General</a></li>
+        <li><a href="{% url 'submit_feedback' %}">Enviar Feedback</a></li>
+
     </ul>
 
     <div id="content" name="content" class="main">

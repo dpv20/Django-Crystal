@@ -1,5 +1,17 @@
 from django.contrib import admin
-from .models import ToDoList, Item, Supervisor, Laguna, LagunaImage, LagoonDetail, IMOP  , SupervisorLaguna, Laguna_Stock, AditivosLaguna
+from .models import (
+    ToDoList, 
+    Item, 
+    Supervisor, 
+    Laguna, 
+    LagunaImage, 
+    LagoonDetail, 
+    IMOP, 
+    SupervisorLaguna, 
+    Laguna_Stock, 
+    AditivosLaguna,
+    Feedback,
+)
 # Register your models here.
 
 # admin.site.register(ToDoList)
@@ -158,6 +170,7 @@ class LagunaStockAdmin(admin.ModelAdmin):
     ]
     list_filter = ['date', 'laguna', 'stock_or_supply']
     search_fields = ['laguna__Nombre']
+admin.site.register(Laguna_Stock, LagunaStockAdmin)
 
 
 class RelevantMattersAdmin(admin.ModelAdmin):
@@ -169,31 +182,6 @@ class RelevantMattersAdmin(admin.ModelAdmin):
 
 admin.site.register(RelevantMatters, RelevantMattersAdmin)
 
-class IMOPAdmin(admin.ModelAdmin):
-    list_display = ('date', 'last_resumen_ejecutivo_date', 'last_recomendaciones_date', 'last_temas_pendientes_date')
-    search_fields = ('resumen_ejecutivo', 'recomendaciones', 'temas_pendientes')
-
-    # Optional: Customize the form in admin
-    fieldsets = (
-        (None, {
-            'fields': ('date', 'resumen_ejecutivo', 'recomendaciones', 'temas_pendientes')
-        }),
-        ('Last Modified Dates', {
-            'classes': ('collapse',),
-            'fields': ('last_resumen_ejecutivo_date', 'last_recomendaciones_date', 'last_temas_pendientes_date'),
-        }),
-    )
-
-    # Optional: Make the last modified dates read-only in admin
-    readonly_fields = ('last_resumen_ejecutivo_date', 'last_recomendaciones_date', 'last_temas_pendientes_date')
-
-    # Override get_readonly_fields to make 'date' field read-only after creation
-    def get_readonly_fields(self, request, obj=None):
-        if obj:  # obj is not None, so this is an edit
-            return self.readonly_fields + ('date',)
-        return self.readonly_fields
-
-admin.site.register(IMOP, IMOPAdmin)
 
 class AditivosLagunaAdmin(admin.ModelAdmin):
     list_display = ('proyecto', 'leadtime', 'ddaDiaLts_AP2', 'ddaDiaLts_FH1')
@@ -201,3 +189,49 @@ class AditivosLagunaAdmin(admin.ModelAdmin):
     list_filter = ('proyecto', 'leadtime', 'ddaDiaLts_AP2', 'ddaDiaLts_FH1')
 
 admin.site.register(AditivosLaguna, AditivosLagunaAdmin)
+
+
+
+
+
+
+class FeedbackAdmin(admin.ModelAdmin):
+    list_display = ('user', 'get_feedback_type_display', 'short_description')
+
+    def short_description(self, obj):
+        """A method to return the first 50 characters of the description."""
+        return obj.description[:50] + '...' if len(obj.description) > 50 else obj.description
+
+    short_description.short_description = 'Description'  # Sets column header
+
+admin.site.register(Feedback, FeedbackAdmin)
+
+
+class IMOPAdmin(admin.ModelAdmin):
+    list_display = ('laguna', 'generated_id', 'date', 'is_completed')  # Customize as needed
+    list_filter = ('laguna', 'date', 'is_completed')  # Customize as needed
+    search_fields = ('laguna__name', 'generated_id')  # Adjust 'laguna__name' if your Laguna model has a different field to search by
+    readonly_fields = ('generated_id', 'var_FH1LO', 'var_AP2HI', 'nota_final')  # Fields that should not be editable
+    fieldsets = (
+        (None, {
+            'fields': ('laguna', 'date', 'is_completed')
+        }),
+        ('Resumen y Recomendaciones', {
+            'fields': ('resumen_ejecutivo', 'resumen_ejecutivo_date', 'recomendaciones', 'recomendaciones_date', 'temas_pendientes', 'temas_pendientes_date'),
+        }),
+        ('Comentarios de la Operación', {
+            'fields': ('PER', 'BC', 'MC', 'FIL', 'DOS', 'REC', 'TEL', 'SKI', 'ULT', 'INF', 'LIN', 'VISUAL', 'WAT', 'LVL', 'ENV'),
+        }),
+        ('Variables y Nota Final', {
+            'classes': ('collapse',),
+            'fields': ('var_FH1LO', 'var_AP2HI', 'nota_final'),
+        }),
+    )
+
+    def save_model(self, request, obj, form, change):
+        if not obj.generated_id:
+            obj.generate_id()
+        super().save_model(request, obj, form, change)
+
+# Register your models here.
+admin.site.register(IMOP, IMOPAdmin)

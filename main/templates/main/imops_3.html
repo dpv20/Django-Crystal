@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMOP Report</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gotham:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Centers the content */
+            font-family: 'Gotham', sans-serif;
+        }
+        .body-text {
+            font-family: 'Gotham', sans-serif;
+            font-weight: 400; /* Normal weight */
+        }
+        .bold-text {
+            font-family: 'Gotham', sans-serif;
+            font-weight: 700; /* Bold */
+        }
+        .header-image {
+            width: 1200px;
+            height: 130px;
+            object-fit: cover;
+        }
+        .info-table, .form-table, form {
+            font-family: 'Gotham', sans-serif;
+            width: 1200px;
+            margin-bottom: 20px; 
+            box-sizing: border-box; 
+        }
+        .info-table, .form-table {
+            border: #00AFC9 1px solid;
+            border-collapse: separate;
+            border-spacing: 0px;
+            box-sizing: border-box; 
+        }
+        .info-table th, .info-table td, .form-table caption {
+            text-align: left;
+            padding: 2px;
+            box-sizing: border-box; 
+        }
+        .info-table th, .form-table caption {
+            background-color: #f2f2f2;
+            color: #00AFC9;
+            font-family: 'Gotham';
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .images-section {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .image-item {
+            margin: 5px;
+            border: #D3D8DC 1px solid;
+            padding: 5px;
+        }
+        img {
+            width: 570px; /* 572px max */
+            height: auto;
+        }
+        
+    </style>
+
+
+</head>
+<body>
+
+    <img src="/media/header-mensual.jpg" alt="Header Mensual" class="header-image">
+    <br></br>
+    <table class="info-table">
+        <tbody>
+            <tr>
+                <td><p style="color: #00AFC9">Proyecto:</p></td>
+                <td>{{ laguna.Nombre }}</td>
+                <td><p style="color: #00AFC9">Análisis Mes:</p></td>
+                <td>{{ selected_date|date:"F Y" }}</td>
+                
+            </tr>
+            <tr>
+                <td><p style="color: #00AFC9">Supervisor:</p></td>
+                <td>{{ supervisor_name }}</td>
+                <td><p style="color: #00AFC9">Clasificación:</p></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Resumen Ejecutivo Section -->
+    <form method="POST" action="{% url 'imop_info_view' id_laguna=laguna.idLagunas date=selected_date|date:'Y-m-d' %}">
+        {% csrf_token %}
+        <table style="margin-left: auto; margin-right: auto; width:1200px; background: #FFFFFF; border: #D3D8DC 1px solid; border-collapse: separate; border-spacing: 3px; font-family: 'Gotham', sans-serif; font-weight: 300;">
+            <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #0092C3; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;">RESUMEN EJECUTIVO</caption>
+
+            <tbody>
+                <tr>
+                    <td style="text-align: center;">
+                        <textarea style="width: 100%; height: 276px; text-align: justify; resize: none; border: none; font-family: 'Gotham', sans-serif; color: #595959; font-size: 15px; font-weight: 300; display: block; margin-left: auto; margin-right: auto;" name="resumen_ejecutivo">{{ last_imop.resumen_ejecutivo|default_if_none:"" }}</textarea>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- Gráficas Section -->
+        <table style="width:1200px; background: #FFFFFF; border: #D3D8DC 1px solid; border-collapse: separate; border-spacing: 3px; font-family: 'Gotham', sans-serif; margin-top: 20px;">
+            <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #0092C3; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;">INDICADORES</caption>
+            <tbody>
+                <tr>
+                    <td style="text-align: center;">
+                        <img src="{{ graph_url }}" alt="Model Ratings Bar Chart" style="width: 580px; height: 350px;">
+                    </td>
+                    <td style="text-align: center;">
+                        <img src="{{ graph_url_2 }}" alt="model_ratings_bar_chart_with_final_gap" style="width: 580px; height: 350px;">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- Recomendaciones Section -->
+        <table style="width:1200px; background: #FFFFFF; border: #D3D8DC 1px solid; border-collapse: separate; border-spacing: 3px; font-family: 'Gotham', sans-serif; margin-top: 20px; margin-left: auto; margin-right: auto;">
+            <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #0092C3; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;">RECOMENDACIONES</caption>
+            <tbody>
+                <tr>
+                    <td style="text-align: center;">
+                        <textarea style="width: 100%; height: 150px; text-align: justify; resize: none; border: none; font-family: 'Gotham', sans-serif; color: #595959; font-size: 15px; font-weight: 300; display: block; margin-left: auto; margin-right: auto;" name="recomendaciones">{{ last_imop.recomendaciones|default_if_none:"" }}</textarea>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <img src="/media/franja.jpg" alt="Image Description" style="width: 1200px; height: auto; display: block; margin-top: 20px;">
+
+        <!-- Temas Pendientes Section -->
+        <table style="width:1200px; background: #FFFFFF; border: #D3D8DC 1px solid; border-collapse: separate; border-spacing: 3px; font-family: 'Gotham', sans-serif; margin-top: 20px; margin-left: auto; margin-right: auto;">
+            <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #0092C3; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;">TEMAS PENDIENTES</caption>
+            <tbody>
+                <tr>
+                    <td style="text-align: center;">
+                        <textarea style="width: 100%; height: 150px; text-align: justify; resize: none; border: none; font-family: 'Gotham', sans-serif; color: #595959; font-size: 15px; font-weight: 300; display: block; margin-left: auto; margin-right: auto;" name="temas_pendientes">{{ last_imop.temas_pendientes|default_if_none:"" }}</textarea>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+       
+    {% if report_paths.cleaning_url %}
+    <table style="width:1200px; background: #FFFFFF; border: #D3D8DC 1px solid; border-collapse: separate; border-spacing: 4px; font-family: 'Gotham', sans-serif; margin-top: 20px;">
+        <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #0092C3; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;">HISTORIAL LIMPIEZA DE FONDO</caption>
+        <tbody>
+            <tr>
+                <td>
+                    <center><img src="{{ report_paths.cleaning_url }}" style="width: 700px; height: 410px;"></center>
+                </td>
+            </tr>
+            <tr>
+                <td>CRI (Cleaning Rate Index): Porcentaje acumulado de superficie limpiada por el bote durante los últimos 3 días.</td>
+            </tr>
+            <tr>
+                <td>Effective cleaning hours: Horas efectivas del uso de ambos botes diariamente.</td>
+            </tr>
+        </tbody>
+    </table>
+    {% endif %}
+
+    <table style="width:1200px; background: #FFFFFF; border: #D3D8DC 1px solid; border-collapse: separate; border-spacing: 4px; font-family: 'Gotham', sans-serif; margin-top: 20px;">
+        <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #0092C3; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;">STOCK DE ADITIVOS</caption>
+        <tbody>
+            <tr>
+                <td>
+                    <center><img src="{{ graph_url_3 }}" style="width: 1100px; height: 410px;"></center>
+                </td>
+            </tr>
+            <tr>
+                <td>Stock en Días: Estimación de días de stock que le quedan, cuando este valor sea cercano a 0 realizar una orden de compra.</td>
+            </tr>
+            <tr>
+                <td>* Les sugerimos que los días de stock deberían estar siempre por sobre el leadtime</td>
+            </tr>
+        </tbody>
+    </table>
+    
+
+    </form>
+
+    
+    <img src="/media/franja.jpg" alt="Image Description" style="width: 1200px; height: auto; display: block">
+
+    
+
+    <table style="width:1200px; background: #FFFFFF; border: #D3D8DC 1px solid; border-collapse: separate; border-spacing: 3px; font-family: 'Gotham', sans-serif; margin-top: 20px; margin-left: auto; margin-right: auto;">
+        <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #0092C3; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;">COMENTARIOS SOBRE LA OPERACIÓN DE LA LAGUNA</caption>
+        <tbody>
+            {% for acro, value in acros_and_values %}
+                <tr>
+                    <td style="display: flex; align-items: flex-start; justify-content: space-between;">
+                        <div style="width: 8%; text-align: left; font-family: 'Gotham', sans-serif; color: #595959; font-size: 15px;">
+                            {{ acro }}
+                        </div>
+                        <textarea style="width: 92%; height: 50px; text-align: justify; resize: none; border: none; font-family: 'Gotham', sans-serif; color: #595959; font-size: 15px;" name="{{ acro|slice:":-1" }}" >{{ value|default_if_none:"" }}</textarea>
+                    </td>                    
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    
+
+
+
+
+
+    <img src="/media/franja.jpg" alt="Image Description" style="width: 1200px; height: auto; display: block; margin-top: 20px;">
+    
+    <!-- Fotografías Laguna Section -->
+    <table style="width:1200px; background: #FFFFFF; border: #D3D8DC 1px solid; border-collapse: separate; border-spacing: 4px; font-family: 'Gotham', sans-serif;">
+        <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #0092C3; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;; margin-top: 20px;">FOTOGRAFIAS</caption>
+        <tbody>
+            <tr>
+                <td>
+                    <div class="images-section">
+                        {% for image in laguna_images %}
+                            <div class="image-item">
+                                <img src="{{ image.photo.url }}" alt="Laguna Image" style="max-width: 100%; max-height: 100%;">
+                            </div>
+                        {% empty %}
+                            <p>No images available.</p>
+                        {% endfor %}
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <img src="/media/franja.jpg" alt="Image Description" style="width: 1200px; height: auto; display: block; margin-top: 20px;">
+
+    
+
+    {% if report_paths.cleaning_url %}
+    <table style="width:1200px; background: #FFFFFF; border: #D3D8DC 1px solid; border-collapse: separate; border-spacing: 4px; font-family: 'Gotham', sans-serif; margin-top: 20px;">
+        <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #0092C3; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;">CONECTIVIDAD</caption>
+        <tbody>
+            <tr>
+                <td>
+                    <center><img src="{{ report_paths.connectivity_url }}" style="width: 700px; height: 410px;"></center>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    {% endif %}
+
+    <!-- Gráficas Section -->
+    <table style="width:1200px; background: #FFFFFF; border: #D3D8DC 1px solid; border-collapse: separate; border-spacing: 3px; font-family: 'Gotham', sans-serif; margin-top: 20px;">
+        <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #0092C3; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;">GLOSARIO/DEFINICIONES - Tabla de Tabulaciones</caption>
+        <tbody>
+            <tr>
+                <td style="text-align: center;">
+                    <img src="/media/escala_notas.jpg" style="width: 480px; height: 250px;">
+                </td>
+                <td style="text-align: center;">
+                    <img src="/media/Nota_por_seccion_3.jpg" style="width: 480px; height: 250px;">
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table style="width:1200px; border: #00AFC9 1px solid; border-collapse: separate; border-spacing: 5.5px; margin-top: 20px; font-family: 'Gotham', sans-serif;">
+        <tbody>
+            <tr>
+                <td style="width: 1200px; text-align: center; padding: 10px 0; font-family: 'Gotham', sans-serif;"> <!-- Gotham font specified here -->
+                    <p style="color: #00AFC9; margin: 0; line-height: 1.2; font-family: 'Gotham', sans-serif;">{{ supervisor_name }}</p> <!-- Gotham font specified here -->
+                    <p style="color: #00AFC9; margin: 0; line-height: 1.2; font-family: 'Gotham', sans-serif;">SUPERVISOR TÉCNICO CRYSTAL LAGOONS</p> <!-- Gotham font specified here -->
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table style="width:1200px; border: #00AFC9 1px solid; border-collapse: separate; border-spacing: 5.5px; margin-top: 20px; font-family: 'Gotham', sans-serif;">
+        <tbody>
+            <tr>
+                <td style="width: 1200px; text-align: center; font-family: 'Gotham', sans-serif; color: #cccccc;">
+                    <p>LEGAL NOTICE</p>
+                    <p style="text-align:justify;">Toda la información contenida en el presente documento es confidencial y propiedad del grupo Crystal Lagoons.
+                        El documento se entrega en el marco del contrato de licencia de tecnología vigente entre las partes.
+                        Crystal Lagoons se reserva desde ya el ejercicio de todos los derechos y acciones que correspondan de acuerdo al contrato o a la ley en caso de uso o divulgación no autorizado de información confidencial.
+                        Adicionalmente, Crystal Lagoons hace presente que no se hace responsable de la exactitud y precisión de aquella información contenida en el documento que haya sido elaborada en base a información entregada por el cliente.</p>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 1200px;text-align: left;">
+                    
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <img src="/media/franja.jpg" alt="Image Description" style="width: 1200px; height: auto; display: block; margin-top: 20px;">
+
+
+</body>
+</html>

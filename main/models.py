@@ -73,7 +73,7 @@ class LagunaImage(models.Model):
             self.photo.field.upload_to = image_upload_to(self._upload_date)
         super().save(*args, **kwargs)
 
-######################
+############################################
 
 class BaseChecklist(models.Model):
     date = models.DateField()
@@ -150,7 +150,7 @@ class OperacionLimpiezaDeFondo(BaseChecklist):
 
     # Evaluación general
     nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True)
-    evaluacion_comentarios = models.TextField(blank=True)
+    comentario = models.TextField(blank=True)
 
     def save(self, *args, **kwargs):
         if self.todo_bien:
@@ -173,7 +173,7 @@ class OperacionLimpiezaDeFondo(BaseChecklist):
             self.carro_antiguo_comentarios = ""
             self.otro_carro_nuevo = ""
             self.carro_nuevo_comentarios = ""
-            # self.evaluacion_comentarios remains unchanged
+            # self.comentario remains unchanged
 
         super().save(*args, **kwargs)
 
@@ -203,7 +203,7 @@ class OperacionLimpiezaManual(BaseChecklist):
 
     # 6) Evaluación general
     nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True)
-    evaluacion_comentarios = models.TextField(blank=True)
+    comentario = models.TextField(blank=True)
 
     def save(self, *args, **kwargs):
         if self.todo_bien:
@@ -218,7 +218,7 @@ class OperacionLimpiezaManual(BaseChecklist):
             self.bomba_comentarios = ""
             self.otro_secuencia = ""
             self.secuencia_comentarios = ""
-            # self.evaluacion_comentarios remains unchanged
+            # self.comentario remains unchanged
 
         super().save(*args, **kwargs)
 
@@ -261,7 +261,7 @@ class OperacionFiltro(BaseChecklist):
 
     # Evaluación general
     nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True)
-    evaluacion_comentarios = models.TextField(blank=True)
+    comentario = models.TextField(blank=True)
 
     def save(self, *args, **kwargs):
         if self.todo_bien:
@@ -282,7 +282,7 @@ class OperacionFiltro(BaseChecklist):
             self.sensores_comentarios = ""
             self.otro_bomba = ""
             self.bomba_comentarios = ""
-            # self.evaluacion_comentarios remains unchanged
+            # self.comentario remains unchanged
 
         super().save(*args, **kwargs)
 
@@ -329,7 +329,7 @@ class OperacionSistemaDosificacion(BaseChecklist):
 
     # Evaluación general
     nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True)
-    evaluacion_comentarios = models.TextField(blank=True)
+    comentario = models.TextField(blank=True)
 
     def save(self, *args, **kwargs):
         if self.todo_bien:
@@ -348,7 +348,7 @@ class OperacionSistemaDosificacion(BaseChecklist):
             self.venturi_comentarios = ""
             self.otro_bomba_playa = ""
             self.bomba_playa_comentarios = ""
-            # self.evaluacion_comentarios remains unchanged
+            # self.comentario remains unchanged
 
         super().save(*args, **kwargs)
 
@@ -383,7 +383,7 @@ class OperacionSistemaRecirculacion(BaseChecklist):
 
     # Evaluación general
     nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True)
-    evaluacion_comentario = models.TextField(blank=True, verbose_name="Comentario")
+    comentario = models.TextField(blank=True, verbose_name="Comentario")
 
     def save(self, *args, **kwargs):
         # If everything is fine, reset other fields to their defaults
@@ -403,7 +403,7 @@ class OperacionSistemaRecirculacion(BaseChecklist):
             self.manifold_comentarios = ""
             self.otro_camara = ""
             self.camara_comentarios = ""
-            # self.evaluacion_comentario remains unchanged
+            # self.comentario remains unchanged
 
         super().save(*args, **kwargs)
 
@@ -456,7 +456,7 @@ class FuncionamientoTelemetria(BaseChecklist):
 
     # Evaluación general
     nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True)
-    evaluacion_comentario = models.TextField(blank=True, verbose_name="Comentario")
+    comentario = models.TextField(blank=True, verbose_name="Comentario")
 
     def save(self, *args, **kwargs):
         # If everything is fine, reset other fields to their defaults
@@ -516,7 +516,7 @@ class OperacionSkimmers(BaseChecklist):
 
     # Evaluación general
     nota = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True)
-    evaluacion_comentario = models.TextField(blank=True, verbose_name="Comentarios")
+    comentario = models.TextField(blank=True, verbose_name="Comentarios")
 
     def save(self, *args, **kwargs):
         # If everything is fine, reset other fields to their defaults
@@ -537,7 +537,7 @@ class OperacionSkimmers(BaseChecklist):
             self.filtro_comentarios = ""
             self.otro_manguera = ""
             self.manguera_comentarios = ""
-            # self.evaluacion_comentario remains unchanged
+            # self.comentario remains unchanged
 
         super().save(*args, **kwargs)
 
@@ -721,6 +721,9 @@ class MedidasDeMitigacion(BaseChecklist):
 
         super().save(*args, **kwargs)
 
+
+######################################################
+
 class Supervisor(models.Model):
     name = models.CharField(max_length=255, unique=True)
     lagunas = models.ManyToManyField(Laguna, through='SupervisorLaguna', related_name='supervisors')
@@ -824,37 +827,55 @@ class AditivosLaguna(models.Model):
     def __str__(self):
         return f"{self.proyecto.Nombre} - {self.leadtime}"
     
-
-
 class IMOP(models.Model):
     laguna = models.ForeignKey('Laguna', on_delete=models.CASCADE)
     generated_id = models.CharField(max_length=255, editable=False, blank=True, null=True)
-    date = models.DateField(auto_now_add=True)
-    
+    date = models.DateField()
     resumen_ejecutivo = models.TextField()
-    last_resumen_ejecutivo_date = models.DateField(editable=True, null=True)
+    resumen_ejecutivo_date = models.DateField(editable=True, null=True)
     recomendaciones = models.TextField()
-    last_recomendaciones_date = models.DateField(editable=True, null=True)
+    recomendaciones_date = models.DateField(editable=True, null=True)
     temas_pendientes = models.TextField()
-    last_temas_pendientes_date = models.DateField(editable=True, null=True)
-
+    temas_pendientes_date = models.DateField(editable=True, null=True)
     is_completed = models.BooleanField(default=False)
-
-    def save(self, *args, **kwargs):
-        # Keep the update logic for other fields but remove the ID generation logic
-        if self.pk:
-            old_instance = IMOP.objects.get(pk=self.pk)
-            if old_instance.resumen_ejecutivo != self.resumen_ejecutivo:
-                self.last_resumen_ejecutivo_date = timezone.now().date()
-            if old_instance.recomendaciones != self.recomendaciones:
-                self.last_recomendaciones_date = timezone.now().date()
-            if old_instance.temas_pendientes != self.temas_pendientes:
-                self.last_temas_pendientes_date = timezone.now().date()
-
-        super(IMOP, self).save(*args, **kwargs)
-
+    var_FH1LO = models.CharField(max_length=255, editable=False, blank=True, null=True)
+    var_AP2HI = models.CharField(max_length=255, editable=False, blank=True, null=True)
+    nota_final = models.CharField(max_length=255, editable=False, blank=True, null=True)
+    PER = models.TextField(null=True)
+    BC = models.TextField(null=True)
+    MC = models.TextField(null=True)
+    FIL = models.TextField(null=True)
+    DOS = models.TextField(null=True)
+    REC = models.TextField(null=True)
+    TEL = models.TextField(null=True)
+    SKI = models.TextField(null=True)
+    ULT = models.TextField(null=True)
+    INF = models.TextField(null=True)
+    LIN = models.TextField(null=True)
+    VISUAL = models.TextField(null=True)
+    WAT = models.TextField(null=True)
+    LVL = models.TextField(null=True)
+    ENV = models.TextField(null=True)
     def generate_id(self):
         selected_month_year = self.date.strftime("%m%y")
         num_imops = IMOP.objects.filter(laguna=self.laguna).count()
         self.generated_id = f"{self.laguna.idLagunas}-{num_imops + 1}-{selected_month_year}"
         self.save()
+
+
+
+class Feedback(models.Model):
+    FEEDBACK_CHOICES = [
+        ('MT', 'Mistake on Translation'),
+        ('ER', 'Error'),
+        ('SG', 'Suggestion'),
+        ('OT', 'Other'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    feedback_type = models.CharField(max_length=2, choices=FEEDBACK_CHOICES, default='OT')
+    description = models.TextField()
+    screenshot = models.ImageField(upload_to='suggestions/', null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.get_feedback_type_display()} by {self.user.username}"
