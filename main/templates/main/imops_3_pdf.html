@@ -100,7 +100,7 @@
     <form method="POST" action="{% url 'imop_info_view' id_laguna=laguna.idLagunas date=selected_date|date:'Y-m-d' %}">
         {% csrf_token %}
         <table style="margin-left: auto; margin-right: auto; width:1200px; background: #FFFFFF; border: #D3D8DC 1px solid; border-collapse: separate; border-spacing: 3px; font-family: 'Gotham', sans-serif; font-weight: 300;">
-            <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #00AFC9; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;">RESUMEN EJECUTIVO</caption>
+            <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #0092C3; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;">RESUMEN EJECUTIVO</caption>
 
             <tbody>
                 <tr>
@@ -112,7 +112,7 @@
         </table>
         <!-- Gráficas Section -->
         <table style="width:1200px; background: #FFFFFF; border: #D3D8DC 1px solid; border-collapse: separate; border-spacing: 3px; font-family: 'Gotham', sans-serif; margin-top: 20px;">
-            <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #00AFC9; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;">INDICADORES</caption>
+            <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #0092C3; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;">INDICADORES</caption>
             <tbody>
                 <tr>
                     <td style="text-align: center;">
@@ -126,7 +126,7 @@
         </table>
         <!-- Recomendaciones Section -->
         <table style="width:1200px; background: #FFFFFF; border: #D3D8DC 1px solid; border-collapse: separate; border-spacing: 3px; font-family: 'Gotham', sans-serif; margin-top: 20px; margin-left: auto; margin-right: auto;">
-            <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #00AFC9; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;">RECOMENDACIONES</caption>
+            <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #0092C3; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;">RECOMENDACIONES</caption>
             <tbody>
                 <tr>
                     <td style="text-align: center;">
@@ -140,7 +140,7 @@
 
         <!-- Temas Pendientes Section -->
         <table style="width:1200px; background: #FFFFFF; border: #D3D8DC 1px solid; border-collapse: separate; border-spacing: 3px; font-family: 'Gotham', sans-serif; margin-top: 20px; margin-left: auto; margin-right: auto;">
-            <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #00AFC9; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;">TEMAS PENDIENTES</caption>
+            <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #0092C3; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;">TEMAS PENDIENTES</caption>
             <tbody>
                 <tr>
                     <td style="text-align: center;">
@@ -152,7 +152,7 @@
        
         {% if report_paths.cleaning_url %}
         <table style="width:1200px; background: #FFFFFF; border: #D3D8DC 1px solid; border-collapse: separate; border-spacing: 4px; font-family: 'Gotham', sans-serif; margin-top: 20px;">
-            <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #00AFC9; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;">HISTORIAL LIMPIEZA DE FONDO</caption>
+            <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #0092C3; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;">HISTORIAL LIMPIEZA DE FONDO</caption>
             <tbody>
                 <tr>
                     <td>
@@ -170,7 +170,7 @@
         {% endif %}
 
         <table style="width:1200px; background: #FFFFFF; border: #D3D8DC 1px solid; border-collapse: separate; border-spacing: 4px; font-family: 'Gotham', sans-serif; margin-top: 20px;">
-            <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #00AFC9; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;">STOCK DE ADITIVOS</caption>
+            <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #0092C3; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;">STOCK DE ADITIVOS</caption>
             <tbody>
                 <tr>
                     <td>
@@ -195,7 +195,7 @@
         
 
         <table style="width:1200px; background: #FFFFFF; border: #D3D8DC 1px solid; border-collapse: separate; border-spacing: 3px; font-family: 'Gotham', sans-serif; margin-top: 20px; margin-left: auto; margin-right: auto;">
-            <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #00AFC9; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;">COMENTARIOS SOBRE LA OPERACIÓN DE LA LAGUNA</caption>
+            <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #0092C3; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;">COMENTARIOS SOBRE LA OPERACIÓN DE LA LAGUNA</caption>
             <tbody>
                 {% for acro, value in acros_and_values %}
                     <tr>
@@ -220,7 +220,7 @@
         
         <!-- Fotografías Laguna Section -->
         <table style="width:1200px; background: #FFFFFF; border: #D3D8DC 1px solid; border-collapse: separate; border-spacing: 4px; font-family: 'Gotham', sans-serif;">
-            <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #00AFC9; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;; margin-top: 20px;">FOTOGRAFIAS</caption>
+            <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #0092C3; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;; margin-top: 20px;">FOTOGRAFIAS</caption>
             <tbody>
                 <tr>
                     <td>
@@ -243,7 +243,7 @@
 
         {% if report_paths.cleaning_url %}
         <table style="width:1200px; background: #FFFFFF; border: #D3D8DC 1px solid; border-collapse: separate; border-spacing: 4px; font-family: 'Gotham', sans-serif; margin-top: 20px;">
-            <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #00AFC9; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;">CONECTIVIDAD</caption>
+            <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #0092C3; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;">CONECTIVIDAD</caption>
             <tbody>
                 <tr>
                     <td>
@@ -256,7 +256,7 @@
 
         <!-- Gráficas Section -->
         <table style="width:1200px; background: #FFFFFF; border: #D3D8DC 1px solid; border-collapse: separate; border-spacing: 3px; font-family: 'Gotham', sans-serif; margin-top: 20px;">
-            <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #00AFC9; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;">GLOSARIO/DEFINICIONES - Tabla de Tabulaciones</caption>
+            <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #0092C3; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;">GLOSARIO/DEFINICIONES - Tabla de Tabulaciones</caption>
             <tbody>
                 <tr>
                     <td style="text-align: center;">

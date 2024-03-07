@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, FileResponse
 from datetime import datetime, timedelta 
 from datetime import date, timedelta
 from django.utils import timezone
@@ -29,8 +29,8 @@ from django.conf import settings
 import numpy as np
 import os
 from django.shortcuts import get_object_or_404, render
-from django.template.loader import render_to_string
-from xhtml2pdf import pisa
+from django.template.loader import render_to_string, get_template
+from io import BytesIO
 
 
 from .models import (
@@ -1444,12 +1444,14 @@ def get_previous_imops(id_laguna, date_str):
         try:
             imop = IMOP.objects.filter(laguna=laguna, date=last_day_of_previous_month).first()
             if imop:
-                results.append([imop.var_FH1LO, imop.var_AP2HI, imop.nota_final])
+                results.append([float(imop.var_FH1LO), float(imop.var_AP2HI), float(imop.nota_final)])
             else:
                 raise IMOP.DoesNotExist
         except IMOP.DoesNotExist:
             results.append([0, 0, 0])
-    
+
+    results = results[::-1]
+
     return results
 def get_last_laguna_stock_data(idLagunas, date):
     date_obj = datetime.strptime(date, "%Y-%m-%d")
@@ -1526,11 +1528,15 @@ def graph_line_2(values_fh1lo, values_ap2hi, Leadtime, date_str):
 
 
 
+
+
+
 @login_required
+@require_http_methods(["GET", "POST"])
 def imop_view(request, id_laguna, date):
+    default_date = datetime.strptime(date, '%Y-%m-%d').date()
     laguna = get_object_or_404(Laguna, pk=id_laguna)
     selected_date = datetime.strptime(date, '%Y-%m-%d').date()
-
     if laguna.idplatanus is None:
         print(f"Laguna {id_laguna} does not have an associated idplatanus.")
     else:
@@ -1538,26 +1544,27 @@ def imop_view(request, id_laguna, date):
         report_paths = download_lagoon_reports(laguna.idplatanus, year, month)
 
     last_imop = IMOP.objects.filter(laguna=laguna).order_by('-date').first()
+
     if not last_imop:
         last_imop = IMOP(laguna=laguna, date=timezone.now())  
         last_imop.save()
     
     acros_and_values = [
-    ('PER:', last_imop.PER),
-    ('BC:', last_imop.BC),
-    ('MC:', last_imop.MC),
-    ('FIL:', last_imop.FIL),
-    ('DOS:', last_imop.DOS),
-    ('REC:', last_imop.REC),
-    ('TEL:', last_imop.TEL),
-    ('SKI:', last_imop.SKI),
-    ('ULT:', last_imop.ULT),
-    ('INF:', last_imop.INF),
-    ('LIN:', last_imop.LIN),
-    ('VISUAL:', last_imop.VISUAL),
-    ('WAT:', last_imop.WAT),
-    ('LVL:', last_imop.LVL),
-    ('ENV:', last_imop.ENV),]
+        ('PER:', last_imop.PER),
+        ('BC:', last_imop.BC),
+        ('MC:', last_imop.MC),
+        ('FIL:', last_imop.FIL),
+        ('DOS:', last_imop.DOS),
+        ('REC:', last_imop.REC),
+        ('TEL:', last_imop.TEL),
+        ('SKI:', last_imop.SKI),
+        ('ULT:', last_imop.ULT),
+        ('INF:', last_imop.INF),
+        ('LIN:', last_imop.LIN),
+        ('VISUAL:', last_imop.VISUAL),
+        ('WAT:', last_imop.WAT),
+        ('LVL:', last_imop.LVL),
+        ('ENV:', last_imop.ENV),]
 
     models = [PersonalDeLaLaguna, OperacionLimpiezaDeFondo, OperacionLimpiezaManual, OperacionFiltro,
               OperacionSistemaDosificacion, OperacionSistemaRecirculacion, FuncionamientoTelemetria,
@@ -1583,6 +1590,7 @@ def imop_view(request, id_laguna, date):
     laguna_images = combined_images
 
     resultss = get_previous_imops(id_laguna, date)
+
     graph_url = graph_line_1(resultss, final_grade_nota, date)
     graph_url_2 = generate_bar_graph(last_instances)
     comentarios = {model.__name__: instance.get('comentario', '') for model in models for instance in [get_last_instance(model, laguna)]}
@@ -1603,12 +1611,13 @@ def imop_view(request, id_laguna, date):
     values_ap2hi = [result[1] for result in resultss] + [stocks_mes[1]]
     Leadtime =  float(get_leadtime_by_laguna(id_laguna))
 
+    
     #values_fh1lo = [60, 70, 80, 90, 100, 110]
     #values_ap2hi = [50, 60, 70, 80, 90, 100]
 
     graph_url_3 = graph_line_2(values_fh1lo,values_ap2hi, Leadtime, date)
 
-
+    
 
     context = {
         'laguna': laguna,
@@ -1625,11 +1634,211 @@ def imop_view(request, id_laguna, date):
         'graph_url_3': graph_url_3,
         'report_paths': report_paths,
     }
+
+    if request.method == 'POST':
+        resumen_ejecutivo = request.POST.get('resumen_ejecutivo', '')
+        recomendaciones = request.POST.get('recomendaciones', '')
+        temas_pendientes = request.POST.get('temas_pendientes', '')
+        recomendaciones = request.POST.get('recomendaciones', '')
+        temas_pendientes = request.POST.get('temas_pendientes', '')
+        texts_list = [resumen_ejecutivo, recomendaciones, temas_pendientes]
+        acronyms = ['PER', 'BC', 'MC', 'FIL', 'DOS', 'REC', 'TEL', 'SKI', 'ULT', 'INF', 'LIN', 'VISUAL', 'WAT', 'LVL', 'ENV']
+        for acronym in acronyms:
+                value = request.POST.get(acronym, '')
+                if value: 
+                    texts_list.append(value)
+                if not value:
+                    texts_list.append("")
+        if last_imop is not None:
+                resumen_ejecutivo_past = last_imop.resumen_ejecutivo
+                resumen_ejecutivo_past_date = last_imop.resumen_ejecutivo_date
+                recomendaciones_past = last_imop.recomendaciones
+                recomendaciones_past_date = last_imop.recomendaciones_date
+                temas_pendientes_past = last_imop.temas_pendientes
+                temas_pendientes_past_date = last_imop.temas_pendientes_date
+        else:
+                resumen_ejecutivo_past = ""
+                resumen_ejecutivo_past_date = default_date
+                recomendaciones_past = ""
+                recomendaciones_past_date = default_date
+                temas_pendientes_past = ""
+                temas_pendientes_past_date = default_date
+        resumen_ejecutivo_date = resumen_ejecutivo_past_date if resumen_ejecutivo == resumen_ejecutivo_past else default_date
+        recomendaciones_date = recomendaciones_past_date if recomendaciones == recomendaciones_past else default_date
+        temas_pendientes_date = temas_pendientes_past_date if temas_pendientes == temas_pendientes_past else default_date
+        acros_and_values_2 = [
+                ('PER:', texts_list[3]),
+                ('BC:', texts_list[4]),
+                ('MC:', texts_list[5]),
+                ('FIL:', texts_list[6]),
+                ('DOS:', texts_list[7]),
+                ('REC:', texts_list[8]),
+                ('TEL:', texts_list[9]),
+                ('SKI:', texts_list[10]),
+                ('ULT:', texts_list[11]),
+                ('INF:', texts_list[12]),
+                ('LIN:', texts_list[13]),
+                ('VISUAL:', texts_list[14]),
+                ('WAT:', texts_list[15]),
+                ('LVL:', texts_list[16]),
+                ('ENV:', texts_list[17]),]
+        IMOP.objects.filter(laguna=laguna, date=default_date).delete()
+        new_imop = IMOP(
+                laguna=laguna,
+                date=default_date,
+                resumen_ejecutivo=texts_list[0],
+                resumen_ejecutivo_date=resumen_ejecutivo_date,
+                recomendaciones=texts_list[1],
+                recomendaciones_date=recomendaciones_date,
+                temas_pendientes=texts_list[2],
+                temas_pendientes_date=temas_pendientes_date,
+                var_FH1LO = round(values_fh1lo[-1], 2),
+                var_AP2HI = round(values_ap2hi[-1], 2),
+                nota_final = round(final_grade_nota, 2),
+                is_completed=True,
+                PER=texts_list[3],
+                BC=texts_list[4],
+                MC=texts_list[5],
+                FIL=texts_list[6],
+                DOS=texts_list[7],
+                REC=texts_list[8],
+                TEL=texts_list[9],
+                SKI=texts_list[10],
+                ULT=texts_list[11],
+                INF=texts_list[12],
+                LIN=texts_list[13],
+                VISUAL=texts_list[14],
+                WAT=texts_list[15],
+                LVL=texts_list[16],
+                ENV=texts_list[17],
+            )
+        new_imop.generate_id()
+
+        if 'submit_form' in request.POST and request.POST['submit_form'] == 'update_info':  
+            context = {
+            'laguna': laguna,
+            'selected_date': selected_date,
+            'supervisor_name': supervisor_name,
+            'last_imop': new_imop,
+            'acros': acros,
+            'comentarios_acros': comentarios_acros,
+            'acros_and_values': acros_and_values_2,
+            'last_instances': last_instances,
+            'laguna_images': laguna_images,  
+            'graph_url': graph_url,
+            'graph_url_2': graph_url_2,
+            'graph_url_3': graph_url_3,
+            'report_paths': report_paths,
+            }
+            return render(request, 'main/imops_3.html', context)
+
+        elif request.POST.get('action') == 'generate_pdf':
+            return redirect(reverse('imop_pdf_view', kwargs={'id_laguna': id_laguna, 'date': date}))
+        
+
+
+
     return render(request, 'main/imops_3.html', context)
 
 
+def link_callback(uri, rel):
+    print(f"Resolving URI: {uri}")
 
-#import pdfkit
+    # use settings.MEDIA_ROOT and settings.STATIC_ROOT to construct absolute paths
+    if uri.startswith(settings.MEDIA_URL):
+        path = os.path.join(settings.MEDIA_ROOT, uri.replace(settings.MEDIA_URL, ""))
+    elif uri.startswith(settings.STATIC_URL):
+        path = os.path.join(settings.STATIC_ROOT, uri.replace(settings.STATIC_URL, ""))
+    else:
+        return uri  # return as is for absolute URIs
 
-def imop_pdf_view():
-    pass
+    # Make sure the file exists
+    if not os.path.isfile(path):
+        raise Exception(f'Media or static file not found: {path}')
+    return path
+def render_to_pdf(template_src, context_dict={}):
+    template = get_template(template_src)
+    html = template.render(context_dict)
+    result = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result, link_callback=link_callback)
+    if not pdf.err:
+        return HttpResponse(result.getvalue(), content_type='application/pdf')
+    return None
+def imop_pdf_view(request, id_laguna, date):
+    laguna = get_object_or_404(Laguna, pk=id_laguna)
+    selected_date = datetime.strptime(date, '%Y-%m-%d').date()
+    if laguna.idplatanus is None:
+        print(f"Laguna {id_laguna} does not have an associated idplatanus.")
+    else:
+        year, month = selected_date.strftime("%Y"), selected_date.strftime("%m")
+        report_paths = download_lagoon_reports(laguna.idplatanus, year, month)
+    last_imop = IMOP.objects.filter(laguna=laguna).order_by('-date').first()
+    acros_and_values = [
+        ('PER:', last_imop.PER),
+        ('BC:', last_imop.BC),
+        ('MC:', last_imop.MC),
+        ('FIL:', last_imop.FIL),
+        ('DOS:', last_imop.DOS),
+        ('REC:', last_imop.REC),
+        ('TEL:', last_imop.TEL),
+        ('SKI:', last_imop.SKI),
+        ('ULT:', last_imop.ULT),
+        ('INF:', last_imop.INF),
+        ('LIN:', last_imop.LIN),
+        ('VISUAL:', last_imop.VISUAL),
+        ('WAT:', last_imop.WAT),
+        ('LVL:', last_imop.LVL),
+        ('ENV:', last_imop.ENV),]
+    models = [PersonalDeLaLaguna, OperacionLimpiezaDeFondo, OperacionLimpiezaManual, OperacionFiltro,
+              OperacionSistemaDosificacion, OperacionSistemaRecirculacion, FuncionamientoTelemetria,
+              OperacionSkimmers, OperacionUltrasonido, Infraestructura, CondicionLiner,
+              CondicionVisualLaguna, FuncionamientoAguaRelleno, NivelDeLaLaguna, MedidasDeMitigacion]
+    last_instances = {model.__name__: get_last_instance(model, laguna) for model in models}
+    valuesss = [instance.get('nota', 0) for instance in last_instances.values()]
+    valuesss = [instance.get('nota', 0) for instance in last_instances.values()]
+    weights_list = [0.05, 0.1, 0.1, 0.1, 0.07, 0.07, 0.1, 0.04, 0.04, 0.03, 0.08, 0.14, 0.02, 0.04, 0.02]
+    final_grade_nota = sum(value * weight for value, weight in zip(valuesss, weights_list))
+    year, month = selected_date.year, selected_date.month
+    first_day, last_day = monthrange(year, month)
+    laguna_images = LagunaImage.objects.filter(
+        laguna=laguna,
+        date__range=[datetime(year, month, 1).date(), datetime(year, month, last_day).date()],
+        selected=True  
+    )
+    placeholders_needed = 8 - laguna_images.count()
+    placeholder_path = os.path.join(settings.MEDIA_URL, 'placeholder_imop.jpg')
+    placeholder_images = [{'photo': {'url': placeholder_path}} for _ in range(placeholders_needed)]
+    combined_images = list(laguna_images) + placeholder_images
+    laguna_images = combined_images
+    resultss = get_previous_imops(id_laguna, date)
+    graph_url = graph_line_1(resultss, final_grade_nota, date)
+    graph_url_2 = generate_bar_graph(last_instances)
+    comentarios = {model.__name__: instance.get('comentario', '') for model in models for instance in [get_last_instance(model, laguna)]}
+    acros = ["PER:", "BC:", "MC:", "FIL:", "DOS:", "REC:", "TEL:", "SKI:", "ULT:", "INF:", "LIN:", "VISUAL:", "WAT:", "LVL:", "ENV:"]
+    comentarios_acros = {acro: comentarios[model.__name__] for acro, model in zip(acros, models)}
+    supervisor_name = f"{request.user.first_name} {request.user.last_name}"
+    stocks_mes = get_last_laguna_stock_data(id_laguna, date)
+    FH1_DECAI = float(get_FH1_by_laguna(id_laguna))
+    AP2_DECAI = float(get_AP2_by_laguna(id_laguna))
+    stocks_mes[0] = float(stocks_mes[0]/FH1_DECAI)
+    stocks_mes[1] = float(stocks_mes[1]/AP2_DECAI)
+    values_fh1lo = [result[0] for result in resultss] + [stocks_mes[0]]
+    values_ap2hi = [result[1] for result in resultss] + [stocks_mes[1]]
+    Leadtime =  float(get_leadtime_by_laguna(id_laguna))
+    graph_url_3 = graph_line_2(values_fh1lo,values_ap2hi, Leadtime, date)
+    context = {
+        'laguna': laguna,
+        'selected_date': selected_date,
+        'supervisor_name': supervisor_name,
+        'last_imop': last_imop,
+        'acros': acros,
+        'comentarios_acros': comentarios_acros,
+        'acros_and_values': acros_and_values,
+        'last_instances': last_instances,
+        'laguna_images': laguna_images,  
+        'graph_url': graph_url,
+        'graph_url_2': graph_url_2,
+        'graph_url_3': graph_url_3,
+        'report_paths': report_paths,
+    }
+    return render_to_pdf('main/imops_3_pdf.html', context)
