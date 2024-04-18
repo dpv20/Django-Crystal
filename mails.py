@@ -19,6 +19,10 @@ def get_id_laguna_from_subject(subject):
 email_sender = 'dpavez@crystal-lagoons.com'
 email_password = 'wzda cjzm ursc whld'
 
+
+#'backoperaciones@crystal-lagoons.com'
+#'rakb zwvz sokv raxt'
+
 # Set up the email connection
 mail = imaplib.IMAP4_SSL('imap.gmail.com')
 mail.login(email_sender, email_password)
