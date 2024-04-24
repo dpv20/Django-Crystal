@@ -57,18 +57,27 @@
             align-items: center;
         }
         .images-section {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around; /* Adjusts content spacing and centers items */
         }
-        .image-item {
+        .image-item { /* dimensiones de imagenes de la tabla*/
+            position: relative; /* Sets positioning context for the image */
             margin: 5px;
             border: #D3D8DC 1px solid;
             padding: 5px;
+            width: 562px; /* Fixed width as specified */
+            height: 420px; /* Fixed height as specified */
+            overflow: hidden; /* Hides parts of the image that overflow the container */
         }
-        img {
-            width: 570px; /* 572px max */
-            height: auto;
+        .image-item img {
+            position: absolute; /* Positioning the image absolutely inside its container */
+            top: 50%;  /* Align center vertically */
+            left: 50%; /* Align center horizontally */
+            width: auto; /* Auto width for maintaining aspect ratio */
+            height: 100%; /* Set height to fill the container */
+            object-fit: cover; /* Ensures image covers the area, cropping as needed */
+            transform: translate(-50%, -50%); /* Centers the image perfectly in the container */
         }
         
     </style>

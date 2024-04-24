@@ -91,17 +91,24 @@ function submitCheck() {
 .image-container {
     position: relative;
     display: inline-block;
-    margin: 5px; 
+    margin: 5px;
+    transition: transform 0.3s ease; /* Transition for smooth scaling */
+    z-index: 1; /* Normal state with default stacking level */
 }
+
+.image-container:hover {
+    z-index: 100; /* Significantly higher z-index on hover */
+}
+
 .image-container img {
     width: 100px;
     height: 100px;
-    transition: all 0.3s ease;
     cursor: pointer;
+    transform-origin: center; /* Ensures scaling is centered */
 }
+
 .image-container img.enlarge-medium:hover {
-    width: 300px;
-    height: 300px;
+    transform: scale(3); /* 300% enlargement */
 }
 .image-container img.selected {
     border: 5px solid blue;

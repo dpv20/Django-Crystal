@@ -35,7 +35,7 @@ class Command(BaseCommand):
 
 
         ##########################################
-        modificar_date = 0
+        modificar_date = 1
         if modificar_date == 1:
             chile_tz = pytz.timezone('America/Santiago')
             now_in_chile = datetime.now(chile_tz)
@@ -86,7 +86,15 @@ class Command(BaseCommand):
     def save_attachments(self, laguna, msg):
         print("Processing attachments...")
         chile_tz = pytz.timezone('America/Santiago')
-        upload_date = datetime.now(chile_tz) #- timedelta(days=1)
+        #here dias!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        #here dias!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        #here dias!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        #here dias!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        upload_date = datetime.now(chile_tz) - timedelta(days=1)
+        #here dias!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        #here dias!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        #here dias!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        #here dias!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         for part in msg.walk():
             if part.get_content_maintype() == 'multipart':
@@ -159,14 +167,10 @@ class Command(BaseCommand):
         if not os.path.exists(base_dir):
             os.makedirs(base_dir)
 
-        # Format the date for the filename
-        today_date = datetime.now().strftime("%Y-%m-%d")
-
-
-        #################
-        #modificacion fecha
-        #today_date = "2024-04-17"
-        ##################
+        
+        chile_tz = pytz.timezone('America/Santiago')
+        today_date = datetime.now(chile_tz) - timedelta(days=1)
+        today_date = today_date.strftime("%Y-%m-%d")
 
         
         # Initialize the count based on existing files

@@ -24,7 +24,10 @@ from django.contrib.auth.decorators import login_required
 from calendar import monthrange
 from django.contrib.auth import authenticate, login
 import requests
-import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg')
+from matplotlib import pyplot as plt
+#import matplotlib.pyplot as plt
 from django.conf import settings
 import numpy as np
 import os
@@ -1101,7 +1104,7 @@ def supervisor_relevant_matters_page2(request, supervisor_name):
     lagunas = supervisor.lagunas.all()
 
     end_date = datetime.now().date()
-    start_date = end_date - timedelta(days=7)
+    start_date = end_date - timedelta(days=6)
 
     lagunas_with_images = {}
     for laguna in lagunas:
@@ -1365,7 +1368,9 @@ def generate_bar_graph(last_instances):
         "VIS": 0.14, "WAT": 0.02, "LVL": 0.04, "ENV": 0.02
     }
 
-    values = [instance.get('nota', 0) for instance in last_instances.values()]
+    #values = [instance.get('nota', 0) for instance in last_instances.values()]
+    values = [instance.get('nota', 0) if instance is not None else 0 for instance in last_instances.values()]
+
     final_value = sum(values[i] * weight for i, (model, weight) in enumerate(weights.items()))
 
     colors = ['red' if value <= 3 else '#00AFC9' for value in values]
@@ -1537,6 +1542,7 @@ def imop_view(request, id_laguna, date):
     default_date = datetime.strptime(date, '%Y-%m-%d').date()
     laguna = get_object_or_404(Laguna, pk=id_laguna)
     selected_date = datetime.strptime(date, '%Y-%m-%d').date()
+    report_paths = None
     if laguna.idplatanus is None:
         print(f"Laguna {id_laguna} does not have an associated idplatanus.")
     else:
@@ -1571,7 +1577,9 @@ def imop_view(request, id_laguna, date):
               OperacionSkimmers, OperacionUltrasonido, Infraestructura, CondicionLiner,
               CondicionVisualLaguna, FuncionamientoAguaRelleno, NivelDeLaLaguna, MedidasDeMitigacion]
     last_instances = {model.__name__: get_last_instance(model, laguna) for model in models}
-    valuesss = [instance.get('nota', 0) for instance in last_instances.values()]
+    #valuesss = [instance.get('nota', 0) for instance in last_instances.values()]
+    valuesss = [instance.get('nota', 0) if instance is not None else 0 for instance in last_instances.values()]
+
     weights_list = [0.05, 0.1, 0.1, 0.1, 0.07, 0.07, 0.1, 0.04, 0.04, 0.03, 0.08, 0.14, 0.02, 0.04, 0.02]
     final_grade_nota = sum(value * weight for value, weight in zip(valuesss, weights_list))
 
@@ -1593,7 +1601,9 @@ def imop_view(request, id_laguna, date):
 
     graph_url = graph_line_1(resultss, final_grade_nota, date)
     graph_url_2 = generate_bar_graph(last_instances)
-    comentarios = {model.__name__: instance.get('comentario', '') for model in models for instance in [get_last_instance(model, laguna)]}
+    #comentarios = {model.__name__: instance.get('comentario', '') for model in models for instance in [get_last_instance(model, laguna)]}
+    comentarios = {model.__name__: (instance.get('comentario', '') if instance is not None else '') for model in models for instance in [get_last_instance(model, laguna)]}
+
     acros = ["PER:", "BC:", "MC:", "FIL:", "DOS:", "REC:", "TEL:", "SKI:", "ULT:", "INF:", "LIN:", "VISUAL:", "WAT:", "LVL:", "ENV:"]
     comentarios_acros = {acro: comentarios[model.__name__] for acro, model in zip(acros, models)}
     supervisor_name = f"{request.user.first_name} {request.user.last_name}"

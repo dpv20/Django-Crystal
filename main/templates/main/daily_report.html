@@ -22,7 +22,7 @@
     }
 </style>
 
-<!-- Table for the daily report -->
+<!-- Table for the daily report 
 <table>
     <thead>
         <tr>
@@ -59,6 +59,42 @@
         {% endfor %}
     </tbody>
 </table>
+-->
+<!-- Table for the daily report -->
+<table>
+    <thead>
+        <tr>
+            <th>Cod</th>
+            <th>Projects</th>
+            <th>Monday ({{ monday_date }})</th>
+            <th>Friday ({{ friday_date }})</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for lagoon in lagoons %}
+        <tr>
+            <td>{{ lagoon.idLagunas }}</td>
+            <td>{{ lagoon.Nombre }}</td>
+            <td>
+                {% if lagoon.total_images_monday == 0 %}
+                    <font color="red">X</font>
+                {% else %}
+                    TF:{{ lagoon.total_images_monday }}/TR:{{ lagoon.selected_images_monday }}
+                {% endif %}
+            </td>
+            <td>
+                {% if lagoon.total_images_friday == 0 %}
+                    <font color="red">X</font>
+                {% else %}
+                    TF:{{ lagoon.total_images_friday }}/TR:{{ lagoon.selected_images_friday }}
+                {% endif %}
+            </td>           
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
 
 <form id="lagoonForm" enctype="multipart/form-data" method="POST">
     {% csrf_token %}
