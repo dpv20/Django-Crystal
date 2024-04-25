@@ -25,6 +25,8 @@ from .views import (
     results_EN_view,
     submit_feedback,
     imop_view,
+    lagunas_activas_view,
+    lagunas_activas_view2,
 )
 
 urlpatterns = [
@@ -53,7 +55,12 @@ urlpatterns = [
     path('update_image_status/', views.update_image_status, name='update_image_status'),
     path('semanal_selection/', views.semanal_selection_view2, name='semanal_selection'),
     path('imops/', views.imops_view, name='imops_view'),
+    path('supervisor/lagunas_activas/', lagunas_activas_view, name='lagunas_activas'),
+    path('supervisor/lagunas_activas/2', lagunas_activas_view2, name='lagunas_activas_2'),
     path('supervisor/<str:supervisor_name>/', views.supervisor_relevant_matters_view, name='supervisor_relevant_matters'),
+    
+
+
     path('supervisor/<str:supervisor_name>/2', views.supervisor_relevant_matters_page2, name='supervisor_relevant_matters_page2'),
     path('update_image_selection/', update_image_selection, name='update_image_selection'),
     path('supervisor/<str:supervisor_name>/3', supervisor_report, name='supervisor_report'),

@@ -10,6 +10,10 @@
         <div class="form-group">
             <label for="supervisor">Supervisor</label>
             <select name="supervisor" id="supervisor" class="select-supervisor">
+                <!-- Static entry for Lagunas Activas -->
+                <option value="lagunas_activas">Lagunas Activas</option>
+
+                <!-- Dynamic entries for supervisors -->
                 {% for supervisor in supervisors %}
                     <option value="{{ supervisor.name }}">{{ supervisor.name }}</option>
                 {% endfor %}
@@ -27,7 +31,14 @@
 <script>
     function submitForm() {
         var selectedSupervisorName = document.getElementById('supervisor').value;
-        window.location.href = '/supervisor/' + encodeURIComponent(selectedSupervisorName) + '/';
+        // Check if the selected value is 'lagunas_activas'
+        if (selectedSupervisorName === 'lagunas_activas') {
+            // Redirect to a special filter or action for Lagunas Activas
+            window.location.href = '/supervisor/lagunas_activas/';
+        } else {
+            // Redirect to the selected supervisor's page
+            window.location.href = '/supervisor/' + encodeURIComponent(selectedSupervisorName) + '/';
+        }
     }
 </script>
 

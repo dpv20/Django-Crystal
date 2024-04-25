@@ -1034,6 +1034,7 @@ def semanal_selection_view2(request):
     supervisors = Supervisor.objects.all()  # Query all supervisors
     return render(request, 'main/select_laguna_3.html', {'lagunas': lagunas, 'supervisors': supervisors})
 
+
 @login_required
 def imops_view(request):
     if request.method == 'POST':
@@ -1097,6 +1098,40 @@ def supervisor_relevant_matters_view(request, supervisor_name):
         'supervisor': supervisor,
         'lagunas_with_matters': lagunas_with_matters,
     })
+
+@login_required
+def lagunas_activas_view(request):
+    lagunas = Laguna.objects.filter(Estado=True)  # Only active lagunas
+    lagunas_with_matters = {}
+    for laguna in lagunas:
+        relevant_matters = RelevantMatters.objects.filter(laguna=laguna).order_by('date')
+        lagunas_with_matters[laguna] = relevant_matters if relevant_matters.exists() else None
+
+    if request.method == 'POST':
+        if 'update_matter' in request.POST:
+            matter_id = request.POST.get('matter_id')
+            if matter_id:
+                matter = get_object_or_404(RelevantMatters, id=matter_id)
+                matter.date = timezone.now().date()
+                matter.text = request.POST.get('text', matter.text)
+                matter.save()
+            else:
+                laguna_id = request.POST.get('laguna_id')
+                laguna = get_object_or_404(Laguna, idLagunas=laguna_id)
+                new_text = request.POST.get('text', '')
+                new_matter = RelevantMatters(laguna=laguna, text=new_text, date=timezone.now().date())
+                new_matter.save()
+
+            return redirect('lagunas_activas')  # Redirect to the same view to refresh the data
+
+    return render(request, 'main/lagunas_activas.html', {
+        'supervisor': None,
+        'lagunas_with_matters': lagunas_with_matters,
+    })
+
+@login_required
+def lagunas_activas_view2(request):
+    pass
 
 @login_required
 def supervisor_relevant_matters_page2(request, supervisor_name):
