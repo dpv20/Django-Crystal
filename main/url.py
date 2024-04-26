@@ -26,7 +26,9 @@ from .views import (
     submit_feedback,
     imop_view,
     lagunas_activas_view,
-    lagunas_activas_view2,
+    lagunas_activas_page2,
+    lagunas_activas_3,
+    generate_pdf_for_lagunas_activas,
 )
 
 urlpatterns = [
@@ -56,16 +58,18 @@ urlpatterns = [
     path('semanal_selection/', views.semanal_selection_view2, name='semanal_selection'),
     path('imops/', views.imops_view, name='imops_view'),
     path('supervisor/lagunas_activas/', lagunas_activas_view, name='lagunas_activas'),
-    path('supervisor/lagunas_activas/2', lagunas_activas_view2, name='lagunas_activas_2'),
+    path('supervisor/lagunas_activas/2', lagunas_activas_page2, name='lagunas_activas_2'),
+    path('supervisor/lagunas_activas/3', lagunas_activas_3, name='lagunas_activas_3'),
+    path('supervisor/lagunas_activas/generate_pdf_for_lagunas_activas/', views.generate_pdf_for_lagunas_activas, name='generate_pdf_for_lagunas_activas'),
+
     path('supervisor/<str:supervisor_name>/', views.supervisor_relevant_matters_view, name='supervisor_relevant_matters'),
-    
-
-
     path('supervisor/<str:supervisor_name>/2', views.supervisor_relevant_matters_page2, name='supervisor_relevant_matters_page2'),
-    path('update_image_selection/', update_image_selection, name='update_image_selection'),
     path('supervisor/<str:supervisor_name>/3', supervisor_report, name='supervisor_report'),
     path('supervisor/<str:supervisor_name>/report_pdf', generate_pdf, name='generate_pdf'),
-    
+
+    path('update_image_selection/', update_image_selection, name='update_image_selection'),
+
+
     path('generate_imop_id/', views.generate_imop_id, name='generate_imop_id'),
     path('imops/<str:id_laguna>/<str:date>/', views.create_imop_view, name='create_imop_view'),
     path('imops/<str:id_laguna>/<str:date>/info', views.imop_view, name='imop_info_view'),

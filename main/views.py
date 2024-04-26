@@ -1129,9 +1129,7 @@ def lagunas_activas_view(request):
         'lagunas_with_matters': lagunas_with_matters,
     })
 
-@login_required
-def lagunas_activas_view2(request):
-    pass
+
 
 @login_required
 def supervisor_relevant_matters_page2(request, supervisor_name):
@@ -1154,6 +1152,59 @@ def supervisor_relevant_matters_page2(request, supervisor_name):
         'lagunas_with_images': lagunas_with_images,
         'start_date': start_date,
         'end_date': end_date
+    })
+
+@login_required
+def lagunas_activas_page2(request):
+    lagunas = Laguna.objects.filter(Estado=True)
+
+    end_date = datetime.now().date()
+    start_date = end_date - timedelta(days=6)
+
+    lagunas_with_images = {}
+    for laguna in lagunas:
+        images = LagunaImage.objects.filter(
+            laguna=laguna,
+            date__range=(start_date, end_date)
+        ).order_by('date', 'photo')
+        lagunas_with_images[laguna] = images
+
+    return render(request, 'main/lagunas_activas_2.html', {
+        'lagunas_with_images': lagunas_with_images,
+        'start_date': start_date,
+        'end_date': end_date
+    })
+
+@login_required
+def lagunas_activas_3(request):
+    lagunas = Laguna.objects.filter(Estado=True)
+
+    end_date = datetime.now().date()
+    start_date = end_date - timedelta(days=7)
+
+    lagunas_with_pictures = []
+    lagunas_without_pictures = []
+
+    for laguna in lagunas:
+        images = LagunaImage.objects.filter(
+            laguna=laguna,
+            date__range=(start_date, end_date)
+        )
+
+        if images.exists():
+            lagunas_with_pictures.append(laguna)
+        else:
+            lagunas_without_pictures.append(laguna)
+
+    total_lagunas = len(lagunas)
+    lagunas_with_pictures_count = len(lagunas_with_pictures)
+    percentage_with_pictures = (lagunas_with_pictures_count / total_lagunas * 100) if total_lagunas > 0 else 0
+
+    return render(request, 'main/lagunas_activas_3.html', {
+        'lagunas_with_pictures': lagunas_with_pictures,
+        'lagunas_without_pictures': lagunas_without_pictures,
+        'report_date': end_date,
+        'percentage_with_pictures': percentage_with_pictures
     })
 
 @login_required
@@ -1259,6 +1310,56 @@ def generate_pdf(request, supervisor_name):
         return JsonResponse({'status': 'success', 'message': f'PDF successfully saved at {pdf_filepath}'})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)})
+
+@login_required
+def generate_pdf_for_lagunas_activas(request):
+    try:
+        end_date = datetime.now().date()
+        start_date = end_date - timedelta(days=7)
+
+        active_lagunas = Laguna.objects.filter(Estado=True)
+        lagunas_with_pictures = []
+        lagunas_without_pictures = []
+
+        for laguna in active_lagunas:
+            images = LagunaImage.objects.filter(
+                laguna=laguna,
+                date__range=(start_date, end_date)
+            )
+
+            if images.exists():
+                lagunas_with_pictures.append(laguna)
+            else:
+                lagunas_without_pictures.append(laguna)
+
+        total_lagunas = len(active_lagunas)
+        percentage_with_pictures = (len(lagunas_with_pictures) / total_lagunas * 100) if total_lagunas > 0 else 0
+
+        pdf_directory = 'C:\\code\\Djangopage\\PDF'
+        pdf_filename = "lagunas_activas_report.pdf"
+        pdf_filepath = os.path.join(pdf_directory, pdf_filename)
+
+        html_content = render_to_string('PDFs/lagunas_activas_report_pdf.html', {
+            'lagunas_with_pictures': lagunas_with_pictures,
+            'lagunas_without_pictures': lagunas_without_pictures,
+            'report_date': end_date,
+            'percentage_with_pictures': percentage_with_pictures,
+            'is_pdf': True
+        })
+
+        with open(pdf_filepath, "w+b") as pdf_file:
+            pisa_status = pisa.CreatePDF(html_content, dest=pdf_file)
+
+            if pisa_status.err:
+                raise Exception('PDF generation error')
+
+        return JsonResponse({'status': 'success', 'message': f'PDF successfully saved at {pdf_filepath}'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
+
+
+
+
 
 @login_required
 @csrf_exempt
