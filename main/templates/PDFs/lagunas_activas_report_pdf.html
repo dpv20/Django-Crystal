@@ -6,44 +6,40 @@
             text-align: center;
             margin-bottom: 20px;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
         }
-
         th, td {
             border: 1px solid #ddd;
             padding: 8px;
             text-align: left;
             vertical-align: top;
         }
-
         th {
             background-color: #f2f2f2;
         }
-
         .percentage-row {
-            background-color: #eef; /* Light background for percentage row */
-            text-align: center; /* Center-align the percentage text */
-            font-weight: bold; /* Optional: makes the text bold */
+            background-color: #eef;
+            text-align: center;
+            font-weight: bold;
         }
-
         .laguna-list {
+            display: flex;
+            flex-direction: column;
             list-style: none;
             padding: 0;
             margin: 0;
         }
-
         .laguna-item {
             margin-bottom: 5px;
             padding: 5px;
             background-color: #f9f9f9;
             border-radius: 4px;
+            box-sizing: border-box;
             transition: background-color 0.3s ease;
         }
-
         .laguna-item:hover {
             background-color: #eaeaea;
         }
@@ -55,33 +51,55 @@
     <table>
         <thead>
             <tr class="percentage-row">
-                <td colspan="2">PORCENTAGE OF LAGOONS WITH PHOTOS this week: {{ percentage_with_pictures|floatformat:2 }}%</td>
+                <td colspan="4">PERCENTAGE OF LAGOONS WITH PHOTOS this week: {{ percentage_with_pictures|floatformat:2 }}%</td>
             </tr>
             <tr>
-                <th>LAGOONS with pictures</th>
-                <th>LAGOONS without pictures</th>
+                <th colspan="2">LAGOONS with pictures</th>
+                <th colspan="2">LAGOONS without pictures</th>
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td>
                     <ul class="laguna-list">
-                        {% for laguna in lagunas_with_pictures %}
+                        {% for laguna in lagunas_with_pictures_1 %}
                             <li class="laguna-item">{{ laguna.Nombre }}</li>
                         {% empty %}
-                            <li class="laguna-item">No Lagunas with pictures.</li>
+                            <li class="laguna-item">No Lagunas with pictures in Part 1.</li>
                         {% endfor %}
                     </ul>
                 </td>
                 <td>
                     <ul class="laguna-list">
-                        {% for laguna in lagunas_without_pictures %}
+                        {% for laguna in lagunas_with_pictures_2 %}
                             <li class="laguna-item">{{ laguna.Nombre }}</li>
                         {% empty %}
-                            <li class="laguna-item">No Lagunas without pictures.</li>
+                            <li class="laguna-item">No Lagunas with pictures in Part 2.</li>
                         {% endfor %}
                     </ul>
                 </td>
+                <td>
+                    <ul class="laguna-list">
+                        {% for laguna in lagunas_without_pictures_1 %}
+                            <li class="laguna-item">{{ laguna.Nombre }}</li>
+                        {% empty %}
+                            <li class="laguna-item">No Lagunas without pictures in Part 1.</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+                <td>
+                    <ul class="laguna-list">
+                        {% for laguna in lagunas_without_pictures_2 %}
+                            <li class="laguna-item">{{ laguna.Nombre }}</li>
+                        {% empty %}
+                            <li class="laguna-item">No Lagunas without pictures in Part 2.</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+                
+
+
+
             </tr>
         </tbody>
     </table>

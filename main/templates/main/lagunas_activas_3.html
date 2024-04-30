@@ -4,49 +4,54 @@
 
 <div style="text-align: center; margin-bottom: 20px;">
     <button onclick="generatePDF()" class="btn btn-primary">Generate PDF</button>
+    <a href="{% url 'generate_pdf' %}">Generate PDF - 2</a>
 </div>
 
 {% if not is_pdf %}
-    <style>
-        .report-title {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-            vertical-align: top;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .percentage-row {
-            background-color: #eef;
-            text-align: center;
-            font-weight: bold;
-        }
-        .laguna-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .laguna-item {
-            margin-bottom: 5px;
-            padding: 5px;
-            background-color: #f9f9f9;
-            border-radius: 4px;
-            transition: background-color 0.3s ease;
-        }
-        .laguna-item:hover {
-            background-color: #eaeaea;
-        }
-    </style>
+<style>
+    .report-title {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+        vertical-align: top;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+    .percentage-row {
+        background-color: #eef;
+        text-align: center;
+        font-weight: bold;
+    }
+    .laguna-list {
+        display: flex;
+        flex-wrap: wrap;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .laguna-item {
+        flex: 0 50%; /* Takes up 50% of the width, allowing 2 items per row */
+        margin-bottom: 5px;
+        padding: 5px;
+        background-color: #f9f9f9;
+        border-radius: 4px;
+        box-sizing: border-box;
+        transition: background-color 0.3s ease;
+    }
+    .laguna-item:hover {
+        background-color: #eaeaea;
+    }
+</style>
 {% endif %}
 
 <h2 class="report-title">LAGOONS OPERATIONS REPORT :: Status As Of {{ report_date|date:"l, F d, Y" }}</h2>
@@ -87,8 +92,7 @@
 
 <script>
     function generatePDF() {
-        // Adjust the PDF generation URL to the context of active lagunas
-        var url = "{% url 'generate_pdf_for_lagunas_activas' %}"; // Ensure this URL is defined in your urls.py
+        var url = "{% url 'generate_pdf_for_lagunas_activas' %}";
         fetch(url)
             .then(response => response.json())
             .then(data => {

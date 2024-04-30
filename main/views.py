@@ -1311,11 +1311,58 @@ def generate_pdf(request, supervisor_name):
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)})
 
+
+
+
+def lagunas_con_imagenes_pdf(request):
+    # Define the date range
+    end_date = timezone.now().date()
+    start_date = end_date - timedelta(days=6)  # Last 7 days
+
+    # Filter active Lagunas with pictures within the last 7 days
+    active_lagunas = Laguna.objects.filter(Estado=True)
+    lagunas_with_pictures = []
+
+    for laguna in active_lagunas:
+        selected_images = LagunaImage.objects.filter(
+            laguna=laguna,
+            date__range=(start_date, end_date),
+            selected=True
+        )
+        if selected_images.exists():
+            laguna_info = {
+                'nombre': laguna.Nombre,
+                'relevant_matter': RelevantMatters.objects.filter(laguna=laguna).first(),
+                'images': selected_images
+            }
+            lagunas_with_pictures.append(laguna_info)
+
+    # Prepare the PDF
+    template = get_template('PDFs/lagunas_template.html')
+    context = {'lagunas': lagunas_with_pictures}
+    html_content = template.render(context)
+
+    # Define PDF file path
+    pdf_dir = os.path.join(settings.BASE_DIR, 'PDF')
+    if not os.path.exists(pdf_dir):
+        os.makedirs(pdf_dir)  # Create the PDF directory if it doesn't exist
+    pdf_filepath = os.path.join(pdf_dir, 'lagunas_report.pdf')
+
+    # Generate PDF
+    with open(pdf_filepath, "w+b") as pdf_file:
+        pisa_status = pisa.CreatePDF(html_content, dest=pdf_file)
+    
+    if pisa_status.err:
+        return HttpResponse('Error occurred while generating PDF', status=500)
+    else:
+        return HttpResponse(f'PDF successfully saved to {pdf_filepath}', status=200)
+
+
 @login_required
 def generate_pdf_for_lagunas_activas(request):
     try:
         end_date = datetime.now().date()
-        start_date = end_date - timedelta(days=7)
+        start_date = end_date - timedelta(days=6)
 
         active_lagunas = Laguna.objects.filter(Estado=True)
         lagunas_with_pictures = []
@@ -1326,22 +1373,33 @@ def generate_pdf_for_lagunas_activas(request):
                 laguna=laguna,
                 date__range=(start_date, end_date)
             )
-
             if images.exists():
                 lagunas_with_pictures.append(laguna)
             else:
                 lagunas_without_pictures.append(laguna)
 
+        # Splitting each list into two parts
+        midpoint_with = len(lagunas_with_pictures) // 2
+        midpoint_without = len(lagunas_without_pictures) // 2
+
+        lagunas_with_pictures_1 = lagunas_with_pictures[:midpoint_with]
+        lagunas_with_pictures_2 = lagunas_with_pictures[midpoint_with:]
+        lagunas_without_pictures_1 = lagunas_without_pictures[:midpoint_without]
+        lagunas_without_pictures_2 = lagunas_without_pictures[midpoint_without:]
+
         total_lagunas = len(active_lagunas)
         percentage_with_pictures = (len(lagunas_with_pictures) / total_lagunas * 100) if total_lagunas > 0 else 0
 
         pdf_directory = 'C:\\code\\Djangopage\\PDF'
-        pdf_filename = "lagunas_activas_report.pdf"
+        pdf_filename = "lagunas_activas_report_1.pdf"
         pdf_filepath = os.path.join(pdf_directory, pdf_filename)
 
+
         html_content = render_to_string('PDFs/lagunas_activas_report_pdf.html', {
-            'lagunas_with_pictures': lagunas_with_pictures,
-            'lagunas_without_pictures': lagunas_without_pictures,
+            'lagunas_with_pictures_1': lagunas_with_pictures_1,
+            'lagunas_with_pictures_2': lagunas_with_pictures_2,
+            'lagunas_without_pictures_1': lagunas_without_pictures_1,
+            'lagunas_without_pictures_2': lagunas_without_pictures_2,
             'report_date': end_date,
             'percentage_with_pictures': percentage_with_pictures,
             'is_pdf': True

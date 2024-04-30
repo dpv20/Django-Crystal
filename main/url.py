@@ -29,6 +29,7 @@ from .views import (
     lagunas_activas_page2,
     lagunas_activas_3,
     generate_pdf_for_lagunas_activas,
+    lagunas_con_imagenes_pdf,
 )
 
 urlpatterns = [
@@ -61,7 +62,10 @@ urlpatterns = [
     path('supervisor/lagunas_activas/2', lagunas_activas_page2, name='lagunas_activas_2'),
     path('supervisor/lagunas_activas/3', lagunas_activas_3, name='lagunas_activas_3'),
     path('supervisor/lagunas_activas/generate_pdf_for_lagunas_activas/', views.generate_pdf_for_lagunas_activas, name='generate_pdf_for_lagunas_activas'),
+    path('generate-pdf/', lagunas_con_imagenes_pdf, name='generate_pdf'),
 
+
+    
     path('supervisor/<str:supervisor_name>/', views.supervisor_relevant_matters_view, name='supervisor_relevant_matters'),
     path('supervisor/<str:supervisor_name>/2', views.supervisor_relevant_matters_page2, name='supervisor_relevant_matters_page2'),
     path('supervisor/<str:supervisor_name>/3', supervisor_report, name='supervisor_report'),

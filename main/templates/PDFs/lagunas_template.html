@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Laguna Report</title>
+</head>
+<body>
+    {% for laguna in lagunas %}
+        {% with first_time=True %}
+            {% for image in laguna.images %}
+                <div style="page-break-after: always;">
+                    <h1>{{ laguna.nombre }}</h1>
+                    {% if first_time %}
+                        {% if laguna.relevant_matter %}
+                            <p>{{ laguna.relevant_matter.text }}</p>
+                        {% endif %}
+                        {% with first_time=False %}
+                        {% endwith %}
+                    {% endif %}
+                    <img src="{{ MEDIA_URL }}{{ image.photo.name }}" style="width:100%; max-width:300px;">
+                </div>
+            {% empty %}
+                <div style="page-break-after: always;">
+                    <h1>{{ laguna.nombre }}</h1>
+                    {% if laguna.relevant_matter %}
+                        <p>{{ laguna.relevant_matter.text }}</p>
+                    {% endif %}
+                    <p>No selected images found.</p>
+                </div>
+            {% endfor %}
+        {% endwith %}
+    {% endfor %}
+</body>
+</html>
