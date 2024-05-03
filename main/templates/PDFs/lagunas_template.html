@@ -3,32 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <title>Laguna Report</title>
+    <style>
+        @page {
+            size: landscape;
+            margin: 10mm;
+        }
+        .page {
+            position: relative; /* Set the page as the reference for absolute positioning */
+            page-break-after: always; /* Ensures that every .page div starts on a new page */
+            width: 100%;
+            text-align: center; /* Center the content horizontally */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center; /* Center content vertically */
+            height: 100vh; /* Use the full height of the viewport */
+        }
+        .image-container {
+            width: 910px; /* Total width including border */
+            height: 620px; /* Total height including border */
+            border: 5px solid #00AFC9; /* Blue border for the image container */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        img {
+            width: 900px;
+            height: 610px;
+            object-fit: cover; /* This will cover the area of the box without changing the aspect ratio */
+        }
+        .info-table {
+            position: absolute; /* Positioned absolutely relative to its nearest positioned ancestor (.page) */
+            top: 10%; /* Distance from the top of the page */
+            width: 100%; /* Full width to maintain center alignment */
+            background: #FFFFFF;
+            border: #D3D8DC 1px solid;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+        caption {
+            height: 30px;
+            font-size: 20px;
+            line-height: 30px;
+            color: #00AFC9;
+            background: #F0F4F5;
+            border-top: #D3D8DC 1px solid;
+            border-left: #D3D8DC 1px solid;
+            border-right: #D3D8DC 1px solid;
+            font-family: 'Gotham', sans-serif;
+            font-weight: 500;
+            padding: 10px;
+        }
+        .relevant-matter {
+            height: 48px; /* Reserved space for three lines of text */
+            vertical-align: bottom; /* Aligns the text at the bottom if not enough to fill 3 lines */
+            padding: 10px;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
     {% for laguna in lagunas %}
-        {% with first_time=True %}
+        {% if laguna.images %}
             {% for image in laguna.images %}
-                <div style="page-break-after: always;">
-                    <h1>{{ laguna.nombre }}</h1>
-                    {% if first_time %}
-                        {% if laguna.relevant_matter %}
-                            <p>{{ laguna.relevant_matter.text }}</p>
-                        {% endif %}
-                        {% with first_time=False %}
-                        {% endwith %}
-                    {% endif %}
-                    <img src="{{ MEDIA_URL }}{{ image.photo.name }}" style="width:100%; max-width:300px;">
-                </div>
-            {% empty %}
-                <div style="page-break-after: always;">
-                    <h1>{{ laguna.nombre }}</h1>
-                    {% if laguna.relevant_matter %}
-                        <p>{{ laguna.relevant_matter.text }}</p>
-                    {% endif %}
-                    <p>No selected images found.</p>
+                <div class="page">
+                    <!-- Table for name and relevant matter -->
+                    <table class="info-table">
+                        <caption>{{ laguna.nombre }}</caption>
+                        <tr>
+                            <td class="relevant-matter">
+                                {% if forloop.first and laguna.relevant_matter %}
+                                    {{ laguna.relevant_matter.text }}
+                                {% else %}
+                                    <!-- Space is reserved but no text is shown -->
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                    <!-- Image container -->
+                    <div class="image-container">
+                        <img src="{{ MEDIA_URL }}{{ image.photo.name }}">
+                    </div>
                 </div>
             {% endfor %}
-        {% endwith %}
+        {% else %}
+            <div class="page">
+                <!-- Similar setup for when no images are available -->
+                <table class="info-table">
+                    <caption>{{ laguna.nombre }}</caption>
+                    <tr>
+                        <td class="relevant-matter">
+                            <!-- Even if no images, we show relevant matter on the first page view -->
+                            {{ laguna.relevant_matter.text }}
+                        </td>
+                    </tr>
+                </table>
+                <div class="image-container">
+                    <p>No selected images found.</p>
+                </div>
+            </div>
+        {% endif %}
     {% endfor %}
 </body>
 </html>
