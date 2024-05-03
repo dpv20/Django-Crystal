@@ -2,9 +2,10 @@
 
 {% block content %}
 
+
+
 <div style="text-align: center; margin-bottom: 20px;">
-    <button onclick="generatePDF()" class="btn btn-primary">Generate PDF</button>
-    <a href="{% url 'generate_pdf' %}">Generate PDF - 2</a>
+    <a href="{% url 'generate_both_pdfs' %}" target="_blank" class="btn btn-primary">Generate PDFs</a>
 </div>
 
 {% if not is_pdf %}

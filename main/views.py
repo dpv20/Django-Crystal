@@ -1311,8 +1311,11 @@ def generate_pdf(request, supervisor_name):
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)})
 
-
-
+def lagunas_con_imagenes_pdf(request):
+    pass
+def generate_pdf_for_lagunas_activas(request):
+    pass
+'''
 
 def lagunas_con_imagenes_pdf(request):
     # Define the date range
@@ -1414,6 +1417,130 @@ def generate_pdf_for_lagunas_activas(request):
         return JsonResponse({'status': 'success', 'message': f'PDF successfully saved at {pdf_filepath}'})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)})
+
+
+
+''' 
+import threading
+from PyPDF2 import PdfReader, PdfWriter
+from django.core.mail import EmailMessage
+
+def generate_both_pdfs(request):
+    # Ensure the PDF directory exists
+    pdf_dir = os.path.join(settings.BASE_DIR, 'PDF')
+    if not os.path.exists(pdf_dir):
+        os.makedirs(pdf_dir)
+
+    pdf_filepath1 = os.path.join(pdf_dir, 'lagunas_report.pdf')
+    pdf_filepath2 = os.path.join(pdf_dir, 'lagunas_activas_report.pdf')
+    merged_pdf_filepath = os.path.join(pdf_dir, 'merged_lagunas_report.pdf')
+
+    # Store any errors that occur
+    errors = []
+
+    def generate_first_pdf():
+        try:
+            end_date = timezone.now().date()
+            start_date = end_date - timedelta(days=6)
+            active_lagunas = Laguna.objects.filter(Estado=True)
+            lagunas_with_pictures = []
+
+            for laguna in active_lagunas:
+                selected_images = LagunaImage.objects.filter(
+                    laguna=laguna,
+                    date__range=(start_date, end_date),
+                    selected=True
+                )
+                if selected_images.exists():
+                    laguna_info = {
+                        'nombre': laguna.Nombre,
+                        'relevant_matter': RelevantMatters.objects.filter(laguna=laguna).first(),
+                        'images': selected_images
+                    }
+                    lagunas_with_pictures.append(laguna_info)
+
+            template = get_template('PDFs/lagunas_template.html')
+            context = {'lagunas': lagunas_with_pictures}
+            html_content = template.render(context)
+
+            with open(pdf_filepath1, "w+b") as pdf_file:
+                pisa_status = pisa.CreatePDF(html_content, dest=pdf_file)
+                if pisa_status.err:
+                    raise Exception('Error in generating PDF 1')
+        except Exception as e:
+            errors.append(str(e))
+
+    def generate_second_pdf():
+        try:
+            end_date = datetime.now().date()
+            start_date = end_date - timedelta(days=6)
+            active_lagunas = Laguna.objects.filter(Estado=True)
+            lagunas_with_pictures = []
+            lagunas_without_pictures = []
+
+            for laguna in active_lagunas:
+                images = LagunaImage.objects.filter(
+                    laguna=laguna,
+                    date__range=(start_date, end_date)
+                )
+                if images.exists():
+                    lagunas_with_pictures.append(laguna)
+                else:
+                    lagunas_without_pictures.append(laguna)
+
+            midpoint_with = len(lagunas_with_pictures) // 2
+            midpoint_without = len(lagunas_without_pictures) // 2
+
+            context = {
+                'lagunas_with_pictures_1': lagunas_with_pictures[:midpoint_with],
+                'lagunas_with_pictures_2': lagunas_with_pictures[midpoint_with:],
+                'lagunas_without_pictures_1': lagunas_without_pictures[:midpoint_without],
+                'lagunas_without_pictures_2': lagunas_without_pictures[midpoint_without:],
+                'report_date': end_date,
+                'percentage_with_pictures': (len(lagunas_with_pictures) / len(active_lagunas) * 100) if active_lagunas else 0,
+                'is_pdf': True
+            }
+            html_content = render_to_string('PDFs/lagunas_activas_report_pdf.html', context)
+
+            with open(pdf_filepath2, "w+b") as pdf_file:
+                pisa_status = pisa.CreatePDF(html_content, dest=pdf_file)
+                if pisa_status.err:
+                    raise Exception('Error in generating PDF 2')
+        except Exception as e:
+            errors.append(str(e))
+
+    # Generate PDFs in separate threads
+    thread1 = threading.Thread(target=generate_first_pdf)
+    thread2 = threading.Thread(target=generate_second_pdf)
+    thread1.start()
+    thread2.start()
+    thread1.join()
+    thread2.join()
+
+    writer = PdfWriter()
+    for pdf_path in [pdf_filepath2, pdf_filepath1]:
+        reader = PdfReader(pdf_path)
+        for page in range(len(reader.pages)):
+            writer.add_page(reader.pages[page])
+
+    with open(merged_pdf_filepath, 'wb') as f:
+        writer.write(f)
+
+    # Send an email with the PDF as an attachment
+    email = EmailMessage(
+        'Informe Semanal',  # Subject
+        'Aquí está el informe semanal de las operaciones de las lagunas.',  # Message
+        settings.EMAIL_HOST_USER,  # From email
+        [request.user.email]  # To email
+    )
+    email.attach_file(merged_pdf_filepath)
+    email.send()
+
+    # Open PDF inline in the browser
+    pdf_file = open(merged_pdf_filepath, 'rb')
+    response = FileResponse(pdf_file, content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename="Informe_Semanal.pdf"'
+    return response
 
 
 

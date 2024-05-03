@@ -30,6 +30,7 @@ from .views import (
     lagunas_activas_3,
     generate_pdf_for_lagunas_activas,
     lagunas_con_imagenes_pdf,
+    generate_both_pdfs,
 )
 
 urlpatterns = [
@@ -63,6 +64,7 @@ urlpatterns = [
     path('supervisor/lagunas_activas/3', lagunas_activas_3, name='lagunas_activas_3'),
     path('supervisor/lagunas_activas/generate_pdf_for_lagunas_activas/', views.generate_pdf_for_lagunas_activas, name='generate_pdf_for_lagunas_activas'),
     path('generate-pdf/', lagunas_con_imagenes_pdf, name='generate_pdf'),
+    path('generate-both-pdfs/', views.generate_both_pdfs, name='generate_both_pdfs'),
 
 
     

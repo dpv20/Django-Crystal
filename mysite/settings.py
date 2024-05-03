@@ -27,6 +27,13 @@ DEBUG = True
 WKHTMLTOPDF_CMD = 'C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe'
 #    'wkhtmltopdf',
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'backoperaciones@crystal-lagoons.com'
+EMAIL_HOST_PASSWORD = 'rakb zwvz sokv raxt'
+
 
 ALLOWED_HOSTS = [
     'op.crystallagoons.info', 
