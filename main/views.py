@@ -1054,6 +1054,7 @@ def imops_view(request):
             return redirect('create_imop_view', id_laguna=selected_laguna_id, date=date_str)
     else:
         form = LagunaSelectionForm()
+        form.fields['laguna'].queryset = Laguna.objects.filter(Estado=True).order_by('Nombre')
 
     completed_imops = IMOP.objects.filter(is_completed=True)
     incomplete_imops = IMOP.objects.filter(is_completed=False)
@@ -1099,10 +1100,12 @@ def supervisor_relevant_matters_view(request, supervisor_name):
         'lagunas_with_matters': lagunas_with_matters,
     })
 
+from collections import OrderedDict
 @login_required
 def lagunas_activas_view(request):
-    lagunas = Laguna.objects.filter(Estado=True)  # Only active lagunas
-    lagunas_with_matters = {}
+    # Query the lagunas sorted by 'Nombre'
+    lagunas = Laguna.objects.filter(Estado=True).order_by('Nombre')
+    lagunas_with_matters = OrderedDict()  # Using OrderedDict to emphasize order
     for laguna in lagunas:
         relevant_matters = RelevantMatters.objects.filter(laguna=laguna).order_by('date')
         lagunas_with_matters[laguna] = relevant_matters if relevant_matters.exists() else None
@@ -1122,7 +1125,7 @@ def lagunas_activas_view(request):
                 new_matter = RelevantMatters(laguna=laguna, text=new_text, date=timezone.now().date())
                 new_matter.save()
 
-            return redirect('lagunas_activas')  # Redirect to the same view to refresh the data
+            return redirect('lagunas_activas')  # Redirect to refresh the data
 
     return render(request, 'main/lagunas_activas.html', {
         'supervisor': None,
@@ -1156,7 +1159,8 @@ def supervisor_relevant_matters_page2(request, supervisor_name):
 
 @login_required
 def lagunas_activas_page2(request):
-    lagunas = Laguna.objects.filter(Estado=True)
+    # Sort lagunas alphabetically by 'Nombre'
+    lagunas = Laguna.objects.filter(Estado=True).order_by('Nombre')
 
     end_date = datetime.now().date()
     start_date = end_date - timedelta(days=6)
