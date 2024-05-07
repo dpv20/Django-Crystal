@@ -58,7 +58,7 @@
             height: 30px; /* Adjusted to auto for flexible space allocation */
             vertical-align: middle; /* Aligns the text in the middle */
             padding: 0px;
-            text-align: center;
+            text-align: left;
             font-size: 16px; /* Increase font size here */
             line-height: 16px; /* Adjust line height */
             color: #00AFC9;
@@ -79,37 +79,87 @@
     {% for laguna in lagunas %}
         {% if laguna.images %}
             {% for image in laguna.images %}
-                <div class="page">
-                    <!-- Table for name, water quality comments, and relevant matter -->
-                    <!-- Table for water quality comments using the first info-table -->
-                    <table class="info-table">
-                        <caption>{{ laguna.nombre }}</caption>
-                        <tr>
-                            <td class="water-quality">
-                                {% if forloop.first %}
-                                    Comments on Water Quality and Lagoon Maintenance: {{ laguna.water_quality_comments }}
-                                {% endif %}
-                            </td>
-                        </tr>
-                    </table>
+
+
+
+                {% if forloop.first %}
+                    <div class="page">
+                        <!-- Table for name, water quality comments, and relevant matter -->
+                        <!-- Table for water quality comments using the first info-table -->
+                        <table class="info-table">
+                            <caption>{{ laguna.nombre }}</caption>
+                            <tr>
+                                <td class="water-quality">
+                                    {% if forloop.first %}
+                                        Comments on Water Quality and Lagoon Maintenance: 
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Separate table for relevant matters using the second infotable -->
+                        <table class="second-infotable">
+                            <tr>
+                                <td class="relevant-matter">
+                                    {% if forloop.first and laguna.relevant_matter %}
+                                        {{ laguna.relevant_matter.text }}
+                                    {% else %}
+                                        <!-- Space is reserved but no text is shown -->
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </table>
+                        <!-- Image container -->
+                        <div class="image-container">
+                            <img src="{{ MEDIA_URL }}{{ image.photo.name }}">
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="page">
+                        <!-- Table for name, water quality comments, and relevant matter -->
+                        <table class="info-table">
+                            <!-- Using .info-table class for the caption -->
+                            <caption class="info-table">{{ laguna.nombre }}</caption>
+                            <tr class="second-infotable"> <!-- Using .second-infotable for this row -->
+                                <td class="water-quality">
+                                    {% if forloop.first %}
+                                        Comments on Water Quality and Lagoon Maintenance: 
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </table>
 
                     <!-- Separate table for relevant matters using the second infotable -->
-                    <table class="second-infotable">
-                        <tr>
-                            <td class="relevant-matter">
-                                {% if forloop.first and laguna.relevant_matter %}
-                                    {{ laguna.relevant_matter.text }}
-                                {% else %}
-                                    <!-- Space is reserved but no text is shown -->
-                                {% endif %}
-                            </td>
-                        </tr>
-                    </table>
-                    <!-- Image container -->
-                    <div class="image-container">
-                        <img src="{{ MEDIA_URL }}{{ image.photo.name }}">
+                        <table class="second-infotable">
+                            <tr>
+                                <td class="relevant-matter">
+                                    {% if forloop.first and laguna.relevant_matter %}
+                                        {{ laguna.relevant_matter.text }}
+                                    {% else %}
+                                        <!-- Space is reserved but no text is shown -->
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </table>
+                        <!-- Image container -->
+                        <div class="image-container">
+                            <img src="{{ MEDIA_URL }}{{ image.photo.name }}">
+                        </div>
                     </div>
-                </div>
+                {% endif %}
+
+
+
+
+
+
+
+
+
+
+
+
+
             {% endfor %}
         {% else %}
             <div class="page">
@@ -119,7 +169,7 @@
                     <caption>{{ laguna.nombre }}</caption>
                     <tr>
                         <td class="water-quality">
-                            Comments on Water Quality and Lagoon Maintenance: {{ laguna.water_quality_comments }}
+                            Comments on Water Quality and Lagoon Maintenance: 
                         </td>
                     </tr>
                 </table>

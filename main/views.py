@@ -1532,16 +1532,27 @@ def generate_both_pdfs(request):
 
     with open(merged_pdf_filepath, 'wb') as f:
         writer.write(f)
-    '''
+
     # Send an email with the PDF as an attachment
+    current_date = datetime.now()
+    date_str = current_date.strftime("%A, %B %d, %Y")
+    day_number = current_date.day
+    if 4 <= day_number <= 20 or 24 <= day_number <= 30:
+        suffix = "th"
+    else:
+        suffix = ["st", "nd", "rd"][day_number % 10 - 1]
+    formatted_date = f"{current_date.strftime('%A, %B')} {day_number}{suffix}, {current_date.year}"
+    email_subject = f"LAGOONS OPERATIONS REPORT : Status as of {formatted_date}"
+
     email = EmailMessage(
-        'Informe Semanal',  # Subject
+        email_subject,  # Subject
         'Aquí está el informe semanal de las operaciones de las lagunas.',  # Message
         settings.EMAIL_HOST_USER,  # From email
         [request.user.email]  # To email
     )
     email.attach_file(merged_pdf_filepath)
-    '''
+    email.send()  # Make sure to call the send method
+
     # Open PDF inline in the browser
     pdf_file = open(merged_pdf_filepath, 'rb')
     response = FileResponse(pdf_file, content_type='application/pdf')
