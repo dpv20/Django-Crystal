@@ -967,7 +967,7 @@ def semanal_selection_view(request):
 def display_images_view(request, idLagunas, fecha):
     date_format = "%Y-%m-%d"
     end_date = datetime.strptime(fecha, date_format).date()
-    start_date = end_date - timedelta(days=7)
+    start_date = end_date - timedelta(days=6)
 
     laguna = Laguna.objects.get(idLagunas=idLagunas)
 
@@ -1184,7 +1184,7 @@ def lagunas_activas_3(request):
     lagunas = Laguna.objects.filter(Estado=True)
 
     end_date = datetime.now().date()
-    start_date = end_date - timedelta(days=7)
+    start_date = end_date - timedelta(days=6)
 
     lagunas_with_pictures = []
     lagunas_without_pictures = []
@@ -1233,7 +1233,7 @@ def supervisor_report(request, supervisor_name):
     supervisor = get_object_or_404(Supervisor, name=supervisor_name)
 
     end_date = datetime.now().date()
-    start_date = end_date - timedelta(days=7)
+    start_date = end_date - timedelta(days=6)
 
     all_lagunas = supervisor.lagunas.all()
 
@@ -1272,7 +1272,7 @@ def generate_pdf(request, supervisor_name):
     try:
         supervisor = get_object_or_404(Supervisor, name=supervisor_name)
         end_date = datetime.now().date()
-        start_date = end_date - timedelta(days=7)
+        start_date = end_date - timedelta(days=6)
 
         all_lagunas = supervisor.lagunas.all()
         lagunas_with_pictures = []
@@ -1442,11 +1442,12 @@ def generate_both_pdfs(request):
     # Store any errors that occur
     errors = []
 
+
     def generate_first_pdf():
         try:
-            end_date = timezone.now().date()
+            end_date = datetime.now().date()
             start_date = end_date - timedelta(days=6)
-            active_lagunas = Laguna.objects.filter(Estado=True)
+            active_lagunas = Laguna.objects.filter(Estado=True).order_by('Nombre')
             lagunas_with_pictures = []
 
             for laguna in active_lagunas:
@@ -1478,7 +1479,7 @@ def generate_both_pdfs(request):
         try:
             end_date = datetime.now().date()
             start_date = end_date - timedelta(days=6)
-            active_lagunas = Laguna.objects.filter(Estado=True)
+            active_lagunas = Laguna.objects.filter(Estado=True).order_by('Nombre')
             lagunas_with_pictures = []
             lagunas_without_pictures = []
 
@@ -1492,8 +1493,10 @@ def generate_both_pdfs(request):
                 else:
                     lagunas_without_pictures.append(laguna)
 
-            midpoint_with = len(lagunas_with_pictures) // 2
-            midpoint_without = len(lagunas_without_pictures) // 2
+                    
+            midpoint_without = (len(lagunas_without_pictures) // 2) if len(lagunas_without_pictures) % 2 == 0 else (len(lagunas_without_pictures) // 2) + 1
+            midpoint_with = (len(lagunas_with_pictures) // 2) if len(lagunas_with_pictures) % 2 == 0 else (len(lagunas_with_pictures) // 2) + 1
+
 
             context = {
                 'lagunas_with_pictures_1': lagunas_with_pictures[:midpoint_with],
@@ -1529,7 +1532,7 @@ def generate_both_pdfs(request):
 
     with open(merged_pdf_filepath, 'wb') as f:
         writer.write(f)
-
+    '''
     # Send an email with the PDF as an attachment
     email = EmailMessage(
         'Informe Semanal',  # Subject
@@ -1538,8 +1541,7 @@ def generate_both_pdfs(request):
         [request.user.email]  # To email
     )
     email.attach_file(merged_pdf_filepath)
-    email.send()
-
+    '''
     # Open PDF inline in the browser
     pdf_file = open(merged_pdf_filepath, 'rb')
     response = FileResponse(pdf_file, content_type='application/pdf')

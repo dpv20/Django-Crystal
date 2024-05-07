@@ -19,25 +19,25 @@
             align-items: center; /* Center content vertically */
             height: 100vh; /* Use the full height of the viewport */
         }
-        .image-container {
-            width: 910px; /* Total width including border */
-            height: 620px; /* Total height including border */
-            border: 5px solid #00AFC9; /* Blue border for the image container */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+
         img {
-            width: 900px;
+            width: 1050px;
             height: 610px;
             object-fit: cover; /* This will cover the area of the box without changing the aspect ratio */
         }
         .info-table {
-            position: absolute; /* Positioned absolutely relative to its nearest positioned ancestor (.page) */
-            top: 10%; /* Distance from the top of the page */
-            width: 100%; /* Full width to maintain center alignment */
-            background: #FFFFFF;
-            border: #D3D8DC 1px solid;
+            position: absolute;
+            top: 10%;
+            width: 100%;
+            background: #F0F0F0; /* Light grey background */
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+        .second-infotable {
+            position: absolute;
+            top: 10%;
+            width: 100%;
+            background: #FFFFFF; /* Light grey background */
             border-collapse: collapse;
             margin-bottom: 10px;
         }
@@ -55,12 +55,23 @@
             padding: 10px;
         }
         .relevant-matter {
-            height: 48px; /* Reserved space for three lines of text */
-            vertical-align: bottom; /* Aligns the text at the bottom if not enough to fill 3 lines */
-            padding: 10px;
+            height: 30px; /* Adjusted to auto for flexible space allocation */
+            vertical-align: middle; /* Aligns the text in the middle */
+            padding: 0px;
             text-align: center;
             font-size: 16px; /* Increase font size here */
-            line-height: 16px; /* Adjust line height to fit the text within the available space */
+            line-height: 16px; /* Adjust line height */
+            color: #00AFC9;
+        }
+        .water-quality {
+            height: 20px;
+            vertical-align: middle;
+            padding: 0px;
+            text-align: center;
+            font-size: 16px;
+            line-height: 2px;
+            color: #00AFC9; /* Color to differentiate this section */
+            font-weight: bold; /* Make it bold to stand out */
         }
     </style>
 </head>
@@ -69,9 +80,21 @@
         {% if laguna.images %}
             {% for image in laguna.images %}
                 <div class="page">
-                    <!-- Table for name and relevant matter -->
+                    <!-- Table for name, water quality comments, and relevant matter -->
+                    <!-- Table for water quality comments using the first info-table -->
                     <table class="info-table">
                         <caption>{{ laguna.nombre }}</caption>
+                        <tr>
+                            <td class="water-quality">
+                                {% if forloop.first %}
+                                    Comments on Water Quality and Lagoon Maintenance: {{ laguna.water_quality_comments }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- Separate table for relevant matters using the second infotable -->
+                    <table class="second-infotable">
                         <tr>
                             <td class="relevant-matter">
                                 {% if forloop.first and laguna.relevant_matter %}
@@ -91,11 +114,20 @@
         {% else %}
             <div class="page">
                 <!-- Similar setup for when no images are available -->
+                <!-- Table for water quality comments using the first info-table -->
                 <table class="info-table">
                     <caption>{{ laguna.nombre }}</caption>
                     <tr>
+                        <td class="water-quality">
+                            Comments on Water Quality and Lagoon Maintenance: {{ laguna.water_quality_comments }}
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- Separate table for relevant matters using the second infotable -->
+                <table class="second-infotable">
+                    <tr>
                         <td class="relevant-matter">
-                            <!-- Even if no images, we show relevant matter on the first page view -->
                             {{ laguna.relevant_matter.text }}
                         </td>
                     </tr>
