@@ -784,19 +784,19 @@ class Laguna_Stock(models.Model):
     stock_or_supply = models.CharField(max_length=6, choices=STOCK_OR_SUPPLY_CHOICES)
     
     # Stock items
-    cl_ap2hi_tank = models.IntegerField()  # Number of tanks
-    cl_ap2hi_storage = models.DecimalField(max_digits=10, decimal_places=2)  # Storage capacity
-
-    cl_fh1lo_tank = models.IntegerField()
+    cl_ap2hi_tank = models.DecimalField(max_digits=10, decimal_places=2)  
+    cl_ap2hi_storage = models.DecimalField(max_digits=10, decimal_places=2)  
+    
+    cl_fh1lo_tank = models.DecimalField(max_digits=10, decimal_places=2)
     cl_fh1lo_storage = models.DecimalField(max_digits=10, decimal_places=2)
 
-    cl_flo12_tank = models.IntegerField()
+    cl_flo12_tank = models.DecimalField(max_digits=10, decimal_places=2)
     cl_flo12_storage = models.DecimalField(max_digits=10, decimal_places=2)
 
-    cl_cotflo_tank = models.IntegerField()
+    cl_cotflo_tank = models.DecimalField(max_digits=10, decimal_places=2)
     cl_cotflo_storage = models.DecimalField(max_digits=10, decimal_places=2)
 
-    cl_mb010_tank = models.IntegerField()
+    cl_mb010_tank = models.DecimalField(max_digits=10, decimal_places=2)
     cl_mb010_storage = models.DecimalField(max_digits=10, decimal_places=2)
 
     # Add more fields as needed for each stock item
