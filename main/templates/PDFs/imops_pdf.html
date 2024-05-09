@@ -10,6 +10,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Gotham:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/styles.css">
     <style>
+        @page {
+            size: 1280px 1620px;
+            margin: 5mm; /* or you could use pixels here too */
+        }
         body {
             display: flex;
             flex-direction: column;
@@ -67,7 +71,7 @@
             border: #D3D8DC 1px solid;
             padding: 5px;
             width: 562px; /* Fixed width as specified */
-            height: 420px; /* Fixed height as specified */
+            height: 330px; /* Fixed height as specified */
             overflow: hidden; /* Hides parts of the image that overflow the container */
         }
         .image-item img {
@@ -79,7 +83,9 @@
             object-fit: cover; /* Ensures image covers the area, cropping as needed */
             transform: translate(-50%, -50%); /* Centers the image perfectly in the container */
         }
-        
+        .page-break {
+        page-break-before: always; /* Add a page break before the element */
+        }
     </style>
 
 
@@ -101,6 +107,7 @@
                 <td><p style="color: #00AFC9">Supervisor:</p></td>
                 <td>{{ supervisor_name }}</td>
                 <td><p style="color: #00AFC9">Clasificación:</p></td>
+                <td>{{ clasificacion }}</td>
             </tr>
         </tbody>
     </table>
@@ -145,8 +152,6 @@
             </tbody>
         </table>
         
-        <img src="/media/franja.jpg" alt="Image Description" style="width: 1200px; height: auto; display: block; margin-top: 20px;">
-
         <!-- Temas Pendientes Section -->
         <table style="width:1200px; background: #FFFFFF; border: #D3D8DC 1px solid; border-collapse: separate; border-spacing: 3px; font-family: 'Gotham', sans-serif; margin-top: 20px; margin-left: auto; margin-right: auto;">
             <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #00AFC9; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;">TEMAS PENDIENTES</caption>
@@ -158,7 +163,71 @@
                 </tr>
             </tbody>
         </table>
-       
+
+        <!-- break de pagina -->
+        <div class="page-break"></div>
+        <!-- break de pagina -->
+        
+
+        <table style="width:1200px; background: #FFFFFF; border: #D3D8DC 1px solid; border-collapse: separate; border-spacing: 4px; font-family: 'Gotham', sans-serif; margin-top: 20px;">
+            <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #00AFC9; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;">STOCK DE ADITIVOS</caption>
+            <tbody>
+                <tr>
+                    <td>
+                        <center><img src="{{ graph_url_3 }}" style="width: 1100px; height: 410px;"></center>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Stock en Días: Estimación de días de stock que le quedan, cuando este valor sea cercano a 0 realizar una orden de compra.</td>
+                </tr>
+                <tr>
+                    <td>* Les sugerimos que los días de stock deberían estar siempre por sobre el leadtime</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <table style="width:1200px; background: #FFFFFF; border: #D3D8DC 1px solid; border-collapse: separate; border-spacing: 3px; font-family: 'Gotham', sans-serif; margin-top: 20px; margin-left: auto; margin-right: auto;">
+            <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #00AFC9; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;">COMENTARIOS SOBRE LA OPERACIÓN DE LA LAGUNA</caption>
+            <tbody>
+                {% for acro, value in acros_and_values %}
+                    <tr>
+                        <td style="display: flex; align-items: flex-start; justify-content: space-between;">
+                            <div style="width: 8%; text-align: left; font-family: 'Gotham', sans-serif; color: #595959; font-size: 15px;">
+                                {{ acro }}
+                            </div>
+                            <textarea style="width: 92%; height: 50px; text-align: justify; resize: none; border: none; font-family: 'Gotham', sans-serif; color: #595959; font-size: 15px;" name="{{ acro|slice:":-1" }}" >{{ value|default_if_none:"" }}</textarea>
+                        </td>                    
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <!-- break de pagina -->
+        <div class="page-break"></div>
+        <!-- break de pagina -->
+
+        <table style="width:1200px; background: #FFFFFF; border: #D3D8DC 1px solid; border-collapse: separate; border-spacing: 4px; font-family: 'Gotham', sans-serif;">
+            <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #00AFC9; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;; margin-top: 20px;">FOTOGRAFIAS</caption>
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="images-section">
+                            {% for image in laguna_images %}
+                                <div class="image-item">
+                                    <img src="{{ image.photo.url }}" alt="Laguna Image" style="max-width: 100%; max-height: 100%;">
+                                </div>
+                            {% empty %}
+                                <p>No images available.</p>
+                            {% endfor %}
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- break de pagina -->
+        <div class="page-break"></div>
+        <!-- break de pagina -->
+
         {% if report_paths.cleaning_url %}
         <table style="width:1200px; background: #FFFFFF; border: #D3D8DC 1px solid; border-collapse: separate; border-spacing: 4px; font-family: 'Gotham', sans-serif; margin-top: 20px;">
             <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #00AFC9; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;">HISTORIAL LIMPIEZA DE FONDO</caption>
@@ -178,77 +247,6 @@
         </table>
         {% endif %}
 
-        <table style="width:1200px; background: #FFFFFF; border: #D3D8DC 1px solid; border-collapse: separate; border-spacing: 4px; font-family: 'Gotham', sans-serif; margin-top: 20px;">
-            <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #00AFC9; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;">STOCK DE ADITIVOS</caption>
-            <tbody>
-                <tr>
-                    <td>
-                        <center><img src="{{ graph_url_3 }}" style="width: 1100px; height: 410px;"></center>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Stock en Días: Estimación de días de stock que le quedan, cuando este valor sea cercano a 0 realizar una orden de compra.</td>
-                </tr>
-                <tr>
-                    <td>* Les sugerimos que los días de stock deberían estar siempre por sobre el leadtime</td>
-                </tr>
-            </tbody>
-        </table>
-    
-
-    
-
-        
-        <img src="/media/franja.jpg" alt="Image Description" style="width: 1200px; height: auto; display: block">
-
-        
-
-        <table style="width:1200px; background: #FFFFFF; border: #D3D8DC 1px solid; border-collapse: separate; border-spacing: 3px; font-family: 'Gotham', sans-serif; margin-top: 20px; margin-left: auto; margin-right: auto;">
-            <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #00AFC9; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;">COMENTARIOS SOBRE LA OPERACIÓN DE LA LAGUNA</caption>
-            <tbody>
-                {% for acro, value in acros_and_values %}
-                    <tr>
-                        <td style="display: flex; align-items: flex-start; justify-content: space-between;">
-                            <div style="width: 8%; text-align: left; font-family: 'Gotham', sans-serif; color: #595959; font-size: 15px;">
-                                {{ acro }}
-                            </div>
-                            <textarea style="width: 92%; height: 50px; text-align: justify; resize: none; border: none; font-family: 'Gotham', sans-serif; color: #595959; font-size: 15px;" name="{{ acro|slice:":-1" }}" >{{ value|default_if_none:"" }}</textarea>
-                        </td>                    
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    
-    
-
-
-
-
-
-        <img src="/media/franja.jpg" alt="Image Description" style="width: 1200px; height: auto; display: block; margin-top: 20px;">
-        
-        <!-- Fotografías Laguna Section -->
-        <table style="width:1200px; background: #FFFFFF; border: #D3D8DC 1px solid; border-collapse: separate; border-spacing: 4px; font-family: 'Gotham', sans-serif;">
-            <caption style="height: 30px; font-size: 20px; line-height: 30px; color: #00AFC9; margin: 0 auto; background: #F0F4F5; border-top: #D3D8DC 1px solid; border-left: #D3D8DC 1px solid; border-right: #D3D8DC 1px solid; font-family: 'Gotham', sans-serif; font-weight: 500;; margin-top: 20px;">FOTOGRAFIAS</caption>
-            <tbody>
-                <tr>
-                    <td>
-                        <div class="images-section">
-                            {% for image in laguna_images %}
-                                <div class="image-item">
-                                    <img src="{{ image.photo.url }}" alt="Laguna Image" style="max-width: 100%; max-height: 100%;">
-                                </div>
-                            {% empty %}
-                                <p>No images available.</p>
-                            {% endfor %}
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <img src="/media/franja.jpg" alt="Image Description" style="width: 1200px; height: auto; display: block; margin-top: 20px;">
-
-    
 
         {% if report_paths.cleaning_url %}
         <table style="width:1200px; background: #FFFFFF; border: #D3D8DC 1px solid; border-collapse: separate; border-spacing: 4px; font-family: 'Gotham', sans-serif; margin-top: 20px;">
@@ -256,7 +254,7 @@
             <tbody>
                 <tr>
                     <td>
-                        <center><img src="{{ report_paths.connectivity_url }}" style="width: 700px; height: 410px;"></center>
+                        <center><img src="{{ report_paths.connectivity_url }}" style="width: 700px; height: 350px;"></center>
                     </td>
                 </tr>
             </tbody>
@@ -308,18 +306,10 @@
             </tbody>
         </table>
     
-        <img src="/media/franja.jpg" alt="Image Description" style="width: 1200px; height: auto; display: block; margin-top: 20px;">
 
-        <div style="text-align: center; margin-top: 20px;">
-            <button type="submit" name="submit_form" value="update_info" style="padding: 10px 20px; font-size: 16px; cursor: pointer;">Actualizar</button>
-        </div>
+
         
-        <form method="post" action="">
-            {% csrf_token %}
-            <input type="hidden" name="action" value="generate_pdf">
-            <!-- any additional fields you need for the PDF generation -->
-            <input type="submit" value="Generate PDF">
-        </form>
+
         
     </form>
 </body>

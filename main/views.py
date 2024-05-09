@@ -1893,7 +1893,19 @@ def graph_line_2(values_fh1lo, values_ap2hi, Leadtime, date_str):
     return os.path.join(settings.MEDIA_URL, 'model_line_chart_2.png')
 
 
-
+def evaluate_grade(final_grade_nota):
+    if final_grade_nota >= 5:
+        return "Muy Bueno"
+    elif 5 > final_grade_nota > 4:
+        return "Bueno"
+    elif 4 >= final_grade_nota > 3:
+        return "Regular"
+    elif 3 >= final_grade_nota > 2:
+        return "Deficiente"
+    elif 2 >= final_grade_nota:
+        return "Muy Deficiente"
+    else:
+        return "Sin calificacion"
 
 
 
@@ -1969,9 +1981,12 @@ def imop_view(request, id_laguna, date):
 
     acros = ["PER:", "BC:", "MC:", "FIL:", "DOS:", "REC:", "TEL:", "SKI:", "ULT:", "INF:", "LIN:", "VISUAL:", "WAT:", "LVL:", "ENV:"]
     comentarios_acros = {acro: comentarios[model.__name__] for acro, model in zip(acros, models)}
-    supervisor_name = f"{request.user.first_name} {request.user.last_name}"
-
-
+    #supervisor_name = f"{request.user.first_name} {request.user.last_name}"
+    supervisor_lagunas = SupervisorLaguna.objects.filter(laguna__idLagunas=id_laguna).select_related('supervisor')
+    if supervisor_lagunas.exists():
+        supervisor_name = supervisor_lagunas.first().supervisor.name
+    else:
+        supervisor_name = 'No Supervisor'
 
     stocks_mes = get_last_laguna_stock_data(id_laguna, date)
     FH1_DECAI = float(get_FH1_by_laguna(id_laguna))
@@ -1991,7 +2006,7 @@ def imop_view(request, id_laguna, date):
 
     graph_url_3 = graph_line_2(values_fh1lo,values_ap2hi, Leadtime, date)
 
-    
+    clasificacion = evaluate_grade(final_grade_nota)
 
     context = {
         'laguna': laguna,
@@ -2007,6 +2022,7 @@ def imop_view(request, id_laguna, date):
         'graph_url_2': graph_url_2,
         'graph_url_3': graph_url_3,
         'report_paths': report_paths,
+        'clasificacion': clasificacion,
     }
 
     if request.method == 'POST':
@@ -2103,6 +2119,7 @@ def imop_view(request, id_laguna, date):
             'graph_url_2': graph_url_2,
             'graph_url_3': graph_url_3,
             'report_paths': report_paths,
+            'clasificacion': clasificacion,
             }
             return render(request, 'main/imops_3.html', context)
 
@@ -2191,7 +2208,14 @@ def imop_pdf_view(request, id_laguna, date):
     comentarios = {model.__name__: instance.get('comentario', '') for model in models for instance in [get_last_instance(model, laguna)]}
     acros = ["PER:", "BC:", "MC:", "FIL:", "DOS:", "REC:", "TEL:", "SKI:", "ULT:", "INF:", "LIN:", "VISUAL:", "WAT:", "LVL:", "ENV:"]
     comentarios_acros = {acro: comentarios[model.__name__] for acro, model in zip(acros, models)}
-    supervisor_name = f"{request.user.first_name} {request.user.last_name}"
+
+    #supervisor_name = f"{request.user.first_name} {request.user.last_name}"
+    supervisor_lagunas = SupervisorLaguna.objects.filter(laguna__idLagunas=id_laguna).select_related('supervisor')
+    if supervisor_lagunas.exists():
+        supervisor_name = supervisor_lagunas.first().supervisor.name
+    else:
+        supervisor_name = 'No Supervisor'
+
     stocks_mes = get_last_laguna_stock_data(id_laguna, date)
     FH1_DECAI = float(get_FH1_by_laguna(id_laguna))
     AP2_DECAI = float(get_AP2_by_laguna(id_laguna))
@@ -2201,6 +2225,8 @@ def imop_pdf_view(request, id_laguna, date):
     values_ap2hi = [result[1] for result in resultss] + [stocks_mes[1]]
     Leadtime =  float(get_leadtime_by_laguna(id_laguna))
     graph_url_3 = graph_line_2(values_fh1lo,values_ap2hi, Leadtime, date)
+    clasificacion = evaluate_grade(final_grade_nota)
+
     context = {
         'laguna': laguna,
         'selected_date': selected_date,
@@ -2215,15 +2241,16 @@ def imop_pdf_view(request, id_laguna, date):
         'graph_url_2': graph_url_2,
         'graph_url_3': graph_url_3,
         'report_paths': report_paths,
+        'clasificacion': clasificacion,
     }
-    return render_to_pdf('main/imops_3_pdf.html', context)
+    #return render_to_pdf('main/PDFs/imops_pdf.html', context)
+    return render(request, 'PDFs/imops_pdf.html', context)
 
 
 
 
-
-def final_PDF():
-    chrome_profile_path = r"C:\Users\Administrator\AppData\Local\Google\Chrome\User Data\Default"
-    chrome_options = Options()
-    chrome_options.add_argument(f"user-data-dir={chrome_profile_path}")
-    driver = webdriver.Chrome(options=chrome_options)
+#def final_PDF():
+#    chrome_profile_path = r"C:\Users\Administrator\AppData\Local\Google\Chrome\User Data\Default"
+#    chrome_options = Options()
+#    chrome_options.add_argument(f"user-data-dir={chrome_profile_path}")
+#    driver = webdriver.Chrome(options=chrome_options)
