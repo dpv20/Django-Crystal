@@ -908,7 +908,7 @@ def stock_view(request):
 
 @login_required
 def select_laguna_view(request):
-    lagunas = Laguna.objects.all()
+    lagunas = Laguna.objects.filter(Estado=True).order_by('Nombre')
     return render(request, 'main/select_laguna.html', {'lagunas': lagunas})
 
 @login_required
@@ -2120,6 +2120,7 @@ def link_callback(uri, rel):
     if not os.path.isfile(path):
         raise Exception(f'Media or static file not found: {path}')
     return path
+
 def render_to_pdf(template_src, context_dict={}):
     template = get_template(template_src)
     html = template.render(context_dict)
@@ -2206,3 +2207,4 @@ def imop_pdf_view(request, id_laguna, date):
         'report_paths': report_paths,
     }
     return render_to_pdf('main/imops_3_pdf.html', context)
+
