@@ -142,6 +142,7 @@ def index(response, id):
 @login_required
 def home(request):
     lagunas = Laguna.objects.all()
+    #lagunas = Laguna.objects.filter(Estado=True).order_by('Nombre')
     
     # Check the language cookie
     language = request.COOKIES.get('language', 'en')  # Default to English if the cookie is not set
@@ -180,7 +181,7 @@ def view(response):
 
 @login_required
 def laguna_database(request):
-    lagunas = Laguna.objects.all()
+    lagunas = Laguna.objects.all().order_by('Nombre')
     return render(request, 'main/laguna_database.html', {'lagunas': lagunas, 'full_width': True})
 
 @login_required
@@ -902,7 +903,7 @@ def stock_view(request):
     else:
         form = StockForm()  # Initialize an empty form for a GET request
    
-    lagunas = Laguna.objects.all()
+    lagunas = Laguna.objects.filter(Estado=True).order_by('Nombre')
     return render(request, 'main/stock.html', {'form': form, 'lagunas': lagunas})
 
 @login_required

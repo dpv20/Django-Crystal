@@ -42,8 +42,8 @@ class LagunaForm(forms.ModelForm):
 
 class ChecklistForm(forms.Form):
     fecha = forms.DateField(label='Date of visit / Fecha de visita', widget=forms.DateInput(attrs={'type': 'date'}))
-    supervisor = forms.ModelChoiceField(label='Supervisor', queryset=Supervisor.objects.all())
-    lagoons = forms.ModelChoiceField(label='Lagoon / Laguna', queryset=Laguna.objects.all())
+    supervisor = forms.ModelChoiceField(label='Supervisor', queryset=Supervisor.objects.all().order_by('name'))
+    lagoons = forms.ModelChoiceField(label='Lagoon / Laguna', queryset=Laguna.objects.filter(Estado=True).order_by('Nombre'))
 
 class PersonalDeLaLagunaForm(forms.ModelForm):
     nota = forms.ChoiceField(choices=[('', '------')] + [(i, i) for i in range(1, 5)], required=False, initial='', label='Nota')
