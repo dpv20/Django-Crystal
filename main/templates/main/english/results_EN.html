@@ -73,8 +73,8 @@ function toggleForm(formId) {
     
     <div class="spoiler" id="personalForm" style="display: none;"> <!-- This is the right side for PersonalDeLaLagunaForm -->
         <!-- Personal de la Laguna form -->
-        <h1>Personal de la Laguna</h1>
-        <form method="post" action="{% url 'results' %}">
+        <h1>Personnel</h1>
+        <form method="post" action="{% url 'results_EN' %}">
             {% csrf_token %}
             
             {{ personal_form|crispy }}
@@ -83,9 +83,9 @@ function toggleForm(formId) {
     </div>
     
     <div class="spoiler" id="limpiezaForm" style="display: none;"> <!-- This is the right side for OperacionLimpiezaDeFondoForm -->
-        <!-- Operacion Limpieza de Fondo form -->
-        <h1>Operacion Limpieza de Fondo</h1>
-        <form method="post" action="{% url 'results' %}">
+        <!-- Bottom cleaning operation form -->
+        <h1>Bottom cleaning operation</h1>
+        <form method="post" action="{% url 'results_EN' %}">
             {% csrf_token %}
             {{ limpieza_form|crispy }}
             <input type="submit" name="limpieza_submit" value="Submit Limpieza">
@@ -93,8 +93,8 @@ function toggleForm(formId) {
     </div>
 
     <div class="spoiler" id="limpiezamanualForm" style="display: none;"> 
-        <h1>Operacion Limpieza Manual</h1>
-        <form method="post" action="{% url 'results' %}">
+        <h1>Manual cleaning operation</h1>
+        <form method="post" action="{% url 'results_EN' %}">
             {% csrf_token %}
             {{ limpiezamanual_form|crispy }}
             <input type="submit" name="limpiezamanual_submit" value="Submit Limpieza Manual">
@@ -102,17 +102,17 @@ function toggleForm(formId) {
     </div>
 
     <div class="spoiler" id="operacionfiltroForms" style="display: none;">
-        <h1>Operacion Filtro</h1>
-        <form method="post" action="{% url 'results' %}">
+        <h1>Filter operation</h1>
+        <form method="post" action="{% url 'results_EN' %}">
             {% csrf_token %}
             {{ operacionfiltro_form|crispy }}
-            <input type="submit" name="operacionfiltro_submit" value="Submit Operacion Filtro">
+            <input type="submit" name="operacionfiltro_submit" value="Submit Filter operation">
         </form>
     </div>
 
     <div class="spoiler" id="operacionsistemadosificacionForms" style="display: none;">
-        <h1>Operacion Sistema Dosificacion</h1>
-        <form method="post" action="{% url 'results' %}">
+        <h1>Dosing system operation</h1>
+        <form method="post" action="{% url 'results_EN' %}">
             {% csrf_token %}
             {{ operacionsistemadosificacion_form|crispy }}
             <input type="submit" name="operacionsistemadosificacion_submit" value="Submit Operacion SistemaDosificacion">
@@ -120,8 +120,8 @@ function toggleForm(formId) {
     </div>
 
     <div class="spoiler" id="operacionsistemarecirculacionForms" style="display: none;">
-        <h1>Operacion Sistema Recirculacion</h1>
-        <form method="post" action="{% url 'results' %}">
+        <h1>Recirculation system operation</h1>
+        <form method="post" action="{% url 'results_EN' %}">
             {% csrf_token %}
             {{ operacionsistemarecirculacion_form|crispy }}
             <input type="submit" name="operacionsistemarecirculacion_submit" value="Submit operacionsistemarecirculacion">
@@ -129,8 +129,8 @@ function toggleForm(formId) {
     </div>
 
     <div class="spoiler" id="funcionamientotelemetriaForms" style="display: none;">
-        <h1>Funcionamiento Telemetria</h1>
-        <form method="post" action="{% url 'results' %}">
+        <h1>Telemetry</h1>
+        <form method="post" action="{% url 'results_EN' %}">
             {% csrf_token %}
             {{ funcionamientotelemetria_form|crispy }}
             <input type="submit" name="funcionamientotelemetria_submit" value="Submit funcionamientotelemetria">
@@ -138,8 +138,8 @@ function toggleForm(formId) {
     </div>
 
     <div class="spoiler" id="operacionskimmersForms" style="display: none;">
-        <h1>Operacion Skimmers</h1>
-        <form method="post" action="{% url 'results' %}">
+        <h1>Skimmers operation</h1>
+        <form method="post" action="{% url 'results_EN' %}">
             {% csrf_token %}
             {{ operacionskimmers_form|crispy }}
             <input type="submit" name="operacionskimmers_submit" value="Submit operacion skimmers">
@@ -147,8 +147,8 @@ function toggleForm(formId) {
     </div>
 
     <div class="spoiler" id="operacionultrasonidoForms" style="display: none;">
-        <h1>Operacion Ultrasonido</h1>
-        <form method="post" action="{% url 'results' %}">
+        <h1>Ultrasounds operation</h1>
+        <form method="post" action="{% url 'results_EN' %}">
             {% csrf_token %}
             {{ operacionultrasonido_form|crispy }}
             <input type="submit" name="operacionultrasonido_submit" value="Submit operacion ultrasonido">
@@ -156,8 +156,8 @@ function toggleForm(formId) {
     </div>
 
     <div class="spoiler" id="infraestructuraForms" style="display: none;">
-        <h1>Infraestructura</h1>
-        <form method="post" action="{% url 'results' %}">
+        <h1>Infrastructure</h1>
+        <form method="post" action="{% url 'results_EN' %}">
             {% csrf_token %}
             {{ infraestructura_form|crispy }}
             <input type="submit" name="infraestructura_submit" value="Submit infraestructura">
@@ -165,8 +165,8 @@ function toggleForm(formId) {
     </div>
 
     <div class="spoiler" id="condicionlinerForms" style="display: none;">
-        <h1>Condicion Liner</h1>
-        <form method="post" action="{% url 'results' %}">
+        <h1>Liner</h1>
+        <form method="post" action="{% url 'results_EN' %}">
             {% csrf_token %}
             {{ condicionliner_form|crispy }}
             <input type="submit" name="condicionliner_submit" value="Submit condicionliner">
@@ -174,8 +174,8 @@ function toggleForm(formId) {
     </div>
 
     <div class="spoiler" id="condicionvisuallagunaForms" style="display: none;">
-        <h1>Condicion Visual Laguna</h1>
-        <form method="post" action="{% url 'results' %}">
+        <h1>Visual condition</h1>
+        <form method="post" action="{% url 'results_EN' %}">
             {% csrf_token %}
             {{ condicionvisuallaguna_form|crispy }}
             <input type="submit" name="condicionvisuallaguna_submit" value="Submit condicion visual laguna">
@@ -183,8 +183,8 @@ function toggleForm(formId) {
     </div>
 
     <div class="spoiler" id="funcionamientoaguarellenoForms" style="display: none;">
-        <h1>Funcionamiento Agua Relleno</h1>
-        <form method="post" action="{% url 'results' %}">
+        <h1>Refilling water</h1>
+        <form method="post" action="{% url 'results_EN' %}">
             {% csrf_token %}
             {{ funcionamientoaguarelleno_form|crispy }}
             <input type="submit" name="funcionamientoaguarelleno_submit" value="Submit funcionamiento agua relleno">
@@ -192,8 +192,8 @@ function toggleForm(formId) {
     </div>
 
     <div class="spoiler" id="niveldelalagunaForms" style="display: none;">
-        <h1>Nivel de la Laguna</h1>
-        <form method="post" action="{% url 'results' %}">
+        <h1>Water level of the lagoon</h1>
+        <form method="post" action="{% url 'results_EN' %}">
             {% csrf_token %}
             {{ niveldelalaguna_form|crispy }}
             <input type="submit" name="niveldelalaguna_submit" value="Submit nivel de la laguna">
@@ -201,8 +201,8 @@ function toggleForm(formId) {
     </div>
 
     <div class="spoiler" id="medidasdemitigacionForms" style="display: none;">
-        <h1>Medidas de Mitigacion</h1>
-        <form method="post" action="{% url 'results' %}">
+        <h1>Environmental pollution</h1>
+        <form method="post" action="{% url 'results_EN' %}">
             {% csrf_token %}
             {{ medidasdemitigacion_form|crispy }}
             <input type="submit" name="medidasdemitigacion_submit" value="Submit medidas de mitigacion">

@@ -211,7 +211,7 @@ admin.site.register(Feedback, FeedbackAdmin)
 class IMOPAdmin(admin.ModelAdmin):
     list_display = ('laguna', 'generated_id', 'date', 'is_completed')  # Customize as needed
     list_filter = ('laguna', 'date', 'is_completed')  # Customize as needed
-    search_fields = ('laguna__name', 'generated_id')  # Adjust 'laguna__name' if your Laguna model has a different field to search by
+    search_fields = ('laguna__Nombre', 'generated_id')  # Adjust 'laguna__name' if your Laguna model has a different field to search by
     readonly_fields = ('generated_id', 'var_FH1LO', 'var_AP2HI', 'nota_final')  # Fields that should not be editable
     fieldsets = (
         (None, {

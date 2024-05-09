@@ -3,6 +3,13 @@ from django.core.management.base import BaseCommand
 from main.models import Laguna_Stock, Laguna
 from datetime import datetime
 
+
+#csv deberia tener las columnas 
+#Proyecto,Fecha,AP2_T,FH1_T,FLO_T,COT_T,MB_T
+#Laguna.idLagunas, MM/DD/YYYY, numero, numero, numero, numero, numero
+# ej:  Pir,1/31/2024,110,50,10,10,50
+
+
 class Command(BaseCommand):
     help = 'Imports data from CSV into Laguna_Stock model'
 

@@ -933,10 +933,9 @@ def notas_view(request, nombre_laguna):
         (NivelDeLaLaguna, 'nota_nivel_laguna'),
         (MedidasDeMitigacion, 'nota_mitigacion')
     ]
-
+    weights_list = [0.05, 0.1, 0.1, 0.1, 0.07, 0.07, 0.1, 0.04, 0.04, 0.03, 0.08, 0.14, 0.02, 0.04, 0.02]
     notas_combinadas = {}
     promedios = []
-
     for modelo, clave_nota in modelos:
         for obj in modelo.objects.filter(lagoon_id=id_laguna):
             fecha = obj.date
@@ -948,6 +947,7 @@ def notas_view(request, nombre_laguna):
         notas_numericas = [nota for nota in datos['notas'].values() if isinstance(nota, (int, float))]
         notas = [nota for nota in datos['notas'].values() if nota is not None]
         promedio = sum(notas_numericas) / len(notas_numericas) if notas_numericas else None
+        promedio = sum(value * weight for value, weight in zip(notas_numericas, weights_list))
         datos['promedio'] = promedio
 
     # Preparar lista para la plantilla
@@ -1934,6 +1934,7 @@ def imop_view(request, id_laguna, date):
 
     weights_list = [0.05, 0.1, 0.1, 0.1, 0.07, 0.07, 0.1, 0.04, 0.04, 0.03, 0.08, 0.14, 0.02, 0.04, 0.02]
     final_grade_nota = sum(value * weight for value, weight in zip(valuesss, weights_list))
+    final_grade_nota = round(final_grade_nota, 2)
 
 
     year, month = selected_date.year, selected_date.month

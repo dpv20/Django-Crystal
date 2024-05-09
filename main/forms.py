@@ -1,6 +1,8 @@
 from django import forms
 import datetime
 from django.forms.widgets import SelectDateWidget
+from django.core.exceptions import ValidationError
+
 from .models import (
     Laguna, 
     LagoonDetail, 
@@ -57,6 +59,16 @@ class PersonalDeLaLagunaForm(forms.ModelForm):
             'comentario': 'Comentario',
         }
 
+    def clean(self):
+        cleaned_data = super().clean()
+        todo_bien = cleaned_data.get('todo_bien')
+        nota = cleaned_data.get('nota')
+
+        if todo_bien is False and not nota:
+            raise ValidationError("Debe seleccionar una nota si todo no está bien.")
+
+        return cleaned_data
+    
 class PersonalDeLaLagunaFormEN(forms.ModelForm):
     nota = forms.ChoiceField(choices=[('', '------')] + [(i, i) for i in range(1, 5)], required=False, initial='', label='Grade')
     
@@ -64,11 +76,22 @@ class PersonalDeLaLagunaFormEN(forms.ModelForm):
         model = PersonalDeLaLaguna
         exclude = ['date', 'supervisor', 'lagoon']
         labels = {
-            'todo_bien': 'Is everything going all right?',
-            'cantidad': 'Quantity:',
-            'dotacion_incompleta': 'Incomplete personal',
+            'todo_bien': 'Is everything operating well?',
+            'cantidad': 'Quantity',
+            'dotacion_incompleta': 'Incomplete staffing',
             'comentario': 'Comment',
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        todo_bien = cleaned_data.get('todo_bien')
+        nota = cleaned_data.get('nota')
+
+        # Check if either 'todo_bien' is true or 'nota' is filled
+        if not todo_bien and not nota:
+            raise ValidationError("You must select a grade if everything is not well.")
+
+        return cleaned_data
     
 class OperacionLimpiezaDeFondoForm(forms.ModelForm):
     nota = forms.ChoiceField(choices=[('', '------')] + [(i, i) for i in range(1, 5)], required=False, initial='', label='Nota')
@@ -123,7 +146,16 @@ class OperacionLimpiezaDeFondoForm(forms.ModelForm):
             'cepillos_gastados_antiguo': 'Carro de aspiración(Antiguo)1',
             'cepillos_gastados_nuevo': 'Carro de aspiración (Nuevo)1',
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        todo_bien = cleaned_data.get('todo_bien')
+        nota = cleaned_data.get('nota')
 
+        if not todo_bien and not nota:
+            raise ValidationError("Debe seleccionar una nota si todo no está bien.")
+
+        return cleaned_data
+    
 class OperacionLimpiezaDeFondoFormEN(forms.ModelForm):
     nota = forms.ChoiceField(choices=[('', '------')] + [(i, i) for i in range(1, 5)], required=False, initial='', label='Grade')
 
@@ -131,7 +163,7 @@ class OperacionLimpiezaDeFondoFormEN(forms.ModelForm):
         model = OperacionLimpiezaDeFondo
         exclude = ['date', 'supervisor', 'lagoon']
         labels = {
-            'todo_bien': 'Is everything going all right?',
+            'todo_bien': 'Is everything operating well?',
             'en_mantencion': 'Under maintenance',
             'sin_combustible': 'Out of fuel',
             'falla_mecanica': 'Mechanical failure',
@@ -178,6 +210,17 @@ class OperacionLimpiezaDeFondoFormEN(forms.ModelForm):
             'cepillos_gastados_nuevo': 'Suction Cart (New)',
         }
 
+    def clean(self):
+        cleaned_data = super().clean()
+        todo_bien = cleaned_data.get('todo_bien')
+        nota = cleaned_data.get('nota')
+
+        # Check if either 'todo_bien' is true or 'nota' is filled
+        if not todo_bien and not nota:
+            raise ValidationError("You must select a grade if everything is not well.")
+
+        return cleaned_data
+
 class OperacionLimpiezaManualForm(forms.ModelForm):
     nota = forms.ChoiceField(choices=[('', '------')] + [(i, i) for i in range(1, 5)], required=False, initial='', label='Nota')
     
@@ -208,6 +251,15 @@ class OperacionLimpiezaManualForm(forms.ModelForm):
             'no_optima': 'Secuencia de Limpieza',
             'suciedad_en_uniones': 'Limpieza de Liner',
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        todo_bien = cleaned_data.get('todo_bien')
+        nota = cleaned_data.get('nota')
+
+        if todo_bien is False and not nota:
+            raise ValidationError("Debe seleccionar una nota si todo no está bien.")
+
+        return cleaned_data
 
 class OperacionLimpiezaManualFormEN(forms.ModelForm):
     nota = forms.ChoiceField(choices=[('', '------')] + [(i, i) for i in range(1, 5)], required=False, initial='', label='Grade')
@@ -238,6 +290,16 @@ class OperacionLimpiezaManualFormEN(forms.ModelForm):
             'no_optima': 'Cleaning Sequence',
             'suciedad_en_uniones': 'Liner Cleaning',
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        todo_bien = cleaned_data.get('todo_bien')
+        nota = cleaned_data.get('nota')
+
+        # Check if either 'todo_bien' is true or 'nota' is filled
+        if not todo_bien and not nota:
+            raise ValidationError("You must select a grade if everything is not well.")
+
+        return cleaned_data        
 
 class OperacionFiltroForms(forms.ModelForm):
     nota = forms.ChoiceField(choices=[('', '------')] + [(i, i) for i in range(1, 5)], required=False, initial='', label='Nota')
@@ -280,6 +342,15 @@ class OperacionFiltroForms(forms.ModelForm):
             'bomba_en_mantencion': "Bomba Filtro",
 
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        todo_bien = cleaned_data.get('todo_bien')
+        nota = cleaned_data.get('nota')
+
+        if todo_bien is False and not nota:
+            raise ValidationError("Debe seleccionar una nota si todo no está bien.")
+
+        return cleaned_data
 
 class OperacionFiltroFormsEN(forms.ModelForm):
     nota = forms.ChoiceField(choices=[('', '------')] + [(i, i) for i in range(1, 5)], required=False, initial='', label='Grade')
@@ -327,6 +398,16 @@ class OperacionFiltroFormsEN(forms.ModelForm):
             'sensores_no_funcionan': "Level sensors in BC Chamber",
             'bomba_en_mantencion': "Filter Pump",
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        todo_bien = cleaned_data.get('todo_bien')
+        nota = cleaned_data.get('nota')
+
+        # Check if either 'todo_bien' is true or 'nota' is filled
+        if not todo_bien and not nota:
+            raise ValidationError("You must select a grade if everything is not well.")
+
+        return cleaned_data
 
 class OperacionSistemaDosificacionForms(forms.ModelForm):
     nota = forms.ChoiceField(choices=[('', '------')] + [(i, i) for i in range(1, 5)], required=False, initial='', label='Nota')
@@ -363,6 +444,15 @@ class OperacionSistemaDosificacionForms(forms.ModelForm):
             'discordancia_telemetria': "Discordancia entre la dosificación por telemetría y la real",
             'comentario': "Comentarios (Evaluación general)",
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        todo_bien = cleaned_data.get('todo_bien')
+        nota = cleaned_data.get('nota')
+
+        if todo_bien is False and not nota:
+            raise ValidationError("Debe seleccionar una nota si todo no está bien.")
+
+        return cleaned_data
 
 class OperacionSistemaDosificacionFormsEN(forms.ModelForm):
     nota = forms.ChoiceField(choices=[('', '------')] + [(i, i) for i in range(1, 5)], required=False, initial='', label='Grade')
@@ -399,6 +489,16 @@ class OperacionSistemaDosificacionFormsEN(forms.ModelForm):
             'discordancia_telemetria': "Discrepancy between telemetry and actual dosing",
             'comentario': "Comments (General Evaluation)",
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        todo_bien = cleaned_data.get('todo_bien')
+        nota = cleaned_data.get('nota')
+
+        # Check if either 'todo_bien' is true or 'nota' is filled
+        if not todo_bien and not nota:
+            raise ValidationError("You must select a grade if everything is not well.")
+
+        return cleaned_data
 
 class OperacionSistemaRecirculacionForms(forms.ModelForm):
     nota = forms.ChoiceField(choices=[('', '------')] + [(i, i) for i in range(1, 5)], required=False, initial='', label='Nota')
@@ -426,6 +526,15 @@ class OperacionSistemaRecirculacionForms(forms.ModelForm):
             'camara_comentarios': "Comentarios (Cámara de aditivos)",
             'comentario': "Comentario (Evaluación general)",
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        todo_bien = cleaned_data.get('todo_bien')
+        nota = cleaned_data.get('nota')
+
+        if todo_bien is False and not nota:
+            raise ValidationError("Debe seleccionar una nota si todo no está bien.")
+
+        return cleaned_data
 
 class OperacionSistemaRecirculacionFormsEN(forms.ModelForm):
     nota = forms.ChoiceField(choices=[('', '------')] + [(i, i) for i in range(1, 5)], required=False, initial='', label='Grade')
@@ -453,6 +562,16 @@ class OperacionSistemaRecirculacionFormsEN(forms.ModelForm):
             'camara_comentarios': "Comments (Additive Chamber)",
             'comentario': "Comment (General Evaluation)",
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        todo_bien = cleaned_data.get('todo_bien')
+        nota = cleaned_data.get('nota')
+
+        # Check if either 'todo_bien' is true or 'nota' is filled
+        if not todo_bien and not nota:
+            raise ValidationError("You must select a grade if everything is not well.")
+
+        return cleaned_data
 
 class FuncionamientoTelemetriaForms(forms.ModelForm):
     nota = forms.ChoiceField(choices=[('', '------')] + [(i, i) for i in range(1, 5)], required=False, initial='', label='Nota')
@@ -490,6 +609,15 @@ class FuncionamientoTelemetriaForms(forms.ModelForm):
             'otro_panel': "Otro (El panel de control)",
             'comentario': "Comentario (Evaluación general)",
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        todo_bien = cleaned_data.get('todo_bien')
+        nota = cleaned_data.get('nota')
+
+        if todo_bien is False and not nota:
+            raise ValidationError("Debe seleccionar una nota si todo no está bien.")
+
+        return cleaned_data
 
 class FuncionamientoTelemetriaFormsEN(forms.ModelForm):
     nota = forms.ChoiceField(choices=[('', '------')] + [(i, i) for i in range(1, 5)], required=False, initial='', label='Grade')
@@ -527,6 +655,16 @@ class FuncionamientoTelemetriaFormsEN(forms.ModelForm):
             'otro_panel': "Other (Control Panel)",
             'comentario': "Comment (General Evaluation)",
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        todo_bien = cleaned_data.get('todo_bien')
+        nota = cleaned_data.get('nota')
+
+        # Check if either 'todo_bien' is true or 'nota' is filled
+        if not todo_bien and not nota:
+            raise ValidationError("You must select a grade if everything is not well.")
+
+        return cleaned_data
 
 class OperacionSkimmersForms(forms.ModelForm):
     nota = forms.ChoiceField(choices=[('', '------')] + [(i, i) for i in range(1, 5)], required=False, initial='', label='Nota')
@@ -557,6 +695,15 @@ class OperacionSkimmersForms(forms.ModelForm):
             'manguera_comentarios': "Comentarios (Manguera de impulsión)",
             'comentario': "Comentarios (Evaluación general)",
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        todo_bien = cleaned_data.get('todo_bien')
+        nota = cleaned_data.get('nota')
+
+        if todo_bien is False and not nota:
+            raise ValidationError("Debe seleccionar una nota si todo no está bien.")
+
+        return cleaned_data
 
 class OperacionSkimmersFormsEN(forms.ModelForm):
     nota = forms.ChoiceField(choices=[('', '------')] + [(i, i) for i in range(1, 5)], required=False, initial='', label='Grade')
@@ -587,6 +734,16 @@ class OperacionSkimmersFormsEN(forms.ModelForm):
             'manguera_comentarios': "Comments (Discharge Hose)",
             'comentario': "Comments (General Evaluation)",
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        todo_bien = cleaned_data.get('todo_bien')
+        nota = cleaned_data.get('nota')
+
+        # Check if either 'todo_bien' is true or 'nota' is filled
+        if not todo_bien and not nota:
+            raise ValidationError("You must select a grade if everything is not well.")
+
+        return cleaned_data
 
 class OperacionUltrasonidoForms(forms.ModelForm):
     nota = forms.ChoiceField(choices=[('', '------')] + [(i, i) for i in range(1, 5)], required=False, initial='', label='Nota')
@@ -601,7 +758,16 @@ class OperacionUltrasonidoForms(forms.ModelForm):
             'nota': "Nota",
             'comentario': "Comentario (General)",
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        todo_bien = cleaned_data.get('todo_bien')
+        nota = cleaned_data.get('nota')
 
+        if todo_bien is False and not nota:
+            raise ValidationError("Debe seleccionar una nota si todo no está bien.")
+
+        return cleaned_data
+    
 class OperacionUltrasonidoFormsEN(forms.ModelForm):
     nota = forms.ChoiceField(choices=[('', '------')] + [(i, i) for i in range(1, 5)], required=False, initial='', label='Grade')
     class Meta:
@@ -615,6 +781,16 @@ class OperacionUltrasonidoFormsEN(forms.ModelForm):
             'nota': "Grade",
             'comentario': "Comment (General)",
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        todo_bien = cleaned_data.get('todo_bien')
+        nota = cleaned_data.get('nota')
+
+        # Check if either 'todo_bien' is true or 'nota' is filled
+        if not todo_bien and not nota:
+            raise ValidationError("You must select a grade if everything is not well.")
+
+        return cleaned_data
 
 class InfraestructuraForms(forms.ModelForm):
     nota = forms.ChoiceField(choices=[('', '------')] + [(i, i) for i in range(1, 5)], required=False, initial='', label='Nota')
@@ -636,7 +812,16 @@ class InfraestructuraForms(forms.ModelForm):
             'bomba_mal_estado': "Bomba sentina en mal estado o no tienen",
             'comentario': "Comentario (General)",
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        todo_bien = cleaned_data.get('todo_bien')
+        nota = cleaned_data.get('nota')
 
+        if todo_bien is False and not nota:
+            raise ValidationError("Debe seleccionar una nota si todo no está bien.")
+
+        return cleaned_data
+    
 class InfraestructuraFormsEN(forms.ModelForm):
     nota = forms.ChoiceField(choices=[('', '------')] + [(i, i) for i in range(1, 5)], required=False, initial='', label='Grade')
     class Meta:
@@ -658,6 +843,17 @@ class InfraestructuraFormsEN(forms.ModelForm):
             'comentario': "Comment (General)",
         }
 
+    def clean(self):
+        cleaned_data = super().clean()
+        todo_bien = cleaned_data.get('todo_bien')
+        nota = cleaned_data.get('nota')
+
+        # Check if either 'todo_bien' is true or 'nota' is filled
+        if not todo_bien and not nota:
+            raise ValidationError("You must select a grade if everything is not well.")
+
+        return cleaned_data
+
 class CondicionLinerForms(forms.ModelForm):
     nota = forms.ChoiceField(choices=[('', '------')] + [(i, i) for i in range(1, 5)], required=False, initial='', label='Nota')
     class Meta:
@@ -671,6 +867,15 @@ class CondicionLinerForms(forms.ModelForm):
             'nota': "Nota",
             'comentario': "Comentario (General)",
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        todo_bien = cleaned_data.get('todo_bien')
+        nota = cleaned_data.get('nota')
+
+        if todo_bien is False and not nota:
+            raise ValidationError("Debe seleccionar una nota si todo no está bien.")
+
+        return cleaned_data
 
 class CondicionLinerFormsEN(forms.ModelForm):
     nota = forms.ChoiceField(choices=[('', '------')] + [(i, i) for i in range(1, 5)], required=False, initial='', label='Grade')
@@ -685,6 +890,17 @@ class CondicionLinerFormsEN(forms.ModelForm):
             'nota': "Grade",
             'comentario': "Comment (General)",
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        todo_bien = cleaned_data.get('todo_bien')
+        nota = cleaned_data.get('nota')
+
+        # Check if either 'todo_bien' is true or 'nota' is filled
+        if not todo_bien and not nota:
+            raise ValidationError("You must select a grade if everything is not well.")
+
+        return cleaned_data
 
 class CondicionVisualLagunaForms(forms.ModelForm):
     nota = forms.ChoiceField(choices=[('', '------')] + [(i, i) for i in range(1, 5)], required=False, initial='', label='Nota')
@@ -704,6 +920,15 @@ class CondicionVisualLagunaForms(forms.ModelForm):
             'nota': "Nota",
             'comentario': "Comentario (General)",
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        todo_bien = cleaned_data.get('todo_bien')
+        nota = cleaned_data.get('nota')
+
+        if todo_bien is False and not nota:
+            raise ValidationError("Debe seleccionar una nota si todo no está bien.")
+
+        return cleaned_data
 
 class CondicionVisualLagunaFormsEN(forms.ModelForm):
     nota = forms.ChoiceField(choices=[('', '------')] + [(i, i) for i in range(1, 5)], required=False, initial='', label='Grade')
@@ -723,6 +948,16 @@ class CondicionVisualLagunaFormsEN(forms.ModelForm):
             'nota': "Grade",
             'comentario': "Comment (General)",
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        todo_bien = cleaned_data.get('todo_bien')
+        nota = cleaned_data.get('nota')
+
+        # Check if either 'todo_bien' is true or 'nota' is filled
+        if not todo_bien and not nota:
+            raise ValidationError("You must select a grade if everything is not well.")
+
+        return cleaned_data
 
 class FuncionamientoAguaRellenoForms(forms.ModelForm):
     nota = forms.ChoiceField(choices=[('', '------')] + [(i, i) for i in range(1, 5)], required=False, initial='', label="Nota")
@@ -742,6 +977,15 @@ class FuncionamientoAguaRellenoForms(forms.ModelForm):
             'nota': "Nota",
             'comentario': "Comentario (General)",
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        todo_bien = cleaned_data.get('todo_bien')
+        nota = cleaned_data.get('nota')
+
+        if todo_bien is False and not nota:
+            raise ValidationError("Debe seleccionar una nota si todo no está bien.")
+
+        return cleaned_data
 
 class FuncionamientoAguaRellenoFormsEN(forms.ModelForm):
     nota = forms.ChoiceField(choices=[('', '------')] + [(i, i) for i in range(1, 5)], required=False, initial='', label="Grade")
@@ -761,6 +1005,16 @@ class FuncionamientoAguaRellenoFormsEN(forms.ModelForm):
             'nota': "Grade",
             'comentario': "Comment (General)",
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        todo_bien = cleaned_data.get('todo_bien')
+        nota = cleaned_data.get('nota')
+
+        # Check if either 'todo_bien' is true or 'nota' is filled
+        if not todo_bien and not nota:
+            raise ValidationError("You must select a grade if everything is not well.")
+
+        return cleaned_data
 
 class NivelDeLaLagunaForms(forms.ModelForm):
     nota = forms.ChoiceField(choices=[('', '------')] + [(i, i) for i in range(1, 5)], required=False, initial='', label='Nota')
@@ -774,6 +1028,15 @@ class NivelDeLaLagunaForms(forms.ModelForm):
             'nota': "Nota",
             'comentario': "Comentario (General)",
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        todo_bien = cleaned_data.get('todo_bien')
+        nota = cleaned_data.get('nota')
+
+        if todo_bien is False and not nota:
+            raise ValidationError("Debe seleccionar una nota si todo no está bien.")
+
+        return cleaned_data
 
 class NivelDeLaLagunaFormsEN(forms.ModelForm):
     nota = forms.ChoiceField(choices=[('', '------')] + [(i, i) for i in range(1, 5)], required=False, initial='', label='Grade')
@@ -787,6 +1050,16 @@ class NivelDeLaLagunaFormsEN(forms.ModelForm):
             'nota': "Grade",
             'comentario': "Comment (General)",
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        todo_bien = cleaned_data.get('todo_bien')
+        nota = cleaned_data.get('nota')
+
+        # Check if either 'todo_bien' is true or 'nota' is filled
+        if not todo_bien and not nota:
+            raise ValidationError("You must select a grade if everything is not well.")
+
+        return cleaned_data
 
 class MedidasDeMitigacionForms(forms.ModelForm):
     nota = forms.ChoiceField(choices=[('', '------')] + [(i, i) for i in range(1, 5)], required=False, initial='', label='Nota')
@@ -800,7 +1073,16 @@ class MedidasDeMitigacionForms(forms.ModelForm):
             'nota': "Nota",
             'comentario': "Comentario (General)",
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        todo_bien = cleaned_data.get('todo_bien')
+        nota = cleaned_data.get('nota')
 
+        if todo_bien is False and not nota:
+            raise ValidationError("Debe seleccionar una nota si todo no está bien.")
+
+        return cleaned_data
+    
 class MedidasDeMitigacionFormsEN(forms.ModelForm):
     nota = forms.ChoiceField(choices=[('', '------')] + [(i, i) for i in range(1, 5)], required=False, initial='', label='Grade')
     class Meta:
@@ -813,6 +1095,16 @@ class MedidasDeMitigacionFormsEN(forms.ModelForm):
             'nota': "Grade",
             'comentario': "Comment (General)",
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        todo_bien = cleaned_data.get('todo_bien')
+        nota = cleaned_data.get('nota')
+
+        # Check if either 'todo_bien' is true or 'nota' is filled
+        if not todo_bien and not nota:
+            raise ValidationError("You must select a grade if everything is not well.")
+
+        return cleaned_data
 
 #################################################################################
 #################################################################################
