@@ -1809,34 +1809,47 @@ def get_last_laguna_stock_data(idLagunas, date):
     if not last_entry:
         return [0,0]
 
-    cl_fh1lo_sum = last_entry.cl_fh1lo_tank + float(last_entry.cl_fh1lo_storage)
-    cl_ap2hi_sum = last_entry.cl_ap2hi_tank + float(last_entry.cl_ap2hi_storage)
+    cl_fh1lo_sum = float(last_entry.cl_fh1lo_tank) + float(last_entry.cl_fh1lo_storage)
+    cl_ap2hi_sum = float(last_entry.cl_ap2hi_tank) + float(last_entry.cl_ap2hi_storage)
     #return [90, 80]
+
     return [cl_fh1lo_sum, cl_ap2hi_sum]
 def get_leadtime_by_laguna(idLagunas):
-    aditivo = AditivosLaguna.objects.filter(proyecto__idLagunas=idLagunas).first()
+    laguna = get_object_or_404(Laguna, idLagunas=idLagunas)
+    aditivo = AditivosLaguna.objects.filter(proyecto=laguna).first()
     if aditivo is None:
-        return 0
+        return 1
     return aditivo.leadtime
 def get_AP2_by_laguna(idLagunas):
-    aditivo = AditivosLaguna.objects.filter(proyecto__idLagunas=idLagunas).first()
+    laguna = get_object_or_404(Laguna, idLagunas=idLagunas)
+    aditivo = AditivosLaguna.objects.filter(proyecto=laguna).first()
     if aditivo is None:
-        return 0
+        return 1
     return aditivo.ddaDiaLts_AP2
 def get_FH1_by_laguna(idLagunas):
-    aditivo = AditivosLaguna.objects.filter(proyecto__idLagunas=idLagunas).first()
+    laguna = get_object_or_404(Laguna, idLagunas=idLagunas)
+    aditivo = AditivosLaguna.objects.filter(proyecto=laguna).first()
     if aditivo is None:
-        return 0
+        return 1
     return aditivo.ddaDiaLts_FH1
 def graph_line_2(values_fh1lo, values_ap2hi, Leadtime, date_str):
+    print("#######################")
+    print(values_fh1lo)
+    print(values_ap2hi)
+    print(Leadtime)
+    print("#######################")
+
     from matplotlib.font_manager import FontProperties
     
     input_date = datetime.strptime(date_str, '%Y-%m-%d').date()
     
     dates = [input_date - relativedelta(months=i) for i in range(5, -1, -1)]
+
     
     date_labels = [date.strftime('%m/%y') for date in dates]
-    
+
+
+
     leadtime_values = [Leadtime] * len(date_labels)
     
     # Specify figsize here, doubling the default width (6.4*2) and keeping the default height (4.8)
@@ -1951,6 +1964,7 @@ def imop_view(request, id_laguna, date):
     stocks_mes = get_last_laguna_stock_data(id_laguna, date)
     FH1_DECAI = float(get_FH1_by_laguna(id_laguna))
     AP2_DECAI = float(get_AP2_by_laguna(id_laguna))
+
 
     stocks_mes[0] = float(stocks_mes[0]/FH1_DECAI)
     stocks_mes[1] = float(stocks_mes[1]/AP2_DECAI)
