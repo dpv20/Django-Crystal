@@ -35,6 +35,16 @@ from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string, get_template
 from io import BytesIO
 
+#selenium 
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
+import time
 
 from .models import (
     ToDoList,
@@ -1057,8 +1067,8 @@ def imops_view(request):
         form = LagunaSelectionForm()
         form.fields['laguna'].queryset = Laguna.objects.filter(Estado=True).order_by('Nombre')
 
-    completed_imops = IMOP.objects.filter(is_completed=True)
-    incomplete_imops = IMOP.objects.filter(is_completed=False)
+    completed_imops = IMOP.objects.filter(is_completed=True).order_by('-date')[:5]
+    incomplete_imops = IMOP.objects.filter(is_completed=False).order_by('-date')[:5]
 
     language = request.COOKIES.get('language', 'es')  # Default to 'es' if the cookie is not set
     template_name = 'main/english/imops_EN.html' if language == 'en' else 'main/imops.html'
@@ -2208,3 +2218,12 @@ def imop_pdf_view(request, id_laguna, date):
     }
     return render_to_pdf('main/imops_3_pdf.html', context)
 
+
+
+
+
+def final_PDF():
+    chrome_profile_path = r"C:\Users\Administrator\AppData\Local\Google\Chrome\User Data\Default"
+    chrome_options = Options()
+    chrome_options.add_argument(f"user-data-dir={chrome_profile_path}")
+    driver = webdriver.Chrome(options=chrome_options)
