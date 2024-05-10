@@ -314,14 +314,31 @@
         <div style="text-align: center; margin-top: 20px;">
             <button type="submit" name="submit_form" value="update_info" style="padding: 10px 20px; font-size: 16px; cursor: pointer;">Actualizar</button>
         </div>
-        
+        <!--
         <form method="post" action="">
             {% csrf_token %}
             <input type="hidden" name="action" value="generate_pdf">
-            <!-- any additional fields you need for the PDF generation -->
             <input type="submit" value="Generate PDF">
         </form>
-        
+        -->
     </form>
+
+    <button type="button" id="submitBtn" onclick="submitCheck()">Enviar</button>
+<script>
+    function submitCheck() {
+        const selectedImages = document.querySelectorAll('.image-container img.selected').length;
+        if (selectedImages > 8) {
+            alert("You can only select a maximum of 8 images.");
+            return;
+        }
+    
+        const lagunaId = "{{ laguna.idLagunas }}"; // Ensure this matches your template context
+        const selectedDate = "{{ selected_date|date:'Y-m-d' }}"; // Ensure this formatting aligns with your URL pattern
+    
+        // Navigate to the PDF generation page
+        window.location.href = `/generate-pdf/${lagunaId}/${selectedDate}/`;
+    }
+</script>
+
 </body>
 </html>

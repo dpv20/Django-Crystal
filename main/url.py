@@ -31,6 +31,7 @@ from .views import (
     generate_pdf_for_lagunas_activas,
     lagunas_con_imagenes_pdf,
     generate_both_pdfs,
+    generate_pdf_withconverter,
 )
 
 urlpatterns = [
@@ -81,7 +82,8 @@ urlpatterns = [
     path('imops/<str:id_laguna>/<str:date>/info', views.imop_view, name='imop_info_view'),
     path('imops/<str:id_laguna>/<str:date>/info/pdf', views.imop_pdf_view, name='imop_pdf_view'),
 
-    
+    path('generate-pdf/<str:id_laguna>/<str:date>/', views.generate_pdf_withconverter, name='generate_pdf'),
+
     path('viernes/', viernes_view, name='viernes'),
     path('viernes/<str:name>/', viernes_view, name='viernes_with_name'),
 

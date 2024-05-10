@@ -35,6 +35,11 @@ from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string, get_template
 from io import BytesIO
 
+
+
+#generar pdf
+from pyhtml2pdf import converter
+
 #selenium 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -1992,7 +1997,6 @@ def imop_view(request, id_laguna, date):
     FH1_DECAI = float(get_FH1_by_laguna(id_laguna))
     AP2_DECAI = float(get_AP2_by_laguna(id_laguna))
 
-
     stocks_mes[0] = float(stocks_mes[0]/FH1_DECAI)
     stocks_mes[1] = float(stocks_mes[1]/AP2_DECAI)
 
@@ -2157,14 +2161,19 @@ def render_to_pdf(template_src, context_dict={}):
         return HttpResponse(result.getvalue(), content_type='application/pdf')
     return None
 def imop_pdf_view(request, id_laguna, date):
+    default_date = datetime.strptime(date, '%Y-%m-%d').date()
     laguna = get_object_or_404(Laguna, pk=id_laguna)
     selected_date = datetime.strptime(date, '%Y-%m-%d').date()
+    report_paths = None
     if laguna.idplatanus is None:
         print(f"Laguna {id_laguna} does not have an associated idplatanus.")
     else:
         year, month = selected_date.strftime("%Y"), selected_date.strftime("%m")
         report_paths = download_lagoon_reports(laguna.idplatanus, year, month)
     last_imop = IMOP.objects.filter(laguna=laguna).order_by('-date').first()
+    if not last_imop:
+        last_imop = IMOP(laguna=laguna, date=timezone.now())  
+        last_imop.save()
     acros_and_values = [
         ('PER:', last_imop.PER),
         ('BC:', last_imop.BC),
@@ -2186,10 +2195,13 @@ def imop_pdf_view(request, id_laguna, date):
               OperacionSkimmers, OperacionUltrasonido, Infraestructura, CondicionLiner,
               CondicionVisualLaguna, FuncionamientoAguaRelleno, NivelDeLaLaguna, MedidasDeMitigacion]
     last_instances = {model.__name__: get_last_instance(model, laguna) for model in models}
-    valuesss = [instance.get('nota', 0) for instance in last_instances.values()]
-    valuesss = [instance.get('nota', 0) for instance in last_instances.values()]
+    #valuesss = [instance.get('nota', 0) for instance in last_instances.values()]
+    valuesss = [instance.get('nota', 0) if instance is not None else 0 for instance in last_instances.values()]
+    
     weights_list = [0.05, 0.1, 0.1, 0.1, 0.07, 0.07, 0.1, 0.04, 0.04, 0.03, 0.08, 0.14, 0.02, 0.04, 0.02]
     final_grade_nota = sum(value * weight for value, weight in zip(valuesss, weights_list))
+    final_grade_nota = round(final_grade_nota, 2)
+
     year, month = selected_date.year, selected_date.month
     first_day, last_day = monthrange(year, month)
     laguna_images = LagunaImage.objects.filter(
@@ -2202,13 +2214,16 @@ def imop_pdf_view(request, id_laguna, date):
     placeholder_images = [{'photo': {'url': placeholder_path}} for _ in range(placeholders_needed)]
     combined_images = list(laguna_images) + placeholder_images
     laguna_images = combined_images
+    
     resultss = get_previous_imops(id_laguna, date)
+    
     graph_url = graph_line_1(resultss, final_grade_nota, date)
     graph_url_2 = generate_bar_graph(last_instances)
-    comentarios = {model.__name__: instance.get('comentario', '') for model in models for instance in [get_last_instance(model, laguna)]}
+    #comentarios = {model.__name__: instance.get('comentario', '') for model in models for instance in [get_last_instance(model, laguna)]}
+    comentarios = {model.__name__: (instance.get('comentario', '') if instance is not None else '') for model in models for instance in [get_last_instance(model, laguna)]}
+ 
     acros = ["PER:", "BC:", "MC:", "FIL:", "DOS:", "REC:", "TEL:", "SKI:", "ULT:", "INF:", "LIN:", "VISUAL:", "WAT:", "LVL:", "ENV:"]
     comentarios_acros = {acro: comentarios[model.__name__] for acro, model in zip(acros, models)}
-
     #supervisor_name = f"{request.user.first_name} {request.user.last_name}"
     supervisor_lagunas = SupervisorLaguna.objects.filter(laguna__idLagunas=id_laguna).select_related('supervisor')
     if supervisor_lagunas.exists():
@@ -2219,12 +2234,16 @@ def imop_pdf_view(request, id_laguna, date):
     stocks_mes = get_last_laguna_stock_data(id_laguna, date)
     FH1_DECAI = float(get_FH1_by_laguna(id_laguna))
     AP2_DECAI = float(get_AP2_by_laguna(id_laguna))
+    
     stocks_mes[0] = float(stocks_mes[0]/FH1_DECAI)
     stocks_mes[1] = float(stocks_mes[1]/AP2_DECAI)
+    
     values_fh1lo = [result[0] for result in resultss] + [stocks_mes[0]]
     values_ap2hi = [result[1] for result in resultss] + [stocks_mes[1]]
     Leadtime =  float(get_leadtime_by_laguna(id_laguna))
+    
     graph_url_3 = graph_line_2(values_fh1lo,values_ap2hi, Leadtime, date)
+    
     clasificacion = evaluate_grade(final_grade_nota)
 
     context = {
@@ -2247,6 +2266,23 @@ def imop_pdf_view(request, id_laguna, date):
     return render(request, 'PDFs/imops_pdf.html', context)
 
 
+def generate_pdf_withconverter(request, id_laguna, date):
+    try:
+        url = f'http://127.0.0.1:8000/imops/{id_laguna}/{date}/info/pdf'
+        output_path = f'PDF/{id_laguna}_{date}.pdf'
+        converter.convert(url, output_path)
+
+        # If you want to return the PDF as a response:
+        with open(output_path, 'rb') as pdf:
+            response = HttpResponse(pdf.read(), content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename="{id_laguna}_{date}.pdf"'
+            return response
+
+        # Or if you just want to notify that the file was saved:
+        # return HttpResponse("PDF generated successfully.")
+
+    except Exception as e:
+        return HttpResponse(f"Error during PDF generation: {str(e)}")
 
 
 #def final_PDF():
