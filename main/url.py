@@ -32,6 +32,7 @@ from .views import (
     lagunas_con_imagenes_pdf,
     generate_both_pdfs,
     generate_pdf_withconverter,
+    edit_notas,
 )
 
 urlpatterns = [
@@ -43,9 +44,12 @@ urlpatterns = [
     path("view/", views.view, name="view"),
     path('database/', views.laguna_database, name='laguna_database'),
     path('edit-laguna/<str:idLagunas>/', views.edit_laguna, name='edit_laguna'),
+
     path('initial/', initial_form_view, name='initial_form'),
     path('results/', results_view, name='results'),
     path('results_EN/', results_EN_view, name='results_EN'),
+
+
 
     path('daily-report/', views.daily_report, name='daily_report'),
     path('daily-report/monday/<str:idLagunas>/', views.lagoon_detail, name='monday'),
@@ -53,7 +57,9 @@ urlpatterns = [
     path('manuals/', manuals_view, name='manuals'),
     path('stock/', stock_view, name='stock'),
     path('select-laguna/', select_laguna_view, name='select_laguna'),
-    path('notas/<str:nombre_laguna>/', notas_view, name='notas'),
+    path('notas/<str:id_laguna>/', notas_view, name='notas_view'),
+    path('notas/<str:supervisor_name>/<str:id_laguna>/<str:fecha>/', edit_notas, name='edit_notas'),
+    
     path('semanal/', semanal_selection_view, name='semanal-select_laguna'),
     path('semanal/<str:idLagunas>/<str:fecha>/', display_images_view, name='display_images'),
     path('semanal/upload/<str:idLagunas>/<str:fecha>/', upload_image_view, name='upload_image'),

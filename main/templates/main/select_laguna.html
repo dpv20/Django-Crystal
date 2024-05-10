@@ -9,7 +9,8 @@
         <label for="nombreLaguna">Nombre de Laguna:</label>
         <select name="nombreLaguna" id="nombreLaguna">
             {% for laguna in lagunas %}
-                <option value="{{ laguna.Nombre }}">{{ laguna.Nombre }}</option>
+                <!-- Update the value to pass idLagunas instead of Nombre -->
+                <option value="{{ laguna.idLagunas }}">{{ laguna.Nombre }}</option>
             {% endfor %}
         </select>
         <button type="button" onclick="submitForm()">Ver Notas</button>
@@ -19,6 +20,7 @@
 <script>
     function submitForm() {
         var selectedLaguna = document.getElementById('nombreLaguna').value;
+        // Make sure to update the URL to accept the idLaguna parameter instead of nombreLaguna
         window.location.href = '/notas/' + encodeURIComponent(selectedLaguna) + '/';
     }
 </script>

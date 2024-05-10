@@ -49,8 +49,9 @@
                 <td>{{ nota.notas.nota_nivel_laguna|default:"N/A" }}</td>
                 <td>{{ nota.notas.nota_mitigacion|default:"N/A" }}</td>
                 <td>{{ nota.promedio|floatformat:2|default:"N/A" }}</td>
-                <th>Pending</th>
-            </tr>
+                <td>
+                    <a href="{% url 'edit_notas' supervisor_name=nota.supervisor id_laguna=id_laguna fecha=nota.fecha %}" class="btn btn-primary">Edit</a>
+                </tr>
         {% endfor %}
     </tbody>
 </table>

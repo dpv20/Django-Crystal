@@ -1,0 +1,34 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<h2>Edit Notas for {{ id_laguna }} on {{ fecha }}</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {% for formset in note_forms %}
+        <fieldset>
+            {{ formset.management_form }}  <!-- Include the management form here -->
+            {% for form in formset %}
+                <div>
+                    {{ form.as_p }}
+                    {% if form.errors %}
+                        {% for error in form.errors.values %}
+                            <div class="alert alert-danger">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </fieldset>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+</form>
+
+{% if messages %}
+    <div class="alert alert-info">
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% endblock %}

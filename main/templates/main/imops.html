@@ -8,7 +8,7 @@
 
         <table>
             <tr>
-                <th colspan="2" class="table-title"> IMOPS</th>
+                <th colspan="2" class="table-title">NUEVO IMOPS</th>
             </tr>
             <!-- Date Selection (Month and Year) -->
             <tr class="form-group">
@@ -50,66 +50,55 @@
     </form>
 </div>
 
-<!-- Table for Completed IMOPs -->
+<!-- Table for Completed IMOPs 
 <div class="table-box">
     <table>
-        <!-- Table Title -->
         <tr>
-            <th colspan="3" class="table-title">IMOPs Completos</th>
+            <th colspan="3" class="table-title">Completed IMOPs</th>
         </tr>
-        <!-- Table Headers -->
         <tr>
             <th>ID</th>
             <th>Date</th>
             <th>Laguna</th>
-            <!-- Add other headers as needed -->
         </tr>
-        <!-- Table Rows -->
         {% for imop in completed_imops %}
         <tr>
             <td>{{ imop.generated_id }}</td>
             <td>{{ imop.date }}</td>
             <td>{{ imop.laguna.Nombre }}</td>
-            <!-- Add other fields as needed -->
         </tr>
         {% empty %}
         <tr>
-            <td colspan="3">No existen IMOPs completos</td>
+            <td colspan="3">No completed IMOPs</td>
         </tr>
         {% endfor %}
     </table>
 </div>
 
-<!-- Table for Incomplete IMOPs -->
 <div class="table-box">
     <table>
-        <!-- Table Title -->
         <tr>
-            <th colspan="3" class="table-title">IMOPs incompletos</th>
+            <th colspan="3" class="table-title">Incomplete IMOPs</th>
         </tr>
-        <!-- Table Headers -->
         <tr>
             <th>ID</th>
             <th>Date</th>
             <th>Laguna</th>
-            <!-- Add other headers as needed -->
         </tr>
-        <!-- Table Rows -->
         {% for imop in incomplete_imops %}
         <tr>
             <td>{{ imop.generated_id }}</td>
             <td>{{ imop.date }}</td>
             <td>{{ imop.laguna.Nombre }}</td>
-            <!-- Add other fields as needed -->
         </tr>
         {% empty %}
         <tr>
-            <td colspan="3">No hay IMOPs incompletos</td>
+            <td colspan="3">No incomplete IMOPs</td>
         </tr>
         {% endfor %}
     </table>
 </div>
-
+-->
 <script>
     function submitIMOPForm() {
         var dateInput = document.getElementById('date_id');
@@ -134,7 +123,6 @@
         }
     }
 </script>
-
 <style>
     .table-box {
         border: 1px solid #ddd;

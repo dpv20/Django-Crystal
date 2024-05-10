@@ -12,7 +12,7 @@
             </tr>
             <!-- Date Selection (Month and Year) -->
             <tr class="form-group">
-                <td><label for="date_id">Fecha:</label></td>
+                <td><label for="date_id">Date:</label></td>
                 <td>
                     <input type="month" id="date_id" name="date" class="sampletext" value="{{ form.date.value|default_if_none:'' }}">
                     {% if form.date.errors %}
@@ -23,7 +23,7 @@
 
             <!-- Laguna Selection -->
             <tr class="form-group">
-                <td><label for="laguna_id">Laguna</label></td>
+                <td><label for="laguna_id">Lagoon</label></td>
                 <td>
                     <select id="laguna_id" name="laguna" class="select-laguna">
                         {% for choice in form.laguna.field.queryset %}
@@ -50,27 +50,22 @@
     </form>
 </div>
 
-<!-- Table for Completed IMOPs -->
+<!-- Table for Completed IMOPs 
 <div class="table-box">
     <table>
-        <!-- Table Title -->
         <tr>
             <th colspan="3" class="table-title">Completed IMOPs</th>
         </tr>
-        <!-- Table Headers -->
         <tr>
             <th>ID</th>
             <th>Date</th>
             <th>Laguna</th>
-            <!-- Add other headers as needed -->
         </tr>
-        <!-- Table Rows -->
         {% for imop in completed_imops %}
         <tr>
             <td>{{ imop.generated_id }}</td>
             <td>{{ imop.date }}</td>
             <td>{{ imop.laguna.Nombre }}</td>
-            <!-- Add other fields as needed -->
         </tr>
         {% empty %}
         <tr>
@@ -80,27 +75,21 @@
     </table>
 </div>
 
-<!-- Table for Incomplete IMOPs -->
 <div class="table-box">
     <table>
-        <!-- Table Title -->
         <tr>
             <th colspan="3" class="table-title">Incomplete IMOPs</th>
         </tr>
-        <!-- Table Headers -->
         <tr>
             <th>ID</th>
             <th>Date</th>
             <th>Laguna</th>
-            <!-- Add other headers as needed -->
         </tr>
-        <!-- Table Rows -->
         {% for imop in incomplete_imops %}
         <tr>
             <td>{{ imop.generated_id }}</td>
             <td>{{ imop.date }}</td>
             <td>{{ imop.laguna.Nombre }}</td>
-            <!-- Add other fields as needed -->
         </tr>
         {% empty %}
         <tr>
@@ -109,7 +98,7 @@
         {% endfor %}
     </table>
 </div>
-
+-->
 <script>
     function submitIMOPForm() {
         var dateInput = document.getElementById('date_id');

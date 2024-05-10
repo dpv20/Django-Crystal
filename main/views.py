@@ -34,7 +34,8 @@ import os
 from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string, get_template
 from io import BytesIO
-
+from django.utils.dateformat import format
+from django.forms import modelformset_factory
 
 
 #generar pdf
@@ -927,9 +928,10 @@ def select_laguna_view(request):
     return render(request, 'main/select_laguna.html', {'lagunas': lagunas})
 
 @login_required
-def notas_view(request, nombre_laguna):
-    lagoon = get_object_or_404(Laguna, Nombre=nombre_laguna)
+def notas_view(request, id_laguna):
+    lagoon = get_object_or_404(Laguna, idLagunas=id_laguna)
     id_laguna = lagoon.idLagunas
+    nombre_laguna = lagoon.Nombre
 
     modelos = [
         (PersonalDeLaLaguna, 'nota_personal'),
@@ -950,29 +952,68 @@ def notas_view(request, nombre_laguna):
     ]
     weights_list = [0.05, 0.1, 0.1, 0.1, 0.07, 0.07, 0.1, 0.04, 0.04, 0.03, 0.08, 0.14, 0.02, 0.04, 0.02]
     notas_combinadas = {}
-    promedios = []
     for modelo, clave_nota in modelos:
         for obj in modelo.objects.filter(lagoon_id=id_laguna):
             fecha = obj.date
-            if fecha not in notas_combinadas:
-                notas_combinadas[fecha] = {'supervisor': obj.supervisor, 'notas': {}}
-            notas_combinadas[fecha]['notas'][clave_nota] = getattr(obj, 'nota', None)
+            formatted_date = format(fecha, 'Y-m-d')  # Correctly format the date to 'YYYY-MM-DD'
+            if formatted_date not in notas_combinadas:
+                notas_combinadas[formatted_date] = {'supervisor': obj.supervisor, 'notas': {}}
+            notas_combinadas[formatted_date]['notas'][clave_nota] = getattr(obj, 'nota', None)
 
     for fecha, datos in notas_combinadas.items():
         notas_numericas = [nota for nota in datos['notas'].values() if isinstance(nota, (int, float))]
-        notas = [nota for nota in datos['notas'].values() if nota is not None]
-        promedio = sum(notas_numericas) / len(notas_numericas) if notas_numericas else None
         promedio = sum(value * weight for value, weight in zip(notas_numericas, weights_list))
         datos['promedio'] = promedio
 
     # Preparar lista para la plantilla
     notas_lista = [{'fecha': fecha, **datos} for fecha, datos in notas_combinadas.items()]
-     
+
     return render(request, 'main/notas.html', {
-        'notas': notas_lista, 
+        'id_laguna': id_laguna,
+        'notas': notas_lista,
         'nombre_laguna': nombre_laguna,
         'full_width': True
     })
+
+
+
+@login_required
+def edit_notas(request, supervisor_name, id_laguna, fecha):
+    lagoon = get_object_or_404(Laguna, idLagunas=id_laguna)
+    nombre_laguna = lagoon.Nombre
+
+    print("#####################")
+    print("supervisor_name:", supervisor_name)
+    print("id_laguna:", id_laguna)
+    print("fecha:", fecha)
+    request.session['personal_form_submitted'] = False
+    request.session['limpieza_form_submitted'] = False
+    request.session['limpiezamanual_form_submitted'] = False
+    request.session['operacionfiltro_form_submitted'] = False
+    request.session['operacionsistemadosificacion_form_submitted'] = False
+    request.session['operacionsistemarecirculacion_form_submitted'] = False
+    request.session['funcionamientotelemetria_form_submitted'] = False
+    request.session['operacionskimmers_form_submitted'] = False
+    request.session['operacionultrasonido_form_submitted'] = False
+    request.session['infraestructura_form_submitted'] = False
+    request.session['condicionliner_form_submitted'] = False
+    request.session['condicionvisuallaguna_form_submitted'] = False
+    request.session['funcionamientoaguarelleno_form_submitted'] = False
+    request.session['niveldelalaguna_form_submitted'] = False
+    request.session['medidasdemitigacion_form_submitted'] = False
+
+    language = request.COOKIES.get('language')
+    request.session['fecha'] = str(fecha)
+    request.session['supervisor'] = str(supervisor_name)
+    request.session['lagoons'] = str(nombre_laguna)
+
+    if language == 'en':
+        return redirect('results_EN')
+    else:
+        return redirect('results')
+
+
+
 
 @login_required
 def semanal_selection_view(request):
@@ -1650,6 +1691,7 @@ def submit_feedback(request):
 @login_required    
 def create_imop_view(request, id_laguna, date):
     laguna = get_object_or_404(Laguna, pk=id_laguna)
+    idioma = laguna.idioma
     year, month, day = map(int, date.split('-'))
     selected_date = timezone.datetime(year, month, day).date()
     date_from = selected_date - relativedelta(months=5)
@@ -1665,14 +1707,14 @@ def create_imop_view(request, id_laguna, date):
     )
 
     language = request.COOKIES.get('language', 'es')  # Default to 'es' if the cookie is not set
-    template_name = 'main/english/imops_2_EN.html' if language == 'en' else 'main/imops_2.html'
+    template_name = 'main/english/imops_2_EN.html' if idioma == 'I' else 'main/imops_2.html'
 
     return render(request, template_name, {
+
         'laguna': laguna,
         'selected_date': selected_date,
         'date_from': date_from,
         'images': images,
-        # ... other context variables if needed ...
     })
 
 def download_lagoon_reports(idplatanus, year, month):
@@ -1755,7 +1797,7 @@ def generate_bar_graph(last_instances):
     ax.text(final_bar[0].get_x() + final_bar[0].get_width() / 2., height - 0.05, f'{final_value:.2f}',
             ha='center', va='top', color='white', fontsize=15, fontweight='bold')  # Added fontweight='bold'
 
-    plt.title('NOTAS POR SECCIÓN', fontsize=16, fontweight='bold', fontname='arial', color='#00AFC9')
+    plt.title('SECTION GRADES', fontsize=16, fontweight='bold', fontname='arial', color='#00AFC9')
     all_positions = np.append(positions, final_position)
     ax.set_xticks(all_positions)
     ax.set_xticklabels(column_names + ["FINAL"], rotation=45, ha='right', fontsize=15)
@@ -1776,7 +1818,7 @@ def graph_line_1(results, final_grade_nota, date_str):
     turquoise = (64/255, 224/255, 208/255)
     plt.figure(figsize=(10, 6))
     plt.plot(date_labels, values, marker='o', linestyle='-', color='#00AFC9', linewidth=5)
-    plt.title('EVALUACIÓN GENERAL', fontsize=15, fontweight='bold', fontname='arial', color='#00AFC9')
+    plt.title('GENERAL EVALUATION', fontsize=15, fontweight='bold', fontname='arial', color='#00AFC9')
     plt.ylim(0, 5)  
     plt.grid(True, which='both', axis='y', linestyle='--', linewidth=1)
     plt.xticks(fontsize=15)
@@ -1876,8 +1918,8 @@ def graph_line_2(values_fh1lo, values_ap2hi, Leadtime, date_str):
     
     ax.plot(date_labels, leadtime_values, label='Leadtime', linestyle='-', color='orange', linewidth=3)
     
-    ax.set_xlabel('Fecha Reportada')
-    ax.set_ylabel('Stock en Días')
+    ax.set_xlabel('Date')
+    ax.set_ylabel('Days remaining')
     #ax.set_title('STOCK DE ADITIVOS', fontproperties=gotham_font, size=20, color='skyblue')
 
     all_values = values_fh1lo + values_ap2hi + leadtime_values
@@ -1896,12 +1938,10 @@ def graph_line_2(values_fh1lo, values_ap2hi, Leadtime, date_str):
     plt.close(fig)
     
     return os.path.join(settings.MEDIA_URL, 'model_line_chart_2.png')
-
-
 def evaluate_grade(final_grade_nota):
-    if final_grade_nota >= 5:
+    if final_grade_nota >= 4.5:
         return "Muy Bueno"
-    elif 5 > final_grade_nota > 4:
+    elif 4.5 > final_grade_nota > 4:
         return "Bueno"
     elif 4 >= final_grade_nota > 3:
         return "Regular"
@@ -1920,6 +1960,7 @@ def evaluate_grade(final_grade_nota):
 def imop_view(request, id_laguna, date):
     default_date = datetime.strptime(date, '%Y-%m-%d').date()
     laguna = get_object_or_404(Laguna, pk=id_laguna)
+    idioma = laguna.idioma
     selected_date = datetime.strptime(date, '%Y-%m-%d').date()
     report_paths = None
     if laguna.idplatanus is None:
@@ -2108,6 +2149,8 @@ def imop_view(request, id_laguna, date):
             )
         new_imop.generate_id()
 
+        template_name = 'main/english/imops_3_EN.html' if idioma == 'I' else 'main/imops_3.html'
+
         if 'submit_form' in request.POST and request.POST['submit_form'] == 'update_info':  
             context = {
             'laguna': laguna,
@@ -2125,15 +2168,15 @@ def imop_view(request, id_laguna, date):
             'report_paths': report_paths,
             'clasificacion': clasificacion,
             }
-            return render(request, 'main/imops_3.html', context)
+            return render(request, template_name, context)
 
         elif request.POST.get('action') == 'generate_pdf':
             return redirect(reverse('imop_pdf_view', kwargs={'id_laguna': id_laguna, 'date': date}))
         
 
 
-
-    return render(request, 'main/imops_3.html', context)
+    template_name = 'main/english/imops_3_EN.html' if idioma == 'I' else 'main/imops_3.html'
+    return render(request, template_name, context)
 
 
 def link_callback(uri, rel):
@@ -2163,6 +2206,7 @@ def render_to_pdf(template_src, context_dict={}):
 def imop_pdf_view(request, id_laguna, date):
     default_date = datetime.strptime(date, '%Y-%m-%d').date()
     laguna = get_object_or_404(Laguna, pk=id_laguna)
+    idioma = laguna.idioma
     selected_date = datetime.strptime(date, '%Y-%m-%d').date()
     report_paths = None
     if laguna.idplatanus is None:
@@ -2263,12 +2307,14 @@ def imop_pdf_view(request, id_laguna, date):
         'clasificacion': clasificacion,
     }
     #return render_to_pdf('main/PDFs/imops_pdf.html', context)
-    return render(request, 'PDFs/imops_pdf.html', context)
+    template_name = 'PDFs/imops_pdf_EN.html' if idioma == 'I' else 'main/imops_pdf.html'
+    return render(request, template_name, context)
 
 
 def generate_pdf_withconverter(request, id_laguna, date):
     try:
-        url = f'http://127.0.0.1:8000/imops/{id_laguna}/{date}/info/pdf'
+        url = f'http://127.0.0.1:8000/imops/{id_laguna}/{date}/info/pdf' #pc diego
+        #url = f'http://172.31.55.215:80/imops/{id_laguna}/{date}/info/pdf' #VM AWS
         output_path = f'PDF/{id_laguna}_{date}.pdf'
         converter.convert(url, output_path)
 
@@ -2276,8 +2322,9 @@ def generate_pdf_withconverter(request, id_laguna, date):
         with open(output_path, 'rb') as pdf:
             response = HttpResponse(pdf.read(), content_type='application/pdf')
             response['Content-Disposition'] = f'attachment; filename="{id_laguna}_{date}.pdf"'
-            return response
 
+        os.remove(output_path)
+        return response
         # Or if you just want to notify that the file was saved:
         # return HttpResponse("PDF generated successfully.")
 
